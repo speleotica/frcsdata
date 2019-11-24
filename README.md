@@ -10,15 +10,15 @@ Parser for Chip Hopper's survey data format used in Fisher Ridge Cave System
 
 # Parse function variants
 
-## AsyncIterable: `parseFrcsXFile(file: string, lines: AsyncIterable<string>): Promise<FrcsXFile>`
+#### AsyncIterable: `parseFrcsXFile(file: string, lines: AsyncIterable<string>): Promise<FrcsXFile>`
 
 These can be imported from the package root (`@speleotica/frcsdata`). The other variants wrap these.
 
-## String: `parseFrcsXFile(file: string, data: string): Promise<FrcsXFile>`
+#### String: `parseFrcsXFile(file: string, data: string): Promise<FrcsXFile>`
 
 These can be imported from `@speleotica/frcsdata/string`.
 
-## Node: `parseFrcsXFile(file: string): Promise<FrcsXFile>`
+#### Node: `parseFrcsXFile(file: string): Promise<FrcsXFile>`
 
 These can be imported from `@speleotica/frcsdata/node` and read the given file from disk. They require Node >=12.
 
