@@ -31,6 +31,9 @@
       "path": "cz-conventional-changelog"
     }
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged && npm run lint && npm run tsc",
@@ -119,7 +122,7 @@
     "prettier": "^1.15.2",
     "prettier-eslint": "^8.8.2",
     "rimraf": "^2.6.0",
-    "semantic-release": "^15.1.4",
+    "semantic-release": "^15.13.31",
     "typescript": "^3.7.2"
   },
   "dependencies": {
