@@ -162,6 +162,8 @@ export default async function parseFrcsSurveyFile(
   for await (const line of lines) {
     let errored = false
 
+    const thisLineNumber = lineNumber
+
     const error = (
       message: string,
       startColumn: number,
@@ -174,7 +176,7 @@ export default async function parseFrcsSurveyFile(
           new Segment({
             value: line,
             source: file,
-            startLine: lineNumber,
+            startLine: thisLineNumber,
             startCol: 0,
           }).substring(startColumn, endColumn)
         )

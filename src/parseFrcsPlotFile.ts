@@ -39,7 +39,7 @@ export default async function parseFrcsPlotFile(
         new Segment({
           value: line,
           source: file,
-          startLine: lineNumber,
+          startLine: lineNumber - 1,
           startCol: 0,
         }).substring(startColumn, endColumn)
       )
