@@ -1,4 +1,4 @@
-import { FrcsSurveyFile } from '..'
+import { FrcsSurveyFile } from '../FrcsSurveyFile'
 import parseFrcsSurveyFile from '../parseFrcsSurveyFile'
 import readline from 'readline'
 import fs from 'fs'

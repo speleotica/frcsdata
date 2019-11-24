@@ -1,7 +1,6 @@
 import { FrcsSurveyFile } from './FrcsSurveyFile'
 import { FrcsTrip } from './FrcsTrip'
-import FrcsParseError, { FrcsParseErrorCode } from './FrcsParseError'
-import { Segment } from 'parse-segment'
+import { Segment, SegmentParseError } from 'parse-segment'
 import {
   Angle,
   Length,
@@ -10,6 +9,7 @@ import {
   UnitType,
 } from '@speleotica/unitized'
 import { FrcsShot, FrcsShotKind } from './FrcsShot'
+import linesOf from './util/linesOf'
 
 function parseNumber<T extends UnitType<T>>(
   s: string,
@@ -92,11 +92,6 @@ function parseLrud<T extends UnitType<T>>(
     : new UnitizedNumber(value, unit)
 }
 
-async function* linesOf(s: string): AsyncIterable<string> {
-  // eslint-disable-line no-inner-declarations
-  yield* s.split(/\r\n?|\n/gm)
-}
-
 /**
  * Parses a raw cdata.fr survey file.  These look like so:
  *
@@ -152,7 +147,7 @@ export default async function parseFrcsSurveyFile(
   let cave: string | null = null
   let location: string | null = null
   const trips: Array<FrcsTrip> = []
-  const errors: Array<FrcsParseError> = []
+  const errors: Array<SegmentParseError> = []
 
   let tripName
   let tripSurveyors
@@ -172,15 +167,13 @@ export default async function parseFrcsSurveyFile(
     let errored = false
 
     const error = (
-      code: FrcsParseErrorCode,
       message: string,
       startColumn: number,
       endColumn: number
     ): void => {
       errored = true
       errors.push(
-        new FrcsParseError(
-          code,
+        new SegmentParseError(
           message,
           new Segment({
             value: line,
@@ -196,21 +189,15 @@ export default async function parseFrcsSurveyFile(
       startColumn: number,
       endColumn: number,
       fieldName: string,
-      validator: (value: string) => boolean,
-      invalidErrorCode: FrcsParseErrorCode,
-      missingErrorCode?: FrcsParseErrorCode
+      validator: (value: string) => boolean
     ): string => {
       const field = line.substring(startColumn, endColumn)
       if (!validator(field)) {
-        const errorCode = field.trim() ? invalidErrorCode : missingErrorCode
-        if (errorCode) {
-          error(
-            errorCode,
-            (field.trim() ? 'Invalid ' : 'Missing ') + fieldName,
-            startColumn,
-            endColumn
-          )
-        }
+        error(
+          (field.trim() ? 'Invalid ' : 'Missing ') + fieldName,
+          startColumn,
+          endColumn
+        )
       }
       return field
     }
@@ -278,32 +265,17 @@ export default async function parseFrcsSurveyFile(
       let distanceUnit = parseLengthUnit(line.slice(0, 2))
       if (!distanceUnit) {
         distanceUnit = Length.feet
-        error(
-          FrcsParseErrorCode.InvalidDistanceUnit,
-          'Invalid distance unit',
-          0,
-          2
-        )
+        error('Invalid distance unit', 0, 2)
       }
       let azimuthUnit = parseAngleUnit(line[6])
       if (!azimuthUnit) {
         azimuthUnit = Angle.degrees
-        error(
-          FrcsParseErrorCode.InvalidAzimuthUnit,
-          'Invalid azimuth unit',
-          6,
-          7
-        )
+        error('Invalid azimuth unit', 6, 7)
       }
       let inclinationUnit = parseAngleUnit(line[7])
       if (!inclinationUnit) {
         inclinationUnit = Angle.degrees
-        error(
-          FrcsParseErrorCode.InvalidInclinationUnit,
-          'Invalid inclination unit',
-          7,
-          8
-        )
+        error('Invalid inclination unit', 7, 8)
       }
       const backsightAzimuthCorrected = line[3] === 'C'
       const backsightInclinationCorrected = line[4] === 'C'
@@ -311,20 +283,10 @@ export default async function parseFrcsSurveyFile(
       const hasBacksightInclination = line[4] !== ' '
 
       if (!/[CB ]/.test(line[3])) {
-        error(
-          FrcsParseErrorCode.InvalidBacksightAzimuthType,
-          'Invalid backsight azimuth type',
-          3,
-          4
-        )
+        error('Invalid backsight azimuth type', 3, 4)
       }
       if (!/[CB ]/.test(line[4])) {
-        error(
-          FrcsParseErrorCode.InvalidBacksightInclinationType,
-          'Invalid backsight inclination type',
-          4,
-          5
-        )
+        error('Invalid backsight inclination type', 4, 5)
       }
 
       trip = {
@@ -360,52 +322,16 @@ export default async function parseFrcsSurveyFile(
       // not properly delimited.
 
       // from station name
-      const fromStr = validate(
-        5,
-        10,
-        'from station',
-        isValidStation,
-        FrcsParseErrorCode.InvalidStationName
-      )
-      if (!fromStr.trim()) continue
+      if (!/\S/.test(line.substring(5, 10))) continue
+      const fromStr = validate(5, 10, 'from station', isValidStation)
 
       // Sadly I have found negative LRUD values in Chip's format and apparently
       // his program doesn't fail on them, so I have to accept them here
       // isValidOptFloat instead of isValidOptUFloat
-      const lStr = validate(
-        40,
-        43,
-        'left',
-        isValidOptFloat,
-        FrcsParseErrorCode.InvalidLrud
-      )
-
-      // right
-      const rStr = validate(
-        43,
-        46,
-        'right',
-        isValidOptFloat,
-        FrcsParseErrorCode.InvalidLrud
-      )
-
-      // up
-      const uStr = validate(
-        46,
-        49,
-        'up',
-        isValidOptFloat,
-        FrcsParseErrorCode.InvalidLrud
-      )
-
-      // down
-      const dStr = validate(
-        49,
-        52,
-        'down',
-        isValidOptFloat,
-        FrcsParseErrorCode.InvalidLrud
-      )
+      const lStr = validate(40, 43, 'left', isValidOptFloat)
+      const rStr = validate(43, 46, 'right', isValidOptFloat)
+      const uStr = validate(46, 49, 'up', isValidOptFloat)
+      const dStr = validate(49, 52, 'down', isValidOptFloat)
 
       if (errored) continue
 
@@ -438,36 +364,13 @@ export default async function parseFrcsSurveyFile(
         continue
       }
       if (!isValidStation(toStr)) {
-        error(
-          FrcsParseErrorCode.InvalidStationName,
-          'Invalid station name',
-          0,
-          5
-        )
+        error('Invalid station name', 0, 5)
       }
 
-      // frontsight azimuth
-      const azmFsStr = validate(
-        19,
-        25,
-        'azimuth',
-        isValidOptUFloat,
-        FrcsParseErrorCode.InvalidAzimuth,
-        FrcsParseErrorCode.MissingAzimuth
-      )
-
-      // backsight azimuth
-      const azmBsStr = validate(
-        25,
-        30,
-        'azimuth',
-        isValidOptUFloat,
-        FrcsParseErrorCode.InvalidAzimuth,
-        FrcsParseErrorCode.MissingAzimuth
-      )
-
+      // azimuth and inclination
+      const azmFsStr = validate(19, 25, 'azimuth', isValidOptUFloat)
+      const azmBsStr = validate(25, 30, 'azimuth', isValidOptUFloat)
       const incFsStr = line.substring(30, 35)
-
       const incBsStr = line.substring(35, 40)
 
       if (errored) continue
@@ -487,14 +390,7 @@ export default async function parseFrcsSurveyFile(
         // feet and inches are not both optional
         if (!isValidUInt(feetStr) && !isValidUInt(inchesStr)) {
           const invalid = feetStr.trim() || inchesStr.trim()
-          error(
-            invalid
-              ? FrcsParseErrorCode.InvalidDistance
-              : FrcsParseErrorCode.MissingDistance,
-            invalid ? 'Invalid distance' : 'Missing distance',
-            10,
-            17
-          )
+          error(invalid ? 'Invalid distance' : 'Missing distance', 10, 17)
           continue
         }
 
@@ -512,28 +408,14 @@ export default async function parseFrcsSurveyFile(
         excludeLength = line[18] === '*'
       } else {
         // decimal feet are not optional
-        const feetStr = validate(
-          10,
-          16,
-          'distance',
-          isValidUFloat,
-          FrcsParseErrorCode.InvalidDistance,
-          FrcsParseErrorCode.MissingDistance
-        )
+        const feetStr = validate(10, 16, 'distance', isValidUFloat)
         distance = new UnitizedNumber(parseFloat(feetStr), distanceUnit)
         kind = parseKind(line[16])
         excludeLength = line[17] === '*'
       }
 
       if (kind !== FrcsShotKind.Normal) {
-        validate(
-          30,
-          35,
-          'vertical-distance',
-          isValidFloat,
-          FrcsParseErrorCode.InvalidVerticalDistance,
-          FrcsParseErrorCode.MissingVerticalDistance
-        )
+        validate(30, 35, 'vertical-distance', isValidFloat)
       }
 
       // convert horizontal and diagonal shots to standard
@@ -561,23 +443,9 @@ export default async function parseFrcsSurveyFile(
         backsightInclination = null
       } else {
         // frontsight inclination
-        validate(
-          30,
-          35,
-          'inclination',
-          isValidOptInclination,
-          FrcsParseErrorCode.InvalidInclination,
-          FrcsParseErrorCode.MissingInclination
-        )
+        validate(30, 35, 'inclination', isValidOptInclination)
         // frontsight inclination
-        validate(
-          35,
-          40,
-          'inclination',
-          isValidOptInclination,
-          FrcsParseErrorCode.InvalidInclination,
-          FrcsParseErrorCode.MissingInclination
-        )
+        validate(35, 40, 'inclination', isValidOptInclination)
         frontsightInclination = parseNumber(incFsStr, inclinationUnit)
         backsightInclination = parseNumber(incBsStr, inclinationUnit)
       }
