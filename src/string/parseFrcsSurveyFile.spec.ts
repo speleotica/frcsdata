@@ -3,6 +3,7 @@ import { parseFrcsSurveyFile } from './index'
 import { Length, Angle } from '@speleotica/unitized'
 import { expect } from 'chai'
 import { FrcsShotKind } from '../FrcsShot'
+import { SegmentParseError, Segment } from 'parse-segment'
 
 const data = `      Fisher Ridge Cave System, Hart Co., KY
 ENTRANCE DROPS, JOE'S "I LOVE MY WIFE TRAVERSE", TRICKY TRAVERSE
@@ -272,6 +273,240 @@ describe('parseFrcsSurveyFile', () => {
           ],
         },
       ],
+    })
+  })
+  it('horizontal shots', async function() {
+    const data = `blah
+ *
+ *
+TEST
+ *
+FT C  DD
+  E22  E21  36.2H  338.5 340.0  1.0      12  2 15 15
+`
+    const parsed = await parseFrcsSurveyFile('cdata.fr', data)
+    expect(parsed.trips[0].shots[0]).to.deep.equal({
+      from: 'E21',
+      to: 'E22',
+      kind: FrcsShotKind.Horizontal,
+      distance: Length.feet(Math.sqrt(36.2 * 36.2 + 1)),
+      horizontalDistance: Length.feet(36.2),
+      verticalDistance: Length.feet(1),
+      frontsightAzimuth: Angle.degrees(338.5),
+      backsightAzimuth: Angle.degrees(340),
+      frontsightInclination: Angle.atan2(1, 36.2),
+      backsightInclination: null,
+      left: Length.feet(12),
+      right: Length.feet(2),
+      up: Length.feet(15),
+      down: Length.feet(15),
+      excludeLength: false,
+      comment: null,
+    })
+  })
+  it('horizontal feet and inches shots', async function() {
+    const data = `blah
+ *
+ *
+TEST
+ *
+FI C  DD
+  A27  A26  16  9H 345.0 163.0 -1.0       0  3  5  4
+`
+    const parsed = await parseFrcsSurveyFile('cdata.fr', data)
+    expect(parsed.trips[0].shots[0]).to.deep.equal({
+      from: 'A26',
+      to: 'A27',
+      kind: FrcsShotKind.Horizontal,
+      distance: Length.feet(Math.sqrt(16.75 * 16.75 + 1)),
+      horizontalDistance: Length.inches(16 * 12 + 9),
+      verticalDistance: Length.feet(-1),
+      frontsightAzimuth: Angle.degrees(345),
+      backsightAzimuth: Angle.degrees(163),
+      frontsightInclination: Angle.atan2(-1, 16.75),
+      backsightInclination: null,
+      left: Length.feet(0),
+      right: Length.feet(3),
+      up: Length.feet(5),
+      down: Length.feet(4),
+      excludeLength: false,
+      comment: null,
+    })
+  })
+  it('diagonal shots', async function() {
+    const data = `blah
+ *
+ *
+TEST
+ *
+FT C  DD
+  E37  E36  31.6D  231.0 232.0  2.0       3 10 20 32
+`
+    const parsed = await parseFrcsSurveyFile('cdata.fr', data)
+    expect(parsed.trips[0].shots[0]).to.deep.equal({
+      from: 'E36',
+      to: 'E37',
+      kind: FrcsShotKind.Diagonal,
+      distance: Length.feet(31.6),
+      verticalDistance: Length.feet(2),
+      frontsightAzimuth: Angle.degrees(231),
+      backsightAzimuth: Angle.degrees(232),
+      frontsightInclination: Angle.asin(2 / 31.6),
+      backsightInclination: null,
+      left: Length.feet(3),
+      right: Length.feet(10),
+      up: Length.feet(20),
+      down: Length.feet(32),
+      excludeLength: false,
+      comment: null,
+    })
+  })
+  it('invalid distance unit', async function() {
+    const data = `blah
+ *
+ *
+TEST
+ * 
+FJ C  DD
+`
+    expect(await parseFrcsSurveyFile('cdata.fr', data)).to.deep.equal({
+      cave: 'blah',
+      errors: [
+        new SegmentParseError(
+          'Invalid distance unit',
+          new Segment({
+            value: 'FJ C  DD',
+            source: 'cdata.fr',
+            startLine: 5,
+            startCol: 0,
+          }).substring(0, 2)
+        ),
+      ],
+      location: null,
+      trips: [
+        {
+          header: {
+            azimuthUnit: Angle.degrees,
+            backsightAzimuthCorrected: true,
+            backsightInclinationCorrected: false,
+            comment: null,
+            date: undefined,
+            distanceUnit: Length.feet,
+            hasBacksightAzimuth: true,
+            hasBacksightInclination: false,
+            inclinationUnit: Angle.degrees,
+            name: 'TEST',
+            section: undefined,
+            surveyors: undefined,
+          },
+          shots: [],
+        },
+      ],
+    })
+  })
+  it('meters', async function() {
+    const data = `blah
+ *
+ *
+TEST
+ * 
+M  CC DD
+  E37  E36  31.6   231.0 232.0  2.0  3.0  3 10 20 32
+`
+    expect(await parseFrcsSurveyFile('cdata.fr', data)).to.deep.equal({
+      cave: 'blah',
+      errors: [],
+      location: null,
+      trips: [
+        {
+          header: {
+            azimuthUnit: Angle.degrees,
+            backsightAzimuthCorrected: true,
+            backsightInclinationCorrected: true,
+            comment: null,
+            date: undefined,
+            distanceUnit: Length.meters,
+            hasBacksightAzimuth: true,
+            hasBacksightInclination: true,
+            inclinationUnit: Angle.degrees,
+            name: 'TEST',
+            section: undefined,
+            surveyors: undefined,
+          },
+          shots: [
+            {
+              from: 'E36',
+              to: 'E37',
+              kind: FrcsShotKind.Normal,
+              distance: Length.meters(31.6),
+              frontsightAzimuth: Angle.degrees(231),
+              backsightAzimuth: Angle.degrees(232),
+              frontsightInclination: Angle.degrees(2),
+              backsightInclination: Angle.degrees(3),
+              left: Length.meters(3),
+              right: Length.meters(10),
+              up: Length.meters(20),
+              down: Length.meters(32),
+              excludeLength: false,
+              comment: null,
+            },
+          ],
+        },
+      ],
+    })
+  })
+  it('exclude length', async function() {
+    const data = `blah
+ *
+ *
+TEST
+ * 
+M  CC DD
+  E37  E36  31.6 * 231.0 232.0  2.0  3.0  3 10 20 32
+`
+    const parsed = await parseFrcsSurveyFile('cdata.fr', data)
+    expect(parsed.trips[0].shots[0]).to.deep.equal({
+      from: 'E36',
+      to: 'E37',
+      kind: FrcsShotKind.Normal,
+      distance: Length.meters(31.6),
+      frontsightAzimuth: Angle.degrees(231),
+      backsightAzimuth: Angle.degrees(232),
+      frontsightInclination: Angle.degrees(2),
+      backsightInclination: Angle.degrees(3),
+      left: Length.meters(3),
+      right: Length.meters(10),
+      up: Length.meters(20),
+      down: Length.meters(32),
+      excludeLength: true,
+      comment: null,
+    })
+  })
+  it('negative LRUD', async function() {
+    const data = `blah
+ *
+ *
+TEST
+ * 
+M  CC DD
+  E37  E36  31.6   231.0 232.0  2.0  3.0 -3 10 20 32
+`
+    const parsed = await parseFrcsSurveyFile('cdata.fr', data)
+    expect(parsed.trips[0].shots[0]).to.deep.equal({
+      from: 'E36',
+      to: 'E37',
+      kind: FrcsShotKind.Normal,
+      distance: Length.meters(31.6),
+      frontsightAzimuth: Angle.degrees(231),
+      backsightAzimuth: Angle.degrees(232),
+      frontsightInclination: Angle.degrees(2),
+      backsightInclination: Angle.degrees(3),
+      left: null,
+      right: Length.meters(10),
+      up: Length.meters(20),
+      down: Length.meters(32),
+      excludeLength: false,
+      comment: null,
     })
   })
 })

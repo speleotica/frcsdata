@@ -473,6 +473,8 @@ export default async function parseFrcsSurveyFile(
         excludeLength,
         comment: getComment(),
       }
+      if (horizontalDistance) shot.horizontalDistance = horizontalDistance
+      if (verticalDistance) shot.verticalDistance = verticalDistance
       shots.push(shot)
     }
   }
