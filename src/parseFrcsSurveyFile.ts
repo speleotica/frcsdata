@@ -9,7 +9,6 @@ import {
   UnitType,
 } from '@speleotica/unitized'
 import { FrcsShot, FrcsShotKind } from './FrcsShot'
-import { format } from 'path'
 
 function parseNumber<T extends UnitType<T>>(
   s: string,

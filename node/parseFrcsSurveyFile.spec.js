@@ -10,9 +10,7 @@ var _asyncToGenerator2 = _interopRequireDefault(
 
 var _mocha = require('mocha')
 
-var _parseFrcsSurveyFile = _interopRequireDefault(
-  require('./parseFrcsSurveyFile')
-)
+var _index = require('./index')
 
 var _unitized = require('@speleotica/unitized')
 
@@ -35,7 +33,7 @@ var _FrcsShot = require('../FrcsShot')
               switch ((_context.prev = _context.next)) {
                 case 0:
                   _context.next = 2
-                  return (0, _parseFrcsSurveyFile.default)(
+                  return (0, _index.parseFrcsSurveyFile)(
                     require.resolve('./cdata.fr')
                   )
 
@@ -51,7 +49,7 @@ var _FrcsShot = require('../FrcsShot')
                           name:
                             'ENTRANCE DROPS, JOE\'S "I LOVE MY WIFE TRAVERSE", TRICKY TRAVERSE',
                           comment:
-                            'ENTRANCE DROPS, JOE\'S "I LOVE MY WIFE TRAVERSE", TRICKY TRAVERSE\nPETER QUICK, KEITH ORTIZ   -  2-15-81\nThis File has Crumps test connected.  11/20/12',
+                            'This File has Crumps test connected.  11/20/12',
                           section: undefined,
                           date: undefined,
                           surveyors: undefined,
@@ -216,8 +214,7 @@ var _FrcsShot = require('../FrcsShot')
                         header: {
                           name:
                             'TRICKY TRAVERSE AND THEN FIRST SURVEY IN UPPER CROWLWAY',
-                          comment:
-                            'TRICKY TRAVERSE AND THEN FIRST SURVEY IN UPPER CROWLWAY\nDAN CROWL, KEITH ORTIZ, CHIP HOPPER, PETER QUICK, LARRY BEAN    14 FEB 1981',
+                          comment: null,
                           section: undefined,
                           date: undefined,
                           surveyors: undefined,

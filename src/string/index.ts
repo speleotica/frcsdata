@@ -1,5 +1,6 @@
 import _parseFrcsSurveyFile from '../parseFrcsSurveyFile'
 import _parseFrcsPlotFile from '../parseFrcsPlotFile'
+import _parseFrcsTripSummaryFile from '../parseFrcsTripSummaryFile'
 
 async function* linesOf(s: string): AsyncIterable<string> {
   yield* s.split(/\r\n?|\n/gm)
@@ -10,3 +11,4 @@ const convert = <T>(
 
 export const parseFrcsSurveyFile = convert(_parseFrcsSurveyFile)
 export const parseFrcsPlotFile = convert(_parseFrcsPlotFile)
+export const parseFrcsTripSummaryFile = convert(_parseFrcsTripSummaryFile)
