@@ -9,6 +9,7 @@ import {
   UnitType,
 } from '@speleotica/unitized'
 import { FrcsShot, FrcsShotKind } from './FrcsShot'
+import { format } from 'path'
 
 function parseNumber<T extends UnitType<T>>(
   s: string,
@@ -151,11 +152,18 @@ export default async function parseFrcsSurveyFile(
   let inTripComment = true
   let tripCommentStartLine = 1
   let tripCommentEndLine = -1
-  let tripComment = []
-  let comment: Array<string> | null = null
+  let tripComment: Array<string> = []
+  let commentLines: Array<string> | null = null
   let trip: FrcsTrip | null = null
   let inBlockComment = false
   let section
+
+  function getComment(): string | null {
+    if (!commentLines) return null
+    const comment = commentLines.join('\n').trim()
+    commentLines = null
+    return comment || null
+  }
 
   let lineNumber = 0
 
@@ -222,10 +230,6 @@ export default async function parseFrcsSurveyFile(
         tripCommentEndLine = lineNumber
       }
     } else if (inTripComment) {
-      if (lineNumber > 1) {
-        tripComment.push(line)
-      }
-
       if (lineNumber === tripCommentStartLine + 1) {
         tripName = line && line.trim()
       } else if (lineNumber === tripCommentStartLine + 2) {
@@ -243,6 +247,8 @@ export default async function parseFrcsSurveyFile(
             surveyors.indexOf(';') >= 0 ? /\s*;\s*/g : /\s*,\s*/g
           )
         }
+      } else if (lineNumber > 1) {
+        tripComment.push(line)
       }
       const match = /^\*\*\*([^*])\*\*\*/.exec(line)
       if (match) {
@@ -250,13 +256,13 @@ export default async function parseFrcsSurveyFile(
       }
     } else if (line.charAt(0) === '*') {
       inBlockComment = !inBlockComment
-      if (inBlockComment) comment = []
-      else if (comment) {
+      if (inBlockComment) commentLines = []
+      else if (commentLines) {
         const part = line.substring(1).trim()
-        if (part && comment) comment.push(part)
+        if (part && commentLines) commentLines.push(part)
       }
     } else if (inBlockComment) {
-      if (comment) comment.push(line)
+      if (commentLines) commentLines.push(line)
     } else if (lineNumber === tripCommentEndLine + 1) {
       // FT CC DD
       // 01234567
@@ -290,7 +296,7 @@ export default async function parseFrcsSurveyFile(
       trip = {
         header: {
           name: tripName || '',
-          comment: tripComment ? tripComment.join('\n') : null,
+          comment: (tripComment && tripComment.join('\n')) || null,
           section,
           date: tripDate,
           surveyors: tripSurveyors,
@@ -355,10 +361,9 @@ export default async function parseFrcsSurveyFile(
           up,
           down,
           excludeLength: true,
-          comment: comment ? comment.join('\n') : null,
+          comment: getComment(),
         }
         shots.push(shot)
-        comment = null
         continue
       }
       if (!isValidStation(toStr)) {
@@ -466,10 +471,9 @@ export default async function parseFrcsSurveyFile(
         up,
         down,
         excludeLength,
-        comment: comment ? comment.join('\n') : null,
+        comment: getComment(),
       }
       shots.push(shot)
-      comment = null
     }
   }
 

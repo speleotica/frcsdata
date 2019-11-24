@@ -45,8 +45,7 @@ describe('parseFrcsSurveyFile', () => {
           header: {
             name:
               'ENTRANCE DROPS, JOE\'S "I LOVE MY WIFE TRAVERSE", TRICKY TRAVERSE',
-            comment:
-              'ENTRANCE DROPS, JOE\'S "I LOVE MY WIFE TRAVERSE", TRICKY TRAVERSE\nPETER QUICK, KEITH ORTIZ   -  2-15-81\nThis File has Crumps test connected.  11/20/12',
+            comment: 'This File has Crumps test connected.  11/20/12',
             section: undefined,
             date: undefined,
             surveyors: undefined,
@@ -209,8 +208,7 @@ describe('parseFrcsSurveyFile', () => {
         {
           header: {
             name: 'TRICKY TRAVERSE AND THEN FIRST SURVEY IN UPPER CROWLWAY',
-            comment:
-              'TRICKY TRAVERSE AND THEN FIRST SURVEY IN UPPER CROWLWAY\nDAN CROWL, KEITH ORTIZ, CHIP HOPPER, PETER QUICK, LARRY BEAN    14 FEB 1981',
+            comment: null,
             section: undefined,
             date: undefined,
             surveyors: undefined,
