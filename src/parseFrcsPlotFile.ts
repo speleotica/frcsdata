@@ -1,6 +1,5 @@
 import { FrcsPlotShot } from './FrcsPlotShot'
 import { FrcsPlotFile } from './FrcsPlotFile'
-import linesOf from './util/linesOf'
 import { Length, UnitizedNumber } from '@speleotica/unitized'
 import { Segment, SegmentParseError } from 'parse-segment'
 
@@ -20,11 +19,8 @@ import { Segment, SegmentParseError } from 'parse-segment'
  */
 export default async function parseFrcsPlotFile(
   file: string,
-  lines: string | AsyncIterable<string>
+  lines: AsyncIterable<string>
 ): Promise<FrcsPlotFile> {
-  if (typeof lines === 'string') {
-    return await parseFrcsPlotFile(file, linesOf(lines))
-  }
   let totalLength: UnitizedNumber<Length> = Length.feet(NaN)
   const shots: Array<FrcsPlotShot> = []
   const errors: Array<SegmentParseError> = []

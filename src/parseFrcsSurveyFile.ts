@@ -9,7 +9,6 @@ import {
   UnitType,
 } from '@speleotica/unitized'
 import { FrcsShot, FrcsShotKind } from './FrcsShot'
-import linesOf from './util/linesOf'
 
 function parseNumber<T extends UnitType<T>>(
   s: string,
@@ -139,11 +138,8 @@ FI B  DD
  */
 export default async function parseFrcsSurveyFile(
   file: any, // eslint-disable-line @typescript-eslint/no-explicit-any
-  lines: string | AsyncIterable<string>
+  lines: AsyncIterable<string>
 ): Promise<FrcsSurveyFile> {
-  if (typeof lines === 'string') {
-    return parseFrcsSurveyFile(file, linesOf(lines))
-  }
   let cave: string | null = null
   let location: string | null = null
   const trips: Array<FrcsTrip> = []

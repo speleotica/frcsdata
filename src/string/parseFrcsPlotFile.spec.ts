@@ -1,5 +1,5 @@
 import { describe, it } from 'mocha'
-import parseFrcsPlotFile from './parseFrcsPlotFile'
+import { parseFrcsPlotFile } from './index'
 import { Length } from '@speleotica/unitized'
 import { expect } from 'chai'
 

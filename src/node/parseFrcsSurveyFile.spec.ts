@@ -1,7 +1,7 @@
 /* eslint-env node */
 
 import { describe, it } from 'mocha'
-import parseFrcsSurveyFile from './parseFrcsSurveyFile'
+import { parseFrcsSurveyFile } from './index'
 import { Length, Angle } from '@speleotica/unitized'
 import { expect } from 'chai'
 import { FrcsShotKind } from '../FrcsShot'

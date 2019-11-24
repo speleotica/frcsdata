@@ -1,8 +1,8 @@
 import { describe, it } from 'mocha'
-import parseFrcsSurveyFile from './parseFrcsSurveyFile'
+import { parseFrcsSurveyFile } from './index'
 import { Length, Angle } from '@speleotica/unitized'
 import { expect } from 'chai'
-import { FrcsShotKind } from './FrcsShot'
+import { FrcsShotKind } from '../FrcsShot'
 
 const data = `      Fisher Ridge Cave System, Hart Co., KY
 ENTRANCE DROPS, JOE'S "I LOVE MY WIFE TRAVERSE", TRICKY TRAVERSE
