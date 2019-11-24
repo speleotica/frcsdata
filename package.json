@@ -1,7 +1,7 @@
 {
-  "name": "typescript-library-skeleton",
+  "name": "@speleotica/frcsdata",
   "version": "0.0.0-development",
-  "description": "my personal ES2015 library project skeleton",
+  "description": "parser for Chip Hopper's survey data format used in Fisher Ridge Cave System",
   "main": "index.js",
   "sideEffects": false,
   "scripts": {
@@ -69,17 +69,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/jedwards1211/typescript-library-skeleton.git"
+    "url": "https://github.com/speleotica/frcsdata.git"
   },
   "keywords": [
-    "typescript"
+    "cave-survey"
   ],
   "author": "Andy Edwards",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jedwards1211/typescript-library-skeleton/issues"
+    "url": "https://github.com/speleotica/frcsdata/issues"
   },
-  "homepage": "https://github.com/jedwards1211/typescript-library-skeleton#readme",
+  "homepage": "https://github.com/speleotica/frcsdata#readme",
   "devDependencies": {
     "@babel/cli": "^7.1.5",
     "@babel/core": "^7.1.6",
@@ -98,7 +98,7 @@
     "@jedwards1211/eslint-config": "^2.0.0",
     "@types/chai": "^4.2.0",
     "@types/mocha": "^5.2.7",
-    "@types/node": "^12.12.6",
+    "@types/node": "^12.12.12",
     "@typescript-eslint/eslint-plugin": "^2.6.1",
     "@typescript-eslint/parser": "^2.6.1",
     "@typescript-eslint/typescript-estree": "^2.6.1",
@@ -123,7 +123,9 @@
     "typescript": "^3.7.2"
   },
   "dependencies": {
-    "@babel/runtime": "^7.1.5"
+    "@babel/runtime": "^7.1.5",
+    "@speleotica/unitized": "^1.0.0",
+    "parse-segment": "^1.5.1"
   },
   "renovate": {
     "extends": [
