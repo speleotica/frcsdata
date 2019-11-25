@@ -6,7 +6,7 @@ export type FrcsTripHeader = {
   comment?: string | null
   section?: string | null
   date?: Date | null
-  surveyors?: Array<string> | null
+  team?: Array<string> | null
   distanceUnit: Unit<Length>
   azimuthUnit: Unit<Angle>
   inclinationUnit: Unit<Angle>

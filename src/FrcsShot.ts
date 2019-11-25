@@ -23,6 +23,6 @@ export type FrcsShot = {
   right?: UnitizedNumber<Length> | null
   up?: UnitizedNumber<Length> | null
   down?: UnitizedNumber<Length> | null
-  excludeLength?: boolean | null
+  excludeDistance?: boolean | null
   comment?: string | null
 }

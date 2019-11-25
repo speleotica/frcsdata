@@ -49,7 +49,7 @@ describe('parseFrcsSurveyFile', () => {
             comment: 'This File has Crumps test connected.  11/20/12',
             section: undefined,
             date: undefined,
-            surveyors: undefined,
+            team: undefined,
             distanceUnit: Length.feet,
             azimuthUnit: Angle.degrees,
             inclinationUnit: Angle.degrees,
@@ -65,7 +65,7 @@ describe('parseFrcsSurveyFile', () => {
               comment: null,
               distance: Length.feet(0),
               down: Length.feet(2),
-              excludeLength: true,
+              excludeDistance: true,
               from: 'AE20',
               frontsightAzimuth: null,
               frontsightInclination: null,
@@ -88,7 +88,7 @@ describe('parseFrcsSurveyFile', () => {
               right: Length.feet(12),
               up: Length.feet(0),
               down: Length.feet(20),
-              excludeLength: false,
+              excludeDistance: false,
               comment:
                 "AE20     0        0        0        Bug-can't put before so put after-so can't make 2 fixed 10/28/12",
             },
@@ -105,7 +105,7 @@ describe('parseFrcsSurveyFile', () => {
               right: Length.feet(10),
               up: Length.feet(25),
               down: Length.feet(0),
-              excludeLength: false,
+              excludeDistance: false,
               comment: null,
             },
             {
@@ -121,7 +121,7 @@ describe('parseFrcsSurveyFile', () => {
               right: Length.feet(5),
               up: Length.feet(0),
               down: Length.feet(0),
-              excludeLength: false,
+              excludeDistance: false,
               comment: null,
             },
             {
@@ -137,7 +137,7 @@ describe('parseFrcsSurveyFile', () => {
               right: Length.feet(5),
               up: Length.feet(6),
               down: Length.feet(1),
-              excludeLength: false,
+              excludeDistance: false,
               comment: null,
             },
             {
@@ -153,7 +153,7 @@ describe('parseFrcsSurveyFile', () => {
               right: Length.feet(0),
               up: Length.feet(2),
               down: Length.feet(1),
-              excludeLength: false,
+              excludeDistance: false,
               comment: null,
             },
             {
@@ -169,7 +169,7 @@ describe('parseFrcsSurveyFile', () => {
               right: Length.feet(5),
               up: Length.feet(0),
               down: Length.feet(3),
-              excludeLength: false,
+              excludeDistance: false,
               comment: null,
             },
             {
@@ -185,7 +185,7 @@ describe('parseFrcsSurveyFile', () => {
               right: Length.feet(7),
               up: Length.feet(20),
               down: Length.feet(5),
-              excludeLength: false,
+              excludeDistance: false,
               comment: null,
             },
             {
@@ -201,7 +201,7 @@ describe('parseFrcsSurveyFile', () => {
               right: Length.feet(5),
               up: Length.feet(4),
               down: Length.feet(4),
-              excludeLength: false,
+              excludeDistance: false,
               comment: 'SHORT CANYON AT THE BASE OF THE SECOND DROP',
             },
           ],
@@ -212,7 +212,7 @@ describe('parseFrcsSurveyFile', () => {
             comment: null,
             section: undefined,
             date: undefined,
-            surveyors: undefined,
+            team: undefined,
             distanceUnit: Length.inches,
             azimuthUnit: Angle.degrees,
             inclinationUnit: Angle.degrees,
@@ -235,7 +235,7 @@ describe('parseFrcsSurveyFile', () => {
               right: Length.feet(10),
               up: Length.feet(35),
               down: Length.feet(5),
-              excludeLength: false,
+              excludeDistance: false,
               comment: null,
             },
             {
@@ -251,7 +251,7 @@ describe('parseFrcsSurveyFile', () => {
               right: Length.feet(1),
               up: Length.feet(15),
               down: Length.feet(5),
-              excludeLength: false,
+              excludeDistance: false,
               comment: null,
             },
             {
@@ -267,7 +267,7 @@ describe('parseFrcsSurveyFile', () => {
               right: Length.feet(1),
               up: Length.feet(10),
               down: Length.feet(10),
-              excludeLength: false,
+              excludeDistance: false,
               comment: null,
             },
           ],
@@ -300,7 +300,7 @@ FT C  DD
       right: Length.feet(2),
       up: Length.feet(15),
       down: Length.feet(15),
-      excludeLength: false,
+      excludeDistance: false,
       comment: null,
     })
   })
@@ -329,7 +329,7 @@ FI C  DD
       right: Length.feet(3),
       up: Length.feet(5),
       down: Length.feet(4),
-      excludeLength: false,
+      excludeDistance: false,
       comment: null,
     })
   })
@@ -357,7 +357,7 @@ FT C  DD
       right: Length.feet(10),
       up: Length.feet(20),
       down: Length.feet(32),
-      excludeLength: false,
+      excludeDistance: false,
       comment: null,
     })
   })
@@ -397,7 +397,7 @@ FJ C  DD
             inclinationUnit: Angle.degrees,
             name: 'TEST',
             section: undefined,
-            surveyors: undefined,
+            team: undefined,
           },
           shots: [],
         },
@@ -431,7 +431,7 @@ M  CC DD
             inclinationUnit: Angle.degrees,
             name: 'TEST',
             section: undefined,
-            surveyors: undefined,
+            team: undefined,
           },
           shots: [
             {
@@ -447,7 +447,7 @@ M  CC DD
               right: Length.meters(10),
               up: Length.meters(20),
               down: Length.meters(32),
-              excludeLength: false,
+              excludeDistance: false,
               comment: null,
             },
           ],
@@ -478,7 +478,7 @@ M  CC DD
       right: Length.meters(10),
       up: Length.meters(20),
       down: Length.meters(32),
-      excludeLength: true,
+      excludeDistance: true,
       comment: null,
     })
   })
@@ -505,7 +505,7 @@ M  CC DD
       right: Length.meters(10),
       up: Length.meters(20),
       down: Length.meters(32),
-      excludeLength: false,
+      excludeDistance: false,
       comment: null,
     })
   })

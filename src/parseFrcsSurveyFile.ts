@@ -146,7 +146,7 @@ export default async function parseFrcsSurveyFile(
   const errors: Array<SegmentParseError> = []
 
   let tripName
-  let tripSurveyors
+  let tripTeam
   let tripDate
   let inTripComment = true
   let tripCommentStartLine = 1
@@ -237,13 +237,13 @@ export default async function parseFrcsSurveyFile(
         )
         if (match) {
           let k = 1
-          const surveyors = match[k++]
+          const team = match[k++]
           const month = parseInt(match[k++])
           const day = parseInt(match[k++])
           const year = parseInt(match[k++])
           tripDate = new Date(year < 70 ? year + 2000 : year, month - 1, day)
-          tripSurveyors = surveyors.split(
-            surveyors.indexOf(';') >= 0 ? /\s*;\s*/g : /\s*,\s*/g
+          tripTeam = team.split(
+            team.indexOf(';') >= 0 ? /\s*;\s*/g : /\s*,\s*/g
           )
         }
       } else if (lineNumber > 1) {
@@ -298,7 +298,7 @@ export default async function parseFrcsSurveyFile(
           comment: (tripComment && tripComment.join('\n')) || null,
           section,
           date: tripDate,
-          surveyors: tripSurveyors,
+          team: tripTeam,
           distanceUnit,
           azimuthUnit,
           inclinationUnit,
@@ -359,7 +359,7 @@ export default async function parseFrcsSurveyFile(
           right,
           up,
           down,
-          excludeLength: true,
+          excludeDistance: true,
           comment: getComment(),
         }
         shots.push(shot)
@@ -383,7 +383,7 @@ export default async function parseFrcsSurveyFile(
       let verticalDistance: UnitizedNumber<Length> | undefined
       let frontsightInclination: UnitizedNumber<Angle> | null
       let backsightInclination: UnitizedNumber<Angle> | null
-      let excludeLength: boolean
+      let excludeDistance: boolean
 
       // parse distance
       if (inches) {
@@ -407,13 +407,13 @@ export default async function parseFrcsSurveyFile(
         // I think they might represent different values, but thisis confused by
         // the fact that for ft/in shots, if there is a D or H flag it occupies the
         // first column that can contain a * for decimal feet shots
-        excludeLength = line[18] === '*'
+        excludeDistance = line[18] === '*'
       } else {
         // decimal feet are not optional
         const feetStr = validate(10, 16, 'distance', isValidUFloat)
         distance = new UnitizedNumber(parseFloat(feetStr), distanceUnit)
         kind = parseKind(line[16])
-        excludeLength = line[17] === '*'
+        excludeDistance = line[17] === '*'
       }
 
       if (kind !== FrcsShotKind.Normal) {
@@ -469,7 +469,7 @@ export default async function parseFrcsSurveyFile(
         right,
         up,
         down,
-        excludeLength,
+        excludeDistance,
         comment: getComment(),
       }
       if (horizontalDistance) shot.horizontalDistance = horizontalDistance
