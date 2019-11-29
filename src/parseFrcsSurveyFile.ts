@@ -282,13 +282,13 @@ export default async function parseFrcsSurveyFile(
       }
       const backsightAzimuthCorrected = line[3] === 'C'
       const backsightInclinationCorrected = line[4] === 'C'
-      const hasBacksightAzimuth = line[3] !== ' '
-      const hasBacksightInclination = line[4] !== ' '
+      const hasBacksightAzimuth = line[3] !== ' ' && line[3] !== '-'
+      const hasBacksightInclination = line[4] !== ' ' && line[4] !== '-'
 
-      if (!/[CB ]/.test(line[3])) {
+      if (!/[-CB ]/.test(line[3])) {
         error('Invalid backsight azimuth type', 3, 4)
       }
-      if (!/[CB ]/.test(line[4])) {
+      if (!/[-CB ]/.test(line[4])) {
         error('Invalid backsight inclination type', 4, 5)
       }
 

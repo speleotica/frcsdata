@@ -509,4 +509,28 @@ M  CC DD
       comment: null,
     })
   })
+  it('- for no backsight', async function() {
+    const data = `blah
+ *
+ *
+TEST
+ * 
+M  B- DD 
+  `
+    const parsed = await parseFrcsSurveyFile('cdata.fr', data)
+    expect(parsed.trips[0].header).to.deep.equal({
+      name: 'TEST',
+      comment: null,
+      section: undefined,
+      date: undefined,
+      team: undefined,
+      distanceUnit: Length.meters,
+      azimuthUnit: Angle.degrees,
+      inclinationUnit: Angle.degrees,
+      backsightAzimuthCorrected: false,
+      backsightInclinationCorrected: false,
+      hasBacksightAzimuth: true,
+      hasBacksightInclination: false,
+    })
+  })
 })
