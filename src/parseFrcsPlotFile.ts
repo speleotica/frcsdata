@@ -53,16 +53,32 @@ export default async function parseFrcsPlotFile(
     fieldName: string
   ): number | null {
     const str = line.substring(startColumn, endColumn)
+    if (!/\S/.test(str)) {
+      error(`Missing ${fieldName}`, line, startColumn, endColumn)
+      return null
+    }
     if (!/^\s*\d+\s*$/.test(str)) {
       error(`Invalid ${fieldName}`, line, startColumn, endColumn)
       return null
     }
-    const value = parseInt(str)
-    if (isNaN(value)) {
-      error(`Missing ${fieldName}`, line, startColumn, endColumn)
+    return parseInt(str)
+  }
+
+  function parseOptionalUint(
+    line: string,
+    startColumn: number,
+    endColumn: number,
+    fieldName: string
+  ): number | null {
+    const str = line.substring(startColumn, endColumn)
+    if (!/\S/.test(str)) {
       return null
     }
-    return value
+    if (!/^\s*\d+\s*$/.test(str)) {
+      error(`Invalid ${fieldName}`, line, startColumn, endColumn)
+      return null
+    }
+    return parseInt(str)
   }
 
   function parseLength(
@@ -124,7 +140,7 @@ export default async function parseFrcsPlotFile(
     if (!up) continue
     const down = parseLength(line, 68, 72, 'down', 10)
     if (!down) continue
-    const tripNumber = parseUint(line, 72, 78, 'trip number')
+    const tripNumber = parseOptionalUint(line, 72, 78, 'trip number')
 
     shots.push({
       toName,
