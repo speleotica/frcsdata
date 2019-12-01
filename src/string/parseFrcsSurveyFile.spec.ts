@@ -533,4 +533,31 @@ M  B- DD
       hasBacksightInclination: false,
     })
   })
+  it('missing both frontsight and backsight inclination', async function() {
+    const data = `blah
+ *
+ *
+TEST
+ * 
+M  B- DD 
+  E37  E36  31.6   231.0 232.0           -3 10 20 32
+  `
+    const parsed = await parseFrcsSurveyFile('cdata.fr', data)
+    expect(parsed.trips[0].shots[0]).to.deep.equal({
+      from: 'E36',
+      to: 'E37',
+      kind: FrcsShotKind.Normal,
+      distance: Length.meters(31.6),
+      frontsightAzimuth: Angle.degrees(231),
+      backsightAzimuth: Angle.degrees(232),
+      frontsightInclination: Angle.degrees(0),
+      backsightInclination: null,
+      left: null,
+      right: Length.meters(10),
+      up: Length.meters(20),
+      down: Length.meters(32),
+      excludeDistance: false,
+      comment: null,
+    })
+  })
 })

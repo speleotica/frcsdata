@@ -456,6 +456,10 @@ export default async function parseFrcsSurveyFile(
       const frontsightAzimuth = parseNumber(azmFsStr, azimuthUnit)
       const backsightAzimuth = parseNumber(azmBsStr, azimuthUnit)
 
+      if (!frontsightInclination && !backsightInclination) {
+        frontsightInclination = Angle.degrees(0)
+      }
+
       const shot: FrcsShot = {
         from: fromStr.trim(),
         to: toStr.trim(),
