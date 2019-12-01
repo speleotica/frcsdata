@@ -1,7 +1,7 @@
 import { FrcsTripSummary } from './FrcsTripSummary'
 import { FrcsTripSummaryFile } from './FrcsTripSummaryFile'
 import { SegmentParseError } from 'parse-segment'
-import { Length } from '@speleotica/unitized'
+import { Unitize } from '@speleotica/unitized'
 
 const tripSummaryRegex = /^\s*(\d+)\s+(\d{1,2})\/(\s\d|\d\d)\/(\d{2,4})\s+(\d+(?:\.\d*)?)\s+(\d+)\s+(\S.*)EXCLUDED:\s+(\d+(?:\.\d*)?)\s+(\d+)/
 /**
@@ -42,10 +42,10 @@ export default async function parseFrcsTripSummaryFile(
       let year = parseInt(match[4])
       if (year < 1000) year += 1900
       const date = new Date(year, parseInt(match[2]) - 1, parseInt(match[3]))
-      const totalLength = Length.feet(parseFloat(match[5]))
+      const totalLength = Unitize.feet(parseFloat(match[5]))
       const numShots = parseInt(match[6])
       const name = match[7].trim()
-      const excludedLength = Length.feet(parseFloat(match[8]))
+      const excludedLength = Unitize.feet(parseFloat(match[8]))
       const numExcludedShots = parseInt(match[9])
       team = []
       shots = []

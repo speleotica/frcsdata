@@ -1,6 +1,6 @@
 import { FrcsPlotShot } from './FrcsPlotShot'
 import { FrcsPlotFile } from './FrcsPlotFile'
-import { Length, UnitizedNumber } from '@speleotica/unitized'
+import { Length, UnitizedNumber, Unitize } from '@speleotica/unitized'
 import { Segment, SegmentParseError } from 'parse-segment'
 
 /**
@@ -21,7 +21,7 @@ export default async function parseFrcsPlotFile(
   file: string,
   lines: AsyncIterable<string>
 ): Promise<FrcsPlotFile> {
-  let totalLength: UnitizedNumber<Length> = Length.feet(NaN)
+  let totalLength: UnitizedNumber<Length> = Unitize.feet(NaN)
   const shots: Array<FrcsPlotShot> = []
   const errors: Array<SegmentParseError> = []
 
@@ -98,13 +98,13 @@ export default async function parseFrcsPlotFile(
       error(`Missing ${fieldName}`, line, startColumn, endColumn)
       return null
     }
-    return Length.feet(value / divisor)
+    return Unitize.feet(value / divisor)
   }
 
   for await (const line of lines) {
     lineNumber++
     if (lineNumber === 1) {
-      totalLength = Length.feet(parseFloat(line))
+      totalLength = Unitize.feet(parseFloat(line))
       continue
     }
     if (!/\S/.test(line)) continue

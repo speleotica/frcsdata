@@ -7,6 +7,7 @@ import {
   Unit,
   UnitizedNumber,
   UnitType,
+  Unitize,
 } from '@speleotica/unitized'
 import { FrcsShot, FrcsShotKind } from './FrcsShot'
 
@@ -398,8 +399,8 @@ export default async function parseFrcsSurveyFile(
 
         // sometimes inches are omitted, hence the || 0...I'm assuming it's possible
         // for feet to be omitted as well
-        distance = Length.inches(parseFloat(inchesStr) || 0).add(
-          Length.feet(parseFloat(feetStr) || 0)
+        distance = Unitize.inches(parseFloat(inchesStr) || 0).add(
+          Unitize.feet(parseFloat(feetStr) || 0)
         )
 
         kind = parseKind(line[17])
@@ -457,7 +458,7 @@ export default async function parseFrcsSurveyFile(
       const backsightAzimuth = parseNumber(azmBsStr, azimuthUnit)
 
       if (!frontsightInclination && !backsightInclination) {
-        frontsightInclination = Angle.degrees(0)
+        frontsightInclination = Unitize.degrees(0)
       }
 
       const shot: FrcsShot = {

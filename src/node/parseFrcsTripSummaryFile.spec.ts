@@ -1,7 +1,7 @@
 import { describe, it } from 'mocha'
 import { expect } from 'chai'
 import { parseFrcsTripSummaryFile } from './index'
-import { Length } from '@speleotica/unitized'
+import { Unitize } from '@speleotica/unitized'
 
 describe('parseFrcsTripSummaryFile', function() {
   it('basic test', async function() {
@@ -15,11 +15,11 @@ describe('parseFrcsTripSummaryFile', function() {
           tripNumber: 1,
           tripIndex: 0,
           date: new Date(81, 1, 15),
-          totalLength: Length.feet(258.6),
+          totalLength: Unitize.feet(258.6),
           numShots: 17,
           name:
             'ENTRANCE DROPS, JOE\'S "I LOVE MY WIFE TRAVERSE", TRICKY TRAVERSE',
-          excludedLength: Length.feet(0),
+          excludedLength: Unitize.feet(0),
           numExcludedShots: 0,
           team: ['Peter Quick', 'Keith Ortiz'],
           shots: [
@@ -38,10 +38,10 @@ describe('parseFrcsTripSummaryFile', function() {
           tripNumber: 2,
           tripIndex: 1,
           date: new Date(81, 1, 14),
-          totalLength: Length.feet(1133.75),
+          totalLength: Unitize.feet(1133.75),
           numShots: 55,
           name: 'TRICKY TRAVERSE AND THEN FIRST SURVEY IN UPPER CROWLWAY',
-          excludedLength: Length.feet(0),
+          excludedLength: Unitize.feet(0),
           numExcludedShots: 0,
           team: [
             'Dan Crowl',
@@ -56,10 +56,10 @@ describe('parseFrcsTripSummaryFile', function() {
           tripNumber: 3,
           tripIndex: 2,
           date: new Date(81, 2, 6),
-          totalLength: Length.feet(2371.2),
+          totalLength: Unitize.feet(2371.2),
           numShots: 61,
           name: "DOUG'S DEMISE (50 FT DROP), CHRIS CROSS, CRAWL ABOVE DROP",
-          excludedLength: Length.feet(0),
+          excludedLength: Unitize.feet(0),
           numExcludedShots: 0,
           team: ['Peter Quick', 'Chris Gerace', 'Phil Oden', 'Chip Hopper'],
           shots: [
@@ -89,11 +89,11 @@ describe('parseFrcsTripSummaryFile', function() {
           tripNumber: 1,
           tripIndex: 0,
           date: new Date(81, 1, 15),
-          totalLength: Length.feet(258.6),
+          totalLength: Unitize.feet(258.6),
           numShots: 17,
           name:
             'ENTRANCE DROPS, JOE\'S "I LOVE MY WIFE TRAVERSE", TRICKY TRAVERSE',
-          excludedLength: Length.feet(0),
+          excludedLength: Unitize.feet(0),
           numExcludedShots: 0,
           team: ['Peter Quick', 'Keith Ortiz'],
           shots: [
@@ -113,10 +113,10 @@ describe('parseFrcsTripSummaryFile', function() {
           tripNumber: 3,
           tripIndex: 2,
           date: new Date(81, 2, 6),
-          totalLength: Length.feet(2371.2),
+          totalLength: Unitize.feet(2371.2),
           numShots: 61,
           name: "DOUG'S DEMISE (50 FT DROP), CHRIS CROSS, CRAWL ABOVE DROP",
-          excludedLength: Length.feet(0),
+          excludedLength: Unitize.feet(0),
           numExcludedShots: 0,
           team: ['Peter Quick', 'Chris Gerace', 'Phil Oden', 'Chip Hopper'],
           shots: [
