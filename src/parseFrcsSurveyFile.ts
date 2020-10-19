@@ -20,6 +20,14 @@ function parseNumber<T extends UnitType<T>>(
   return new UnitizedNumber(value, unit)
 }
 
+function parseAzimuth(
+  s: string,
+  unit: Unit<Angle>
+): UnitizedNumber<Angle> | null {
+  const parsed = parseNumber(s, unit)
+  return parsed?.get(Angle.degrees) === 360 ? Unitize.degrees(0) : parsed
+}
+
 function parseKind(kind: string): FrcsShotKind {
   switch (kind) {
     case 'H':
@@ -454,8 +462,8 @@ export default async function parseFrcsSurveyFile(
       }
       if (errored) continue
 
-      const frontsightAzimuth = parseNumber(azmFsStr, azimuthUnit)
-      const backsightAzimuth = parseNumber(azmBsStr, azimuthUnit)
+      const frontsightAzimuth = parseAzimuth(azmFsStr, azimuthUnit)
+      const backsightAzimuth = parseAzimuth(azmBsStr, azimuthUnit)
 
       if (!frontsightInclination && !backsightInclination) {
         frontsightInclination = Unitize.degrees(0)
