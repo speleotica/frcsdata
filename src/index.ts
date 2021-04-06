@@ -8,6 +8,7 @@ import parseFrcsPlotFile from './parseFrcsPlotFile'
 import { FrcsTripSummary } from './FrcsTripSummary'
 import { FrcsTripSummaryFile } from './FrcsTripSummaryFile'
 import parseFrcsTripSummaryFile from './parseFrcsTripSummaryFile'
+import formatFrcsShot from './formatFrcsShot'
 
 export {
   FrcsShot,
@@ -22,4 +23,5 @@ export {
   FrcsTripSummary,
   FrcsTripSummaryFile,
   parseFrcsTripSummaryFile,
+  formatFrcsShot,
 }
