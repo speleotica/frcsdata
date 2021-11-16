@@ -364,10 +364,12 @@ export default async function parseFrcsSurveyFile(
           backsightAzimuth: null,
           frontsightInclination: null,
           backsightInclination: null,
-          left,
-          right,
-          up,
-          down,
+          fromLruds: {
+            left,
+            right,
+            up,
+            down,
+          },
           excludeDistance: true,
           comment: getComment(),
         }
@@ -376,6 +378,23 @@ export default async function parseFrcsSurveyFile(
       }
       if (!isValidStation(toStr)) {
         error('Invalid station name', 0, 5)
+      }
+
+      const fromLrudMatch = new RegExp(
+        `^\\s+${fromStr
+          .trim()
+          .replace(
+            /[.*+?^${}()|[\]\\]/g,
+            '\\$&'
+          )}((\\s+(\\d+(\\.\\d*)?|\\.\\d+)){4})`
+      ).exec(line.substring(52))
+      let fromLruds
+      if (fromLrudMatch) {
+        const [left, right, up, down] = fromLrudMatch[1]
+          .trim()
+          .split(/\s+/g)
+          .map(s => parseLrud(s, distanceUnit))
+        fromLruds = { left, right, up, down }
       }
 
       // azimuth and inclination
@@ -393,6 +412,7 @@ export default async function parseFrcsSurveyFile(
       let frontsightInclination: UnitizedNumber<Angle> | null
       let backsightInclination: UnitizedNumber<Angle> | null
       let excludeDistance: boolean
+      let isSplay: boolean
 
       // parse distance
       if (inches) {
@@ -416,13 +436,15 @@ export default async function parseFrcsSurveyFile(
         // I think they might represent different values, but thisis confused by
         // the fact that for ft/in shots, if there is a D or H flag it occupies the
         // first column that can contain a * for decimal feet shots
-        excludeDistance = line[18] === '*'
+        excludeDistance = line[18] === '*' || line[18] === 's'
+        isSplay = line[18] === 's'
       } else {
         // decimal feet are not optional
         const feetStr = validate(10, 16, 'distance', isValidUFloat)
         distance = new UnitizedNumber(parseFloat(feetStr), distanceUnit)
         kind = parseKind(line[16])
-        excludeDistance = line[17] === '*'
+        excludeDistance = line[17] === '*' || line[17] === 's'
+        isSplay = line[17] === 's'
       }
 
       if (kind !== FrcsShotKind.Normal) {
@@ -478,13 +500,17 @@ export default async function parseFrcsSurveyFile(
         backsightAzimuth,
         frontsightInclination,
         backsightInclination,
-        left,
-        right,
-        up,
-        down,
+        toLruds: {
+          left,
+          right,
+          up,
+          down,
+        },
         excludeDistance,
         comment: getComment(),
       }
+      if (isSplay) shot.isSplay = true
+      if (fromLruds) shot.fromLruds = fromLruds
       if (horizontalDistance) shot.horizontalDistance = horizontalDistance
       if (verticalDistance) shot.verticalDistance = verticalDistance
       shots.push(shot)

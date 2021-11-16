@@ -29,9 +29,16 @@ TRICKY TRAVERSE AND THEN FIRST SURVEY IN UPPER CROWLWAY
 DAN CROWL, KEITH ORTIZ, CHIP HOPPER, PETER QUICK, LARRY BEAN    14 FEB 1981
  *
 FI B  DD
-   A2   A1  48 10  292.0 110.0-42.0       5 10 35  5
+   A2   A1  48 10  292.0 110.0-42.0       5 10 35  5    A1 2 7 3 4.5
    A3   A2  12  5  333.5 153.5 35.0       3  1 15  5
    A4   A3   4  2    0.0   0.0 90.0       3  1 10 10
+ *
+DOUG'S DEMISE (50 FT DROP), CHRIS CROSS, CRAWL ABOVE DROP
+PETER QUICK, CHRIS GERACE, PHIL ODEN, CHIP HOPPER - 3-6-81
+ *
+FT C  DD
+  B31  B30  13.7   360.0 360.0 40.0       2  4  6  
+B30sp  B30  13.7 s 360.0 360.0 40.0       2  4  6  
 `
 
 describe('parseFrcsSurveyFile', () => {
@@ -64,16 +71,19 @@ describe('parseFrcsSurveyFile', () => {
               backsightInclination: null,
               comment: null,
               distance: Unitize.feet(0),
-              down: Unitize.feet(2),
               excludeDistance: true,
               from: 'AE20',
               frontsightAzimuth: null,
               frontsightInclination: null,
               kind: FrcsShotKind.Normal,
-              left: Unitize.feet(1),
-              right: Unitize.feet(3),
               to: null,
-              up: Unitize.feet(0),
+
+              fromLruds: {
+                left: Unitize.feet(1),
+                right: Unitize.feet(3),
+                up: Unitize.feet(0),
+                down: Unitize.feet(2),
+              },
             },
             {
               from: 'AE20',
@@ -84,13 +94,16 @@ describe('parseFrcsSurveyFile', () => {
               backsightAzimuth: Unitize.degrees(60),
               frontsightInclination: Unitize.degrees(-36),
               backsightInclination: null,
-              left: Unitize.feet(2),
-              right: Unitize.feet(12),
-              up: Unitize.feet(0),
-              down: Unitize.feet(20),
               excludeDistance: false,
               comment:
                 "AE20     0        0        0        Bug-can't put before so put after-so can't make 2 fixed 10/28/12",
+
+              toLruds: {
+                left: Unitize.feet(2),
+                right: Unitize.feet(12),
+                up: Unitize.feet(0),
+                down: Unitize.feet(20),
+              },
             },
             {
               from: 'AE19',
@@ -101,12 +114,15 @@ describe('parseFrcsSurveyFile', () => {
               backsightAzimuth: Unitize.degrees(0),
               frontsightInclination: Unitize.degrees(-90),
               backsightInclination: null,
-              left: Unitize.feet(6),
-              right: Unitize.feet(10),
-              up: Unitize.feet(25),
-              down: Unitize.feet(0),
               excludeDistance: false,
               comment: null,
+
+              toLruds: {
+                left: Unitize.feet(6),
+                right: Unitize.feet(10),
+                up: Unitize.feet(25),
+                down: Unitize.feet(0),
+              },
             },
             {
               from: 'AE18',
@@ -117,12 +133,15 @@ describe('parseFrcsSurveyFile', () => {
               backsightAzimuth: Unitize.degrees(350.5),
               frontsightInclination: Unitize.degrees(17),
               backsightInclination: null,
-              left: Unitize.feet(3),
-              right: Unitize.feet(5),
-              up: Unitize.feet(0),
-              down: Unitize.feet(0),
               excludeDistance: false,
               comment: null,
+
+              toLruds: {
+                left: Unitize.feet(3),
+                right: Unitize.feet(5),
+                up: Unitize.feet(0),
+                down: Unitize.feet(0),
+              },
             },
             {
               from: 'AE17',
@@ -133,12 +152,15 @@ describe('parseFrcsSurveyFile', () => {
               backsightAzimuth: Unitize.degrees(0),
               frontsightInclination: Unitize.degrees(-90),
               backsightInclination: null,
-              left: Unitize.feet(3),
-              right: Unitize.feet(5),
-              up: Unitize.feet(6),
-              down: Unitize.feet(1),
               excludeDistance: false,
               comment: null,
+
+              toLruds: {
+                left: Unitize.feet(3),
+                right: Unitize.feet(5),
+                up: Unitize.feet(6),
+                down: Unitize.feet(1),
+              },
             },
             {
               from: 'AE16',
@@ -149,12 +171,15 @@ describe('parseFrcsSurveyFile', () => {
               backsightAzimuth: Unitize.degrees(71),
               frontsightInclination: Unitize.degrees(-18),
               backsightInclination: null,
-              left: Unitize.feet(4),
-              right: Unitize.feet(0),
-              up: Unitize.feet(2),
-              down: Unitize.feet(1),
               excludeDistance: false,
               comment: null,
+
+              toLruds: {
+                left: Unitize.feet(4),
+                right: Unitize.feet(0),
+                up: Unitize.feet(2),
+                down: Unitize.feet(1),
+              },
             },
             {
               from: 'AE15',
@@ -165,12 +190,15 @@ describe('parseFrcsSurveyFile', () => {
               backsightAzimuth: Unitize.degrees(20),
               frontsightInclination: Unitize.degrees(6),
               backsightInclination: null,
-              left: Unitize.feet(5),
-              right: Unitize.feet(5),
-              up: Unitize.feet(0),
-              down: Unitize.feet(3),
               excludeDistance: false,
               comment: null,
+
+              toLruds: {
+                left: Unitize.feet(5),
+                right: Unitize.feet(5),
+                up: Unitize.feet(0),
+                down: Unitize.feet(3),
+              },
             },
             {
               from: 'AE14',
@@ -181,12 +209,15 @@ describe('parseFrcsSurveyFile', () => {
               backsightAzimuth: Unitize.degrees(286),
               frontsightInclination: Unitize.degrees(-50),
               backsightInclination: null,
-              left: Unitize.feet(0),
-              right: Unitize.feet(7),
-              up: Unitize.feet(20),
-              down: Unitize.feet(5),
               excludeDistance: false,
               comment: null,
+
+              toLruds: {
+                left: Unitize.feet(0),
+                right: Unitize.feet(7),
+                up: Unitize.feet(20),
+                down: Unitize.feet(5),
+              },
             },
             {
               from: 'AE13',
@@ -197,12 +228,15 @@ describe('parseFrcsSurveyFile', () => {
               backsightAzimuth: Unitize.degrees(236),
               frontsightInclination: Unitize.degrees(34),
               backsightInclination: null,
-              left: Unitize.feet(3),
-              right: Unitize.feet(5),
-              up: Unitize.feet(4),
-              down: Unitize.feet(4),
               excludeDistance: false,
               comment: 'SHORT CANYON AT THE BASE OF THE SECOND DROP',
+
+              toLruds: {
+                left: Unitize.feet(3),
+                right: Unitize.feet(5),
+                up: Unitize.feet(4),
+                down: Unitize.feet(4),
+              },
             },
           ],
         },
@@ -231,12 +265,20 @@ describe('parseFrcsSurveyFile', () => {
               backsightAzimuth: Unitize.degrees(110),
               frontsightInclination: Unitize.degrees(-42),
               backsightInclination: null,
-              left: Unitize.feet(5),
-              right: Unitize.feet(10),
-              up: Unitize.feet(35),
-              down: Unitize.feet(5),
               excludeDistance: false,
               comment: null,
+              fromLruds: {
+                left: Unitize.feet(2),
+                right: Unitize.feet(7),
+                up: Unitize.feet(3),
+                down: Unitize.feet(4.5),
+              },
+              toLruds: {
+                left: Unitize.feet(5),
+                right: Unitize.feet(10),
+                up: Unitize.feet(35),
+                down: Unitize.feet(5),
+              },
             },
             {
               from: 'A2',
@@ -247,12 +289,15 @@ describe('parseFrcsSurveyFile', () => {
               backsightAzimuth: Unitize.degrees(153.5),
               frontsightInclination: Unitize.degrees(35),
               backsightInclination: null,
-              left: Unitize.feet(3),
-              right: Unitize.feet(1),
-              up: Unitize.feet(15),
-              down: Unitize.feet(5),
               excludeDistance: false,
               comment: null,
+
+              toLruds: {
+                left: Unitize.feet(3),
+                right: Unitize.feet(1),
+                up: Unitize.feet(15),
+                down: Unitize.feet(5),
+              },
             },
             {
               from: 'A3',
@@ -263,12 +308,71 @@ describe('parseFrcsSurveyFile', () => {
               backsightAzimuth: Unitize.degrees(0),
               frontsightInclination: Unitize.degrees(90),
               backsightInclination: null,
-              left: Unitize.feet(3),
-              right: Unitize.feet(1),
-              up: Unitize.feet(10),
-              down: Unitize.feet(10),
               excludeDistance: false,
               comment: null,
+
+              toLruds: {
+                left: Unitize.feet(3),
+                right: Unitize.feet(1),
+                up: Unitize.feet(10),
+                down: Unitize.feet(10),
+              },
+            },
+          ],
+        },
+        {
+          header: {
+            azimuthUnit: Angle.degrees,
+            backsightAzimuthCorrected: true,
+            backsightInclinationCorrected: false,
+            comment: null,
+            date: undefined,
+            distanceUnit: Length.feet,
+            hasBacksightAzimuth: true,
+            hasBacksightInclination: false,
+            inclinationUnit: Angle.degrees,
+            name: "DOUG'S DEMISE (50 FT DROP), CHRIS CROSS, CRAWL ABOVE DROP",
+            section: undefined,
+            team: undefined,
+          },
+          shots: [
+            {
+              backsightAzimuth: Unitize.degrees(0),
+              backsightInclination: null,
+              comment: null,
+              distance: Unitize.feet(13.7),
+              excludeDistance: false,
+              from: 'B30',
+              frontsightAzimuth: Unitize.degrees(0),
+              frontsightInclination: Unitize.degrees(40),
+              kind: ' ',
+              to: 'B31',
+
+              toLruds: {
+                left: Unitize.feet(2),
+                right: Unitize.feet(4),
+                up: Unitize.feet(6),
+                down: null,
+              },
+            },
+            {
+              backsightAzimuth: Unitize.degrees(0),
+              backsightInclination: null,
+              comment: null,
+              distance: Unitize.feet(13.7),
+              excludeDistance: true,
+              isSplay: true,
+              from: 'B30',
+              frontsightAzimuth: Unitize.degrees(0),
+              frontsightInclination: Unitize.degrees(40),
+              kind: ' ',
+              to: 'B30sp',
+              toLruds: {
+                left: Unitize.feet(2),
+                right: Unitize.feet(4),
+                up: Unitize.feet(6),
+                down: null,
+              },
             },
           ],
         },
@@ -296,12 +400,15 @@ FT C  DD
       backsightAzimuth: Unitize.degrees(340),
       frontsightInclination: Angle.atan2(1, 36.2),
       backsightInclination: null,
-      left: Unitize.feet(12),
-      right: Unitize.feet(2),
-      up: Unitize.feet(15),
-      down: Unitize.feet(15),
       excludeDistance: false,
       comment: null,
+
+      toLruds: {
+        left: Unitize.feet(12),
+        right: Unitize.feet(2),
+        up: Unitize.feet(15),
+        down: Unitize.feet(15),
+      },
     })
   })
   it('horizontal feet and inches shots', async function() {
@@ -325,12 +432,15 @@ FI C  DD
       backsightAzimuth: Unitize.degrees(163),
       frontsightInclination: Angle.atan2(-1, 16.75),
       backsightInclination: null,
-      left: Unitize.feet(0),
-      right: Unitize.feet(3),
-      up: Unitize.feet(5),
-      down: Unitize.feet(4),
       excludeDistance: false,
       comment: null,
+
+      toLruds: {
+        left: Unitize.feet(0),
+        right: Unitize.feet(3),
+        up: Unitize.feet(5),
+        down: Unitize.feet(4),
+      },
     })
   })
   it('diagonal shots', async function() {
@@ -353,12 +463,15 @@ FT C  DD
       backsightAzimuth: Unitize.degrees(232),
       frontsightInclination: Angle.asin(2 / 31.6),
       backsightInclination: null,
-      left: Unitize.feet(3),
-      right: Unitize.feet(10),
-      up: Unitize.feet(20),
-      down: Unitize.feet(32),
       excludeDistance: false,
       comment: null,
+
+      toLruds: {
+        left: Unitize.feet(3),
+        right: Unitize.feet(10),
+        up: Unitize.feet(20),
+        down: Unitize.feet(32),
+      },
     })
   })
   it('invalid distance unit', async function() {
@@ -443,12 +556,15 @@ M  CC DD
               backsightAzimuth: Unitize.degrees(232),
               frontsightInclination: Unitize.degrees(2),
               backsightInclination: Unitize.degrees(3),
-              left: Unitize.meters(3),
-              right: Unitize.meters(10),
-              up: Unitize.meters(20),
-              down: Unitize.meters(32),
               excludeDistance: false,
               comment: null,
+
+              toLruds: {
+                left: Unitize.meters(3),
+                right: Unitize.meters(10),
+                up: Unitize.meters(20),
+                down: Unitize.meters(32),
+              },
             },
           ],
         },
@@ -474,12 +590,15 @@ M  CC DD
       backsightAzimuth: Unitize.degrees(232),
       frontsightInclination: Unitize.degrees(2),
       backsightInclination: Unitize.degrees(3),
-      left: Unitize.meters(3),
-      right: Unitize.meters(10),
-      up: Unitize.meters(20),
-      down: Unitize.meters(32),
       excludeDistance: true,
       comment: null,
+
+      toLruds: {
+        left: Unitize.meters(3),
+        right: Unitize.meters(10),
+        up: Unitize.meters(20),
+        down: Unitize.meters(32),
+      },
     })
   })
   it('negative LRUD', async function() {
@@ -501,12 +620,15 @@ M  CC DD
       backsightAzimuth: Unitize.degrees(232),
       frontsightInclination: Unitize.degrees(2),
       backsightInclination: Unitize.degrees(3),
-      left: null,
-      right: Unitize.meters(10),
-      up: Unitize.meters(20),
-      down: Unitize.meters(32),
       excludeDistance: false,
       comment: null,
+
+      toLruds: {
+        left: null,
+        right: Unitize.meters(10),
+        up: Unitize.meters(20),
+        down: Unitize.meters(32),
+      },
     })
   })
   it('- for no backsight', async function() {
@@ -552,12 +674,15 @@ M  B- DD
       backsightAzimuth: Unitize.degrees(232),
       frontsightInclination: Unitize.degrees(0),
       backsightInclination: null,
-      left: null,
-      right: Unitize.meters(10),
-      up: Unitize.meters(20),
-      down: Unitize.meters(32),
       excludeDistance: false,
       comment: null,
+
+      toLruds: {
+        left: null,
+        right: Unitize.meters(10),
+        up: Unitize.meters(20),
+        down: Unitize.meters(32),
+      },
     })
   })
 })

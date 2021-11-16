@@ -38,10 +38,13 @@ describe(`formatFrcsShot`, function() {
       backsightAzimuth: Unitize.degrees(174.1),
       frontsightInclination: Unitize.degrees(-1.2),
       backsightInclination: Unitize.degrees(-1.6),
-      left: Unitize.feet(2),
-      right: Unitize.feet(3),
-      up: Unitize.feet(0.5),
-      down: Unitize.feet(1.5),
+
+      toLruds: {
+        left: Unitize.feet(2),
+        right: Unitize.feet(3),
+        up: Unitize.feet(0.5),
+        down: Unitize.feet(1.5),
+      },
     },
     'PDF28PDF27  31.7   174.3 174.1 -1.2 -1.6  2  30.51.5'
   )
@@ -57,10 +60,13 @@ describe(`formatFrcsShot`, function() {
       backsightAzimuth: Unitize.degrees(174.1),
       frontsightInclination: Unitize.degrees(-1.2),
       backsightInclination: Unitize.degrees(-1.6),
-      left: Unitize.feet(2),
-      right: Unitize.feet(3),
-      up: Unitize.feet(0.5),
-      down: Unitize.feet(1.5),
+
+      toLruds: {
+        left: Unitize.feet(2),
+        right: Unitize.feet(3),
+        up: Unitize.feet(0.5),
+        down: Unitize.feet(1.5),
+      },
     },
     'PDF28PDF27  31.7 * 174.3 174.1 -1.2 -1.6  2  30.51.5'
   )
@@ -77,10 +83,13 @@ describe(`formatFrcsShot`, function() {
       excludeDistance: true,
       frontsightAzimuth: Unitize.degrees(174.3),
       backsightAzimuth: Unitize.degrees(174.1),
-      left: Unitize.feet(2),
-      right: Unitize.feet(3),
-      up: Unitize.feet(0.5),
-      down: Unitize.feet(1.5),
+
+      toLruds: {
+        left: Unitize.feet(2),
+        right: Unitize.feet(3),
+        up: Unitize.feet(0.5),
+        down: Unitize.feet(1.5),
+      },
     },
     'PDF28PDF27  31.7H* 174.3 174.1    5       2  30.51.5'
   )
@@ -96,10 +105,13 @@ describe(`formatFrcsShot`, function() {
       excludeDistance: true,
       frontsightAzimuth: Unitize.degrees(174.3),
       backsightAzimuth: Unitize.degrees(174.1),
-      left: Unitize.feet(2),
-      right: Unitize.feet(3),
-      up: Unitize.feet(0.5),
-      down: Unitize.feet(1.5),
+
+      toLruds: {
+        left: Unitize.feet(2),
+        right: Unitize.feet(3),
+        up: Unitize.feet(0.5),
+        down: Unitize.feet(1.5),
+      },
     },
     'PDF28PDF27  31.7D* 174.3 174.1    5       2  30.51.5'
   )
@@ -115,10 +127,13 @@ describe(`formatFrcsShot`, function() {
       frontsightAzimuth: Unitize.degrees(345),
       backsightAzimuth: Unitize.degrees(163),
       verticalDistance: Unitize.feet(-1),
-      left: Unitize.feet(0),
-      right: Unitize.feet(3),
-      up: Unitize.feet(5),
-      down: Unitize.feet(4),
+
+      toLruds: {
+        left: Unitize.feet(0),
+        right: Unitize.feet(3),
+        up: Unitize.feet(5),
+        down: Unitize.feet(4),
+      },
     },
     '  A27  A26  16 10H   345   163   -1       0  3  5  4',
     {
@@ -137,10 +152,13 @@ describe(`formatFrcsShot`, function() {
       frontsightAzimuth: Unitize.degrees(345),
       backsightAzimuth: Unitize.degrees(163),
       verticalDistance: Unitize.feet(-1),
-      left: Unitize.feet(0),
-      right: Unitize.feet(3),
-      up: Unitize.feet(5),
-      down: Unitize.feet(4),
+
+      toLruds: {
+        left: Unitize.feet(0),
+        right: Unitize.feet(3),
+        up: Unitize.feet(5),
+        down: Unitize.feet(4),
+      },
     },
     '  A27  A26  16 10D   345   163   -1       0  3  5  4',
     {
@@ -155,10 +173,12 @@ describe(`formatFrcsShot`, function() {
       kind: FrcsShotKind.Normal,
       from: 'A27',
       distance: null,
-      left: Unitize.feet(0),
-      right: Unitize.feet(3),
-      up: Unitize.feet(5),
-      down: Unitize.feet(4),
+      fromLruds: {
+        left: Unitize.feet(0),
+        right: Unitize.feet(3),
+        up: Unitize.feet(5),
+        down: Unitize.feet(4),
+      },
     },
     '  A27                                     0  3  5  4'
   )

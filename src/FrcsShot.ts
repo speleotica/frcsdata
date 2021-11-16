@@ -7,7 +7,13 @@ export enum FrcsShotKind {
 }
 
 export type FrcsShot = {
+  /**
+   * Name of from station
+   */
   from: string
+  /**
+   * Name of to station
+   */
   to?: string | null
   kind: FrcsShotKind
   distance: UnitizedNumber<Length>
@@ -17,12 +23,25 @@ export type FrcsShot = {
   frontsightInclination?: UnitizedNumber<Angle> | null
   backsightAzimuth?: UnitizedNumber<Angle> | null
   backsightInclination?: UnitizedNumber<Angle> | null
-  // In LRUD-only shots, these are the LRUDs at the from station.
-  // Otherwise, these are the LRUDs at the to station.
-  left?: UnitizedNumber<Length> | null
-  right?: UnitizedNumber<Length> | null
-  up?: UnitizedNumber<Length> | null
-  down?: UnitizedNumber<Length> | null
+  /**
+   * LRUDs at from station
+   */
+  fromLruds?: {
+    left?: UnitizedNumber<Length> | null
+    right?: UnitizedNumber<Length> | null
+    up?: UnitizedNumber<Length> | null
+    down?: UnitizedNumber<Length> | null
+  }
+  /**
+   * LRUDs at to station
+   */
+  toLruds?: {
+    left?: UnitizedNumber<Length> | null
+    right?: UnitizedNumber<Length> | null
+    up?: UnitizedNumber<Length> | null
+    down?: UnitizedNumber<Length> | null
+  }
   excludeDistance?: boolean | null
+  isSplay?: boolean | null
   comment?: string | null
 }

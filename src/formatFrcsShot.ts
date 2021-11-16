@@ -85,10 +85,10 @@ export default function formatFrcsShot(
       EMPTY_AZIMUTH,
       EMPTY_INCLINATION,
       EMPTY_INCLINATION,
-      formatLrud(shot.left?.get(distanceUnit)),
-      formatLrud(shot.right?.get(distanceUnit)),
-      formatLrud(shot.up?.get(distanceUnit)),
-      formatLrud(shot.down?.get(distanceUnit)),
+      formatLrud(shot.fromLruds?.left?.get(distanceUnit)),
+      formatLrud(shot.fromLruds?.right?.get(distanceUnit)),
+      formatLrud(shot.fromLruds?.up?.get(distanceUnit)),
+      formatLrud(shot.fromLruds?.down?.get(distanceUnit)),
     ].join('')
   }
 
@@ -113,9 +113,9 @@ export default function formatFrcsShot(
     shot.kind === FrcsShotKind.Normal
       ? formatInclination(shot.backsightInclination?.get(inclinationUnit))
       : EMPTY_INCLINATION,
-    formatLrud(shot.left?.get(distanceUnit)),
-    formatLrud(shot.right?.get(distanceUnit)),
-    formatLrud(shot.up?.get(distanceUnit)),
-    formatLrud(shot.down?.get(distanceUnit)),
+    formatLrud(shot.toLruds?.left?.get(distanceUnit)),
+    formatLrud(shot.toLruds?.right?.get(distanceUnit)),
+    formatLrud(shot.toLruds?.up?.get(distanceUnit)),
+    formatLrud(shot.toLruds?.down?.get(distanceUnit)),
   ].join('')
 }
