@@ -399,6 +399,36 @@ export default async function parseFrcsSurveyFile(
         fromLruds = { left, right, up, down }
       }
 
+      let comment = getComment()
+      let fromLrudComment = comment
+      const commentFromStr = comment ? /^\S{1,5}/.exec(comment)?.[0] : null
+      if (commentFromStr) {
+        const fromStr = commentFromStr
+        fromLrudComment = ' '.repeat(5 - fromStr.length) + fromLrudComment
+        const gap = fromLrudComment.substring(5, 40)
+        const lrudStr = fromLrudComment.substring(40, 52)
+        const lStr = fromLrudComment.substring(40, 43)
+        const rStr = fromLrudComment.substring(43, 46)
+        const uStr = fromLrudComment.substring(46, 49)
+        const dStr = fromLrudComment.substring(49, 52)
+        if (
+          /^\s*\S+$/.test(fromStr) &&
+          !gap.trim() &&
+          isValidOptFloat(lStr) &&
+          isValidOptFloat(rStr) &&
+          isValidOptFloat(uStr) &&
+          isValidOptFloat(dStr) &&
+          /\d/.test(lrudStr)
+        ) {
+          const up = parseLrud(uStr, distanceUnit)
+          const down = parseLrud(dStr, distanceUnit)
+          const left = parseLrud(lStr, distanceUnit)
+          const right = parseLrud(rStr, distanceUnit)
+          fromLruds = { left, right, up, down }
+          comment = null
+        }
+      }
+
       // azimuth and inclination
       const azmFsStr = validate(19, 25, 'azimuth', isValidOptUFloat)
       const azmBsStr = validate(25, 30, 'azimuth', isValidOptUFloat)
@@ -509,7 +539,7 @@ export default async function parseFrcsSurveyFile(
           down,
         },
         excludeDistance,
-        comment: getComment(),
+        comment,
       }
       if (isSplay) shot.isSplay = true
       if (fromLruds) shot.fromLruds = fromLruds

@@ -29,7 +29,9 @@ TRICKY TRAVERSE AND THEN FIRST SURVEY IN UPPER CROWLWAY
 DAN CROWL, KEITH ORTIZ, CHIP HOPPER, PETER QUICK, LARRY BEAN    14 FEB 1981
  *
 FI B  DD
-   A2   A1  48 10  292.0 110.0-42.0       5 10 35  5    A1 2 7 3 4.5
+*
+*   A1                                     2  7 3 4.5
+   A2   A1  48 10  292.0 110.0-42.0       5 10 35  5
    A3   A2  12  5  333.5 153.5 35.0       3  1 15  5
    A4   A3   4  2    0.0   0.0 90.0       3  1 10 10
  *
@@ -37,7 +39,7 @@ DOUG'S DEMISE (50 FT DROP), CHRIS CROSS, CRAWL ABOVE DROP
 PETER QUICK, CHRIS GERACE, PHIL ODEN, CHIP HOPPER - 3-6-81
  *
 FT C  DD
-  B31  B30  13.7   360.0 360.0 40.0       2  4  6  
+  B31  B30  13.7   360.0 360.0 40.0       2  4  6       B30 8 3 5 1.2
 B30sp  B30  13.7 s 360.0 360.0 40.0       2  4  6  
 `
 
@@ -347,7 +349,12 @@ describe('parseFrcsSurveyFile', () => {
               frontsightInclination: Unitize.degrees(40),
               kind: ' ',
               to: 'B31',
-
+              fromLruds: {
+                left: Unitize.feet(8),
+                right: Unitize.feet(3),
+                up: Unitize.feet(5),
+                down: Unitize.feet(1.2),
+              },
               toLruds: {
                 left: Unitize.feet(2),
                 right: Unitize.feet(4),
