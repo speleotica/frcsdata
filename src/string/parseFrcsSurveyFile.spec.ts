@@ -31,6 +31,8 @@ DAN CROWL, KEITH ORTIZ, CHIP HOPPER, PETER QUICK, LARRY BEAN    14 FEB 1981
 FI B  DD
 *
 *   A1                                     2  7 3 4.5
+*
+* test comment after from station lrud
    A2   A1  48 10  292.0 110.0-42.0       5 10 35  5
    A3   A2  12  5  333.5 153.5 35.0       3  1 15  5
    A4   A3   4  2    0.0   0.0 90.0       3  1 10 10
@@ -268,12 +270,12 @@ describe('parseFrcsSurveyFile', () => {
               frontsightInclination: Unitize.degrees(-42),
               backsightInclination: null,
               excludeDistance: false,
-              comment: null,
+              comment: 'test comment after from station lrud',
               fromLruds: {
-                left: Unitize.feet(2),
-                right: Unitize.feet(7),
-                up: Unitize.feet(3),
-                down: Unitize.feet(4.5),
+                left: Unitize.inches(2),
+                right: Unitize.inches(7),
+                up: Unitize.inches(3),
+                down: Unitize.inches(4.5),
               },
               toLruds: {
                 left: Unitize.feet(5),

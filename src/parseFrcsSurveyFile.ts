@@ -102,6 +102,35 @@ function parseLrud<T extends UnitType<T>>(
     : new UnitizedNumber(value, unit)
 }
 
+function parseFromStationLruds(
+  line: string,
+  distanceUnit: Unit<Length>
+): [string, NonNullable<FrcsShot['fromLruds']>] | undefined {
+  const fromStr = line.substring(0, 5)
+  if (!/^\s*\S+$/.test(fromStr)) return undefined
+  const gap = line.substring(5, 40)
+  if (gap.trim()) return undefined
+  const lrudStr = line.substring(40, 52)
+  if (!/\d/.test(lrudStr)) return undefined
+  const lStr = line.substring(40, 43)
+  const rStr = line.substring(43, 46)
+  const uStr = line.substring(46, 49)
+  const dStr = line.substring(49, 52)
+  if (
+    !isValidOptFloat(lStr) ||
+    !isValidOptFloat(rStr) ||
+    !isValidOptFloat(uStr) ||
+    !isValidOptFloat(dStr)
+  ) {
+    return undefined
+  }
+  const up = parseLrud(uStr, distanceUnit)
+  const down = parseLrud(dStr, distanceUnit)
+  const left = parseLrud(lStr, distanceUnit)
+  const right = parseLrud(rStr, distanceUnit)
+  return [fromStr.trim(), { left, right, up, down }]
+}
+
 /**
  * Parses a raw cdata.fr survey file.  These look like so:
  *
@@ -167,6 +196,30 @@ export default async function parseFrcsSurveyFile(
   let trip: FrcsTrip | null = null
   let inBlockComment = false
   let section
+  const commentFromStationLruds: Map<
+    string,
+    NonNullable<FrcsShot['fromLruds']>
+  > = new Map()
+
+  function addCommentLine(comment: string): void {
+    if (trip) {
+      const distanceUnit = trip.header.distanceUnit
+      const parsedFromStationLruds = parseFromStationLruds(
+        comment,
+        distanceUnit
+      )
+      if (parsedFromStationLruds) {
+        commentFromStationLruds.set(
+          parsedFromStationLruds[0],
+          parsedFromStationLruds[1]
+        )
+        return
+      }
+    }
+    if (commentLines) {
+      commentLines.push(comment)
+    }
+  }
 
   function getComment(): string | null {
     if (!commentLines) return null
@@ -267,12 +320,12 @@ export default async function parseFrcsSurveyFile(
     } else if (line.charAt(0) === '*') {
       inBlockComment = !inBlockComment
       if (inBlockComment) commentLines = []
-      else if (commentLines) {
-        const part = line.substring(1).trim()
-        if (part && commentLines) commentLines.push(part)
+      else {
+        const part = line.substring(1)
+        if (part) addCommentLine(part)
       }
     } else if (inBlockComment) {
-      if (commentLines) commentLines.push(line)
+      addCommentLine(line)
     } else if (lineNumber === tripCommentEndLine + 1) {
       // FT CC DD
       // 01234567
@@ -338,6 +391,7 @@ export default async function parseFrcsSurveyFile(
       // from station name
       if (!/\S/.test(line.substring(5, 10))) continue
       const fromStr = validate(5, 10, 'from station', isValidStation)
+      const from = fromStr.trim()
 
       // Sadly I have found negative LRUD values in Chip's format and apparently
       // his program doesn't fail on them, so I have to accept them here
@@ -358,7 +412,7 @@ export default async function parseFrcsSurveyFile(
       const toStr = line.substring(0, 5)
       if (!toStr.trim()) {
         const shot: FrcsShot = {
-          from: fromStr.trim(),
+          from,
           to: null,
           kind: FrcsShotKind.Normal,
           distance: new UnitizedNumber(0, distanceUnit),
@@ -382,52 +436,28 @@ export default async function parseFrcsSurveyFile(
         error('Invalid station name', 0, 5)
       }
 
-      const fromLrudMatch = new RegExp(
-        `^\\s+${fromStr
-          .trim()
-          .replace(
-            /[.*+?^${}()|[\]\\]/g,
-            '\\$&'
-          )}((\\s+(\\d+(\\.\\d*)?|\\.\\d+)){4})`
-      ).exec(line.substring(52))
-      let fromLruds
-      if (fromLrudMatch) {
-        const [left, right, up, down] = fromLrudMatch[1]
-          .trim()
-          .split(/\s+/g)
-          .map(s => parseLrud(s, distanceUnit))
-        fromLruds = { left, right, up, down }
-      }
-
-      let comment = getComment()
-      let fromLrudComment = comment
-      const commentFromStr = comment ? /^\S{1,5}/.exec(comment)?.[0] : null
-      if (commentFromStr) {
-        const fromStr = commentFromStr
-        fromLrudComment = ' '.repeat(5 - fromStr.length) + fromLrudComment
-        const gap = fromLrudComment.substring(5, 40)
-        const lrudStr = fromLrudComment.substring(40, 52)
-        const lStr = fromLrudComment.substring(40, 43)
-        const rStr = fromLrudComment.substring(43, 46)
-        const uStr = fromLrudComment.substring(46, 49)
-        const dStr = fromLrudComment.substring(49, 52)
-        if (
-          /^\s*\S+$/.test(fromStr) &&
-          !gap.trim() &&
-          isValidOptFloat(lStr) &&
-          isValidOptFloat(rStr) &&
-          isValidOptFloat(uStr) &&
-          isValidOptFloat(dStr) &&
-          /\d/.test(lrudStr)
-        ) {
-          const up = parseLrud(uStr, distanceUnit)
-          const down = parseLrud(dStr, distanceUnit)
-          const left = parseLrud(lStr, distanceUnit)
-          const right = parseLrud(rStr, distanceUnit)
+      let fromLruds = commentFromStationLruds.get(from)
+      if (fromLruds) {
+        commentFromStationLruds.delete(from)
+      } else {
+        const fromLrudMatch = new RegExp(
+          `^\\s+${fromStr
+            .trim()
+            .replace(
+              /[.*+?^${}()|[\]\\]/g,
+              '\\$&'
+            )}((\\s+(\\d+(\\.\\d*)?|\\.\\d+)){4})`
+        ).exec(line.substring(52))
+        if (fromLrudMatch) {
+          const [left, right, up, down] = fromLrudMatch[1]
+            .trim()
+            .split(/\s+/g)
+            .map(s => parseLrud(s, distanceUnit))
           fromLruds = { left, right, up, down }
-          comment = null
         }
       }
+
+      const comment = getComment()
 
       // azimuth and inclination
       const azmFsStr = validate(19, 25, 'azimuth', isValidOptUFloat)
@@ -524,7 +554,7 @@ export default async function parseFrcsSurveyFile(
       }
 
       const shot: FrcsShot = {
-        from: fromStr.trim(),
+        from,
         to: toStr.trim(),
         kind,
         distance,
