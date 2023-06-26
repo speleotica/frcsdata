@@ -43,8 +43,10 @@ function parseLengthUnit(unit: string): Unit<Length> | null {
   switch (unit) {
     case 'FI':
       return Length.inches
+    case 'FF':
     case 'FT':
       return Length.feet
+    case 'MT':
     case 'M ':
       return Length.meters
   }

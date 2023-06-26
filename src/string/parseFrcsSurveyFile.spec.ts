@@ -523,7 +523,7 @@ FJ C  DD
  *
 TEST
  * 
-M  CC DD
+MT CC DD
   E37  E36  31.6   231.0 232.0  2.0  3.0  3 10 20 32
 `
     expect(await parseFrcsSurveyFile('cdata.fr', data)).to.deep.equal({
@@ -577,7 +577,7 @@ M  CC DD
  *
 TEST
  * 
-M  CC DD
+MT CC DD
   E37  E36  31.6 * 231.0 232.0  2.0  3.0  3 10 20 32
 `
     const parsed = await parseFrcsSurveyFile('cdata.fr', data)
@@ -607,7 +607,7 @@ M  CC DD
  *
 TEST
  * 
-M  CC DD
+MT CC DD
   E37  E36  31.6   231.0 232.0  2.0  3.0 -3 10 20 32
 `
     const parsed = await parseFrcsSurveyFile('cdata.fr', data)
@@ -637,7 +637,7 @@ M  CC DD
  *
 TEST
  * 
-M  B- DD 
+MT B- DD 
   `
     const parsed = await parseFrcsSurveyFile('cdata.fr', data)
     expect(parsed.trips[0].header).to.deep.equal({
@@ -661,7 +661,7 @@ M  B- DD
  *
 TEST
  * 
-M  B- DD 
+MT B- DD 
   E37  E36  31.6   231.0 232.0           -3 10 20 32
   `
     const parsed = await parseFrcsSurveyFile('cdata.fr', data)
