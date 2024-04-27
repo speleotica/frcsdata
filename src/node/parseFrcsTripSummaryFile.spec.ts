@@ -75,6 +75,22 @@ describe('parseFrcsTripSummaryFile', function() {
             'C1-C18',
           ],
         },
+{
+          tripNumber: 924,
+          tripIndex: 3,
+          date: new Date('May 15 2021'),
+          totalLength: Unitize.feet(3640.20),
+          numShots: 154,
+          name: "Bibbity Bobbity BOOM Room",
+          excludedLength: Unitize.feet(3441.57),
+          numExcludedShots: 139,
+          team: ['Andy Edwards', 'Julia Stuart', 'Eleonore Corvaisier'],
+          shots: [
+            'GB26-GB36',
+            'GB30 SIDE',
+            'GB31 SIDE',
+          ],
+        }
       ],
     })
   })
