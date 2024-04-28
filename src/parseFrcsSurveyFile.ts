@@ -452,7 +452,7 @@ export default async function parseFrcsSurveyFile(
           const [left, right, up, down] = fromLrudMatch[1]
             .trim()
             .split(/\s+/g)
-            .map(s => parseLrud(s, distanceUnit))
+            .map((s) => parseLrud(s, distanceUnit))
           fromLruds = { left, right, up, down }
         }
       }

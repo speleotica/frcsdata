@@ -3,7 +3,8 @@ import { FrcsTripSummaryFile } from './FrcsTripSummaryFile'
 import { SegmentParseError } from 'parse-segment'
 import { Unitize } from '@speleotica/unitized'
 
-const tripSummaryRegex = /^\s*(\d+)\s+(\d{1,2})\/(\s\d|\d\d)\/(\d{2,4})\s+(\d+(?:\.\d*)?)\s+(\d+)\s+(\S.*)EXCLUDED:\s*(\d+(?:\.\d{2})?)\s*(\d+)/
+const tripSummaryRegex =
+  /^\s*(\d+)\s+(\d{1,2})\/(\s\d|\d\d)\/(\d{2,4})\s+(\d+(?:\.\d*)?)\s+(\d+)\s+(\S.*)EXCLUDED:\s*(\d+(?:\.\d{2})?)\s*(\d+)/
 /**
  * Parses data from a STAT_sum.txt file.  Here is an excerpt of the format:
 <pre>  1   2/15/81    258.60   17   ENTRANCE DROPS, JOE'S "I LOVE MY WIFE TRAVERSE", TRICKY TRAVERSE                EXCLUDED:   0.00  0

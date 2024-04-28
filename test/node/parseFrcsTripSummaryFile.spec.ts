@@ -1,10 +1,10 @@
 import { describe, it } from 'mocha'
 import { expect } from 'chai'
-import { parseFrcsTripSummaryFile } from './index'
+import { parseFrcsTripSummaryFile } from '../../src/node'
 import { Unitize } from '@speleotica/unitized'
 
-describe('parseFrcsTripSummaryFile', function() {
-  it('basic test', async function() {
+describe('parseFrcsTripSummaryFile', function () {
+  it('basic test', async function () {
     const parsed = await parseFrcsTripSummaryFile(
       require.resolve('./STAT_sum.txt')
     )
@@ -17,8 +17,7 @@ describe('parseFrcsTripSummaryFile', function() {
           date: new Date(81, 1, 15),
           totalLength: Unitize.feet(258.6),
           numShots: 17,
-          name:
-            'ENTRANCE DROPS, JOE\'S "I LOVE MY WIFE TRAVERSE", TRICKY TRAVERSE',
+          name: 'ENTRANCE DROPS, JOE\'S "I LOVE MY WIFE TRAVERSE", TRICKY TRAVERSE',
           excludedLength: Unitize.feet(0),
           numExcludedShots: 0,
           team: ['Peter Quick', 'Keith Ortiz'],
@@ -75,26 +74,22 @@ describe('parseFrcsTripSummaryFile', function() {
             'C1-C18',
           ],
         },
-{
-          tripNumber: 924,
+        {
+          tripNumber: 4,
           tripIndex: 3,
           date: new Date('May 15 2021'),
-          totalLength: Unitize.feet(3640.20),
+          totalLength: Unitize.feet(3640.2),
           numShots: 154,
-          name: "Bibbity Bobbity BOOM Room",
+          name: 'Bibbity Bobbity BOOM Room',
           excludedLength: Unitize.feet(3441.57),
           numExcludedShots: 139,
           team: ['Andy Edwards', 'Julia Stuart', 'Eleonore Corvaisier'],
-          shots: [
-            'GB26-GB36',
-            'GB30 SIDE',
-            'GB31 SIDE',
-          ],
-        }
+          shots: ['GB26-GB36', 'GB30 SIDE', 'GB31 SIDE'],
+        },
       ],
     })
   })
-  it('old format', async function() {
+  it('old format', async function () {
     const parsed = await parseFrcsTripSummaryFile(
       require.resolve('./STAT_sum_old.txt')
     )
@@ -107,8 +102,7 @@ describe('parseFrcsTripSummaryFile', function() {
           date: new Date(81, 1, 15),
           totalLength: Unitize.feet(258.6),
           numShots: 17,
-          name:
-            'ENTRANCE DROPS, JOE\'S "I LOVE MY WIFE TRAVERSE", TRICKY TRAVERSE',
+          name: 'ENTRANCE DROPS, JOE\'S "I LOVE MY WIFE TRAVERSE", TRICKY TRAVERSE',
           excludedLength: Unitize.feet(0),
           numExcludedShots: 0,
           team: ['Peter Quick', 'Keith Ortiz'],

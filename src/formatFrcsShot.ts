@@ -18,16 +18,18 @@ function trimZeroes(str: string): string {
   return match[2].length > 1 ? match[1] + match[2] : match[1]
 }
 
-const formatNumber = (width: number) => (num: number | void): string => {
-  if (num == null || !Number.isFinite(num)) return ' '.repeat(width)
-  const formatted = trimZeroes(num.toFixed(2))
-  if (formatted.length <= width) return formatted.padStart(width, ' ')
-  if (formatted.length > width + 2) return formatted.substring(0, width)
-  return trimZeroes(num.toFixed(2 - formatted.length + width)).padStart(
-    width,
-    ' '
-  )
-}
+const formatNumber =
+  (width: number) =>
+  (num: number | void): string => {
+    if (num == null || !Number.isFinite(num)) return ' '.repeat(width)
+    const formatted = trimZeroes(num.toFixed(2))
+    if (formatted.length <= width) return formatted.padStart(width, ' ')
+    if (formatted.length > width + 2) return formatted.substring(0, width)
+    return trimZeroes(num.toFixed(2 - formatted.length + width)).padStart(
+      width,
+      ' '
+    )
+  }
 
 const LRUD_WIDTH = 3
 const formatLrud = formatNumber(LRUD_WIDTH)

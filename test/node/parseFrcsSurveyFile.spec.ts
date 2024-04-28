@@ -1,13 +1,11 @@
-/* eslint-env node */
-
 import { describe, it } from 'mocha'
-import { parseFrcsSurveyFile } from './index'
+import { parseFrcsSurveyFile } from '../../src/node'
 import { Length, Angle, Unitize } from '@speleotica/unitized'
 import { expect } from 'chai'
-import { FrcsShotKind } from '../FrcsShot'
+import { FrcsShotKind } from '../../src/FrcsShot'
 
 describe('parseFrcsSurveyFile', () => {
-  it('basic test', async function() {
+  it('basic test', async function () {
     const parsed = await parseFrcsSurveyFile(require.resolve('./cdata.fr'))
     expect(parsed).to.deep.equal({
       cave: 'Fisher Ridge Cave System',
@@ -16,8 +14,7 @@ describe('parseFrcsSurveyFile', () => {
       trips: [
         {
           header: {
-            name:
-              'ENTRANCE DROPS, JOE\'S "I LOVE MY WIFE TRAVERSE", TRICKY TRAVERSE',
+            name: 'ENTRANCE DROPS, JOE\'S "I LOVE MY WIFE TRAVERSE", TRICKY TRAVERSE',
             comment: 'This File has Crumps test connected.  11/20/12',
             section: undefined,
             date: undefined,

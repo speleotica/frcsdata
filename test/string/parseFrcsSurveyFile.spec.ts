@@ -1,8 +1,8 @@
 import { describe, it } from 'mocha'
-import { parseFrcsSurveyFile } from './index'
+import { parseFrcsSurveyFile } from '../../src/string'
 import { Length, Angle, Unitize } from '@speleotica/unitized'
 import { expect } from 'chai'
-import { FrcsShotKind } from '../FrcsShot'
+import { FrcsShotKind } from '../../src/FrcsShot'
 import { SegmentParseError, Segment } from 'parse-segment'
 
 const data = `      Fisher Ridge Cave System, Hart Co., KY
@@ -46,7 +46,7 @@ B30sp  B30  13.7 s 360.0 360.0 40.0       2  4  6
 `
 
 describe('parseFrcsSurveyFile', () => {
-  it('basic test', async function() {
+  it('basic test', async function () {
     const parsed = await parseFrcsSurveyFile('cdata.fr', data)
     expect(parsed).to.deep.equal({
       cave: 'Fisher Ridge Cave System',
@@ -55,8 +55,7 @@ describe('parseFrcsSurveyFile', () => {
       trips: [
         {
           header: {
-            name:
-              'ENTRANCE DROPS, JOE\'S "I LOVE MY WIFE TRAVERSE", TRICKY TRAVERSE',
+            name: 'ENTRANCE DROPS, JOE\'S "I LOVE MY WIFE TRAVERSE", TRICKY TRAVERSE',
             comment: 'This File has Crumps test connected.  11/20/12',
             section: undefined,
             date: undefined,
@@ -388,7 +387,7 @@ describe('parseFrcsSurveyFile', () => {
       ],
     })
   })
-  it('horizontal shots', async function() {
+  it('horizontal shots', async function () {
     const data = `blah
  *
  *
@@ -420,7 +419,7 @@ FT C  DD
       },
     })
   })
-  it('horizontal feet and inches shots', async function() {
+  it('horizontal feet and inches shots', async function () {
     const data = `blah
  *
  *
@@ -452,7 +451,7 @@ FI C  DD
       },
     })
   })
-  it('diagonal shots', async function() {
+  it('diagonal shots', async function () {
     const data = `blah
  *
  *
@@ -483,7 +482,7 @@ FT C  DD
       },
     })
   })
-  it('invalid distance unit', async function() {
+  it('invalid distance unit', async function () {
     const data = `blah
  *
  *
@@ -526,7 +525,7 @@ FJ C  DD
       ],
     })
   })
-  it('meters', async function() {
+  it('meters', async function () {
     const data = `blah
  *
  *
@@ -580,7 +579,7 @@ MT CC DD
       ],
     })
   })
-  it('exclude length', async function() {
+  it('exclude length', async function () {
     const data = `blah
  *
  *
@@ -610,7 +609,7 @@ MT CC DD
       },
     })
   })
-  it('negative LRUD', async function() {
+  it('negative LRUD', async function () {
     const data = `blah
  *
  *
@@ -640,7 +639,7 @@ MT CC DD
       },
     })
   })
-  it('- for no backsight', async function() {
+  it('- for no backsight', async function () {
     const data = `blah
  *
  *
@@ -664,7 +663,7 @@ MT B- DD
       hasBacksightInclination: false,
     })
   })
-  it('missing both frontsight and backsight inclination', async function() {
+  it('missing both frontsight and backsight inclination', async function () {
     const data = `blah
  *
  *

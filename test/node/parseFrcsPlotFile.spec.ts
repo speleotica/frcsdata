@@ -1,10 +1,10 @@
 import { describe, it } from 'mocha'
-import { parseFrcsPlotFile } from './index'
+import { parseFrcsPlotFile } from '../../src/node'
 import { Unitize } from '@speleotica/unitized'
 import { expect } from 'chai'
 
 describe('parseFrcsPlotFile', () => {
-  it('basic test', async function() {
+  it('basic test', async function () {
     const parsed = await parseFrcsPlotFile(require.resolve('./FOR008.fr'))
     expect(parsed).to.deep.equal({
       totalLength: Unitize.feet(123.182259),

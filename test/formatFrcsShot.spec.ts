@@ -1,12 +1,12 @@
 import { describe, it } from 'mocha'
 import { expect } from 'chai'
 
-import { FrcsTripHeader } from './FrcsTrip'
-import formatFrcsShot from './formatFrcsShot'
+import { FrcsTripHeader } from '../src/FrcsTrip'
+import formatFrcsShot from '../src/formatFrcsShot'
 import { Angle, Length, Unitize } from '@speleotica/unitized'
-import { FrcsShot, FrcsShotKind } from './FrcsShot'
+import { FrcsShot, FrcsShotKind } from '../src/FrcsShot'
 
-describe(`formatFrcsShot`, function() {
+describe(`formatFrcsShot`, function () {
   const defaultHeader: FrcsTripHeader = {
     name: 'Foo',
     distanceUnit: Length.feet,
@@ -22,7 +22,7 @@ describe(`formatFrcsShot`, function() {
     expected: string,
     header: FrcsTripHeader = defaultHeader
   ): void {
-    it(desc, function() {
+    it(desc, function () {
       expect(formatFrcsShot(shot, header)).to.equal(expected)
     })
   }
@@ -77,7 +77,7 @@ describe(`formatFrcsShot`, function() {
       kind: FrcsShotKind.Horizontal,
       to: 'PDF28',
       from: 'PDF27',
-      distance: null,
+      distance: Unitize.feet(0),
       horizontalDistance: Unitize.feet(31.7),
       verticalDistance: Unitize.feet(5),
       excludeDistance: true,
@@ -122,7 +122,7 @@ describe(`formatFrcsShot`, function() {
       to: 'A27',
       from: 'A26',
       kind: FrcsShotKind.Horizontal,
-      distance: null,
+      distance: Unitize.feet(0),
       horizontalDistance: Unitize.inches(16 * 12 + 9.6),
       frontsightAzimuth: Unitize.degrees(345),
       backsightAzimuth: Unitize.degrees(163),
@@ -172,7 +172,7 @@ describe(`formatFrcsShot`, function() {
     {
       kind: FrcsShotKind.Normal,
       from: 'A27',
-      distance: null,
+      distance: Unitize.feet(0),
       fromLruds: {
         left: Unitize.feet(0),
         right: Unitize.feet(3),
