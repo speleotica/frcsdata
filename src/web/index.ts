@@ -26,13 +26,49 @@ class LinesTransform extends TransformStream<string> {
   }
 }
 
+function readableStreamValues<T>(
+  stream: ReadableStream<T>,
+  { preventCancel = false }: { preventCancel?: boolean } = {}
+): AsyncIterableIterator<T> {
+  const reader = stream.getReader()
+  return {
+    // @ts-expect-error types don't match, oh well
+    async next() {
+      try {
+        const result = await reader.read()
+        if (result.done) {
+          reader.releaseLock()
+        }
+        return result
+      } catch (e) {
+        reader.releaseLock()
+        throw e
+      }
+    },
+    async return(value: T) {
+      if (!preventCancel) {
+        const cancelPromise = reader.cancel(value)
+        reader.releaseLock()
+        await cancelPromise
+      } else {
+        reader.releaseLock()
+      }
+      return { done: true, value }
+    },
+    [Symbol.asyncIterator]() {
+      return this
+    },
+  }
+}
+
 function linesOf(
   input: Blob | ReadableStream<Uint8Array>
 ): AsyncIterable<string> {
-  // @ts-expect-error missing async iterable type defs
-  return (input instanceof ReadableStream ? input : input.stream())
-    .pipeThrough(new TextDecoderStream())
-    .pipeThrough(new LinesTransform())
+  return readableStreamValues(
+    (input instanceof ReadableStream ? input : input.stream())
+      .pipeThrough(new TextDecoderStream())
+      .pipeThrough(new LinesTransform())
+  )
 }
 
 const convert = <T>(
