@@ -1,12 +1,7 @@
 import { Unit, Length, Angle } from '@speleotica/unitized'
 import { FrcsShot } from './FrcsShot'
 
-export type FrcsTripHeader = {
-  name: string
-  comment?: string | null
-  section?: string | null
-  date?: Date | null
-  team?: Array<string> | null
+export type FrcsUnits = {
   distanceUnit: Unit<Length>
   azimuthUnit: Unit<Angle>
   inclinationUnit: Unit<Angle>
@@ -14,6 +9,14 @@ export type FrcsTripHeader = {
   backsightInclinationCorrected?: boolean | null
   hasBacksightAzimuth?: boolean | null
   hasBacksightInclination?: boolean | null
+}
+
+export type FrcsTripHeader = FrcsUnits & {
+  name: string
+  comment?: string | null
+  section?: string | null
+  date?: Date | null
+  team?: Array<string> | null
 }
 
 export type FrcsTrip = {

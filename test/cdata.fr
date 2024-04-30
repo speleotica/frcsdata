@@ -32,3 +32,12 @@ PETER QUICK, CHRIS GERACE, PHIL ODEN, CHIP HOPPER - 3-6-81
 FT C  DD
   B31  B30  13.7   360.0 360.0 40.0       2  4  6  
 B30sp  B30  13.7 s 360.0 360.0 40.0       2  4  6  
+ *
+"Skill Issue Complex" and other Nebulous Borehole leads
+ *
+FT BB DD
+ AJA2 AJA1  15.4   146.4 326.8-61.7 61.7  4  4 36  2
+*      %NC
+FT CC DD
+ WEG1AJF16  12.9   337.7 338.5 29.0 29.0  7 14 30  8
+ WEG2 WEG1  27.1   349.4 349.4 11.1 10.8 50 15  4 10 

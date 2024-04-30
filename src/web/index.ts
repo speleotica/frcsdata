@@ -15,6 +15,7 @@ class LinesTransform extends TransformStream<string> {
           this.parts.length = 0
           end = match.index + match[0].length
         }
+        if (end < chunk.length) this.parts.push(chunk.substring(end))
       },
       flush: (controller) => {
         if (this.parts.length) {

@@ -1,4 +1,5 @@
 import { UnitizedNumber, Length, Angle } from '@speleotica/unitized'
+import { FrcsUnits } from './FrcsTrip'
 
 export enum FrcsShotKind {
   Normal = ' ',
@@ -44,4 +45,12 @@ export type FrcsShot = {
   excludeDistance?: boolean | null
   isSplay?: boolean | null
   comment?: string | null
+  /**
+   * In the edge case that the surveyors changed measurement units or
+   * corrected/uncorrected backsights in the middle of a trip, the measurements
+   * will be normalized to the initial trip settings, and this field will contain
+   * the actual values recorded, verbatim.  The first shot of the group with
+   * changed units will include the changed units.
+   */
+  recorded?: FrcsShot & { units?: FrcsUnits }
 }
