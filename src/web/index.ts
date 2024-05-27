@@ -1,6 +1,9 @@
-import _parseFrcsSurveyFile from '../parseFrcsSurveyFile'
+import _parseFrcsSurveyFile, {
+  ParseFrcsSurveyFileOptions,
+} from '../parseFrcsSurveyFile'
 import _parseFrcsPlotFile from '../parseFrcsPlotFile'
 import _parseFrcsTripSummaryFile from '../parseFrcsTripSummaryFile'
+import { FrcsSurveyFile } from '../FrcsSurveyFile'
 
 class LinesTransform extends TransformStream<string> {
   parts: string[] = []
@@ -90,6 +93,27 @@ const convert = <T>(
   return converted
 }
 
-export const parseFrcsSurveyFile = convert(_parseFrcsSurveyFile)
+export function parseFrcsSurveyFile(
+  file: File,
+  options?: ParseFrcsSurveyFileOptions
+): Promise<FrcsSurveyFile>
+export function parseFrcsSurveyFile(
+  file: string,
+  input: Blob | ReadableStream<Uint8Array>,
+  options?: ParseFrcsSurveyFileOptions
+): Promise<FrcsSurveyFile>
+export function parseFrcsSurveyFile(
+  file: string | File,
+  input?: Blob | ReadableStream<Uint8Array> | ParseFrcsSurveyFileOptions,
+  options?: ParseFrcsSurveyFileOptions
+): Promise<FrcsSurveyFile> {
+  if (file instanceof File)
+    return _parseFrcsSurveyFile(file.name, linesOf(file), options)
+  if (input instanceof Blob || input instanceof ReadableStream) {
+    return _parseFrcsSurveyFile(file, linesOf(input), options)
+  }
+  throw new Error(`input ust be a Blob or ReadableStream if file is not a File`)
+}
+
 export const parseFrcsPlotFile = convert(_parseFrcsPlotFile)
 export const parseFrcsTripSummaryFile = convert(_parseFrcsTripSummaryFile)

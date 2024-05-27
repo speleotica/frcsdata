@@ -47,6 +47,7 @@ function parseLengthUnit(unit: string): Unit<Length> | null {
     case 'FT':
       return Length.feet
     case 'MT':
+    case 'MM':
     case 'M ':
       return Length.meters
   }
@@ -131,55 +132,153 @@ function parseFromStationLruds(
   return [fromStr.trim(), { left, right, up, down }]
 }
 
+export type FrcsShotColumnConfig = {
+  toStation: number
+  fromStation: number
+  distance: number
+  distanceFeet: number
+  distanceInches: number
+  kind: number
+  exclude: number
+  frontsightAzimuth: number
+  backsightAzimuth: number
+  frontsightInclination: number
+  backsightInclination: number
+  left: number
+  right: number
+  up: number
+  down: number
+}
+
+const defaultFrcsShotColumnConfig: FrcsShotColumnConfig = {
+  toStation: 5,
+  fromStation: 5,
+  distance: 6,
+  distanceFeet: 4,
+  distanceInches: 3,
+  kind: 1,
+  exclude: 1,
+  frontsightAzimuth: 6,
+  backsightAzimuth: 6,
+  frontsightInclination: 5,
+  backsightInclination: 5,
+  left: 3,
+  right: 3,
+  up: 3,
+  down: 3,
+}
+
+type ColumnRanges = {
+  toStation: [number, number]
+  fromStation: [number, number]
+  distance: [number, number]
+  distanceFeet: [number, number]
+  distanceInches: [number, number]
+  kind: [number, number]
+  exclude: [number, number]
+  frontsightAzimuth: [number, number]
+  backsightAzimuth: [number, number]
+  frontsightInclination: [number, number]
+  backsightInclination: [number, number]
+  left: [number, number]
+  right: [number, number]
+  up: [number, number]
+  down: [number, number]
+}
+
+function getColumnRanges(config: FrcsShotColumnConfig): ColumnRanges {
+  const result: ColumnRanges = {
+    toStation: [0, 0],
+    fromStation: [0, 0],
+    distance: [0, 0],
+    distanceFeet: [0, 0],
+    distanceInches: [0, 0],
+    kind: [0, 0],
+    exclude: [0, 0],
+    frontsightAzimuth: [0, 0],
+    backsightAzimuth: [0, 0],
+    frontsightInclination: [0, 0],
+    backsightInclination: [0, 0],
+    left: [0, 0],
+    right: [0, 0],
+    up: [0, 0],
+    down: [0, 0],
+  }
+
+  let c = 0
+  for (const [key, value] of Object.entries(config) as [
+    keyof FrcsShotColumnConfig,
+    FrcsShotColumnConfig[keyof FrcsShotColumnConfig]
+  ][]) {
+    if (key === 'distanceFeet' || key === 'distanceInches') continue
+    result[key][0] = c
+    result[key][1] = c + value
+    c += value
+  }
+  if (config.distanceFeet) {
+    result.distanceFeet[0] = result.distance[0]
+    result.distanceFeet[1] = result.distance[0] + config.distanceFeet
+    result.distanceInches[0] = result.distanceFeet[1]
+    result.distanceInches[1] = result.distanceFeet[1] + config.distanceInches
+  }
+  return result
+}
+
+export type ParseFrcsSurveyFileOptions = { columns?: FrcsShotColumnConfig }
+
 /**
- * Parses a raw cdata.fr survey file.  These look like so:
- *
-<pre>      Fisher Ridge Cave System, Hart Co., KY
-ENTRANCE DROPS, JOE'S "I LOVE MY WIFE TRAVERSE", TRICKY TRAVERSE
-PETER QUICK, KEITH ORTIZ   -  2-15-81
-This File has Crumps test connected.  11/20/12
- *
-FT C  DD    A
-      AE20     0                          1  3  0  2
-*      %FS
-*     AE20     0        0        0        Bug-can't put before so put after-so can't make 2 fixed 10/28/12
- AE19 AE20   9.3    60.0  60.0-36.0       2 12  0 20
- AE18 AE19  24.5     0.0   0.0-90.0       6 10 25  0
- AE17 AE18   8.0   350.5 350.5 17.0       3  5  0  0
- AE16 AE17   6.7     0.0   0.0-90.0       3  5  6  1
- AE15 AE16  12.6    70.5  71.0-18.0       4  0  2  1
- AE14 AE15  10.0    21.5  20.0  6.0       5  5  0  3
- AE13 AE14  26.8   288.0 286.0-50.0       0  7 20  5
-*
-*SHORT CANYON AT THE BASE OF THE SECOND DROP
- AE12 AE13  20.7   236.0 236.0 34.0       3  5  4  4
- AE11 AE12  12.4   210.0 210.0 35.0       7  4  5  1
- AE10 AE13  25.7    40.0  40.0 -9.0       2  2  3  6
-*
-*AE10 AT JOE'S " I LOVE MY WIFE TRAVERSE "
-  AE9 AE10  17.8    32.5  31.0 23.0       4  5 20 15
-  AE1  AE9  13.7    82.0  82.0-13.0
-   A1  AE1  34.3    46.0  48.0-17.5
-*
-*SURVEY TO DOME NEAR THE ENTRANCE DOME (ABOVE THE SECOND DROP)
-  AD1 AE15   8.0   200.0 200.0  0.0       3  1  1  1
-  AD2  AD1  17.7   161.0 161.0  7.0       1  4 25  1
-  AD3  AD2  10.4   180.0 180.0 50.0       4  1 15  5
- *
-TRICKY TRAVERSE AND THEN FIRST SURVEY IN UPPER CROWLWAY
-DAN CROWL, KEITH ORTIZ, CHIP HOPPER, PETER QUICK, LARRY BEAN    14 FEB 1981
- *
-FI B  DD
-   A2   A1  48 10  292.0 110.0-42.0       5 10 35  5
-   A3   A2  12  5  333.5 153.5 35.0       3  1 15  5
-   A4   A3   4  2    0.0   0.0 90.0       3  1 10 10
-...</pre>
- *
- */
+   * Parses a raw cdata.fr survey file.  These look like so:
+   *
+  <pre>      Fisher Ridge Cave System, Hart Co., KY
+  ENTRANCE DROPS, JOE'S "I LOVE MY WIFE TRAVERSE", TRICKY TRAVERSE
+  PETER QUICK, KEITH ORTIZ   -  2-15-81
+  This File has Crumps test connected.  11/20/12
+  *
+  FT C  DD    A
+        AE20     0                          1  3  0  2
+  *      %FS
+  *     AE20     0        0        0        Bug-can't put before so put after-so can't make 2 fixed 10/28/12
+  AE19 AE20   9.3    60.0  60.0-36.0       2 12  0 20
+  AE18 AE19  24.5     0.0   0.0-90.0       6 10 25  0
+  AE17 AE18   8.0   350.5 350.5 17.0       3  5  0  0
+  AE16 AE17   6.7     0.0   0.0-90.0       3  5  6  1
+  AE15 AE16  12.6    70.5  71.0-18.0       4  0  2  1
+  AE14 AE15  10.0    21.5  20.0  6.0       5  5  0  3
+  AE13 AE14  26.8   288.0 286.0-50.0       0  7 20  5
+  *
+  *SHORT CANYON AT THE BASE OF THE SECOND DROP
+  AE12 AE13  20.7   236.0 236.0 34.0       3  5  4  4
+  AE11 AE12  12.4   210.0 210.0 35.0       7  4  5  1
+  AE10 AE13  25.7    40.0  40.0 -9.0       2  2  3  6
+  *
+  *AE10 AT JOE'S " I LOVE MY WIFE TRAVERSE "
+    AE9 AE10  17.8    32.5  31.0 23.0       4  5 20 15
+    AE1  AE9  13.7    82.0  82.0-13.0
+    A1  AE1  34.3    46.0  48.0-17.5
+  *
+  *SURVEY TO DOME NEAR THE ENTRANCE DOME (ABOVE THE SECOND DROP)
+    AD1 AE15   8.0   200.0 200.0  0.0       3  1  1  1
+    AD2  AD1  17.7   161.0 161.0  7.0       1  4 25  1
+    AD3  AD2  10.4   180.0 180.0 50.0       4  1 15  5
+  *
+  TRICKY TRAVERSE AND THEN FIRST SURVEY IN UPPER CROWLWAY
+  DAN CROWL, KEITH ORTIZ, CHIP HOPPER, PETER QUICK, LARRY BEAN    14 FEB 1981
+  *
+  FI B  DD
+    A2   A1  48 10  292.0 110.0-42.0       5 10 35  5
+    A3   A2  12  5  333.5 153.5 35.0       3  1 15  5
+    A4   A3   4  2    0.0   0.0 90.0       3  1 10 10
+  ...</pre>
+  *
+  */
 export default async function parseFrcsSurveyFile(
   file: any, // eslint-disable-line @typescript-eslint/no-explicit-any
-  lines: AsyncIterable<string>
+  lines: AsyncIterable<string>,
+  { columns = defaultFrcsShotColumnConfig }: ParseFrcsSurveyFileOptions = {}
 ): Promise<FrcsSurveyFile> {
+  const ranges = getColumnRanges(columns)
+  const maxRange = Math.max(...Object.values(ranges).map((r) => r[1]))
+
   let cave: string | null = null
   let location: string | null = null
   const trips: Array<FrcsTrip> = []
@@ -375,12 +474,19 @@ export default async function parseFrcsSurveyFile(
     trip.shots.push(shot)
   }
 
+  let began = false
+
   for await (line of lines) {
     errored = false
 
     lineNumber++
 
-    if (lineNumber === 1) {
+    if (!began) {
+      if (/^\s+\*/.test(line)) {
+        lineNumber++
+        continue
+      }
+      began = true
       const match = /^\s*([^,]+)(,(.*))?/.exec(line)
       if (match) {
         cave = match[1].trim()
@@ -394,7 +500,7 @@ export default async function parseFrcsSurveyFile(
       unitsChanged = false
       alternateUnits = parseUnits()
       nextShotUnits = alternateUnits
-    } else if (line.charAt(0) === ' ' && line.charAt(1) === '*') {
+    } else if (/^\s+\*/.test(line)) {
       inTripComment = !inTripComment
       alternateUnits = nextShotUnits = undefined
       unitsChanged = false
@@ -469,17 +575,21 @@ export default async function parseFrcsSurveyFile(
       // not properly delimited.
 
       // from station name
-      if (!/\S/.test(line.substring(5, 10))) continue
-      const fromStr = validate(5, 10, 'from station', isValidStation)
+      if (!/\S/.test(line.substring(...ranges.fromStation))) continue
+      const fromStr = validate(
+        ...ranges.fromStation,
+        'from station',
+        isValidStation
+      )
       const from = fromStr.trim()
 
       // Sadly I have found negative LRUD values in Chip's format and apparently
       // his program doesn't fail on them, so I have to accept them here
       // isValidOptFloat instead of isValidOptUFloat
-      const lStr = validate(40, 43, 'left', isValidOptFloat)
-      const rStr = validate(43, 46, 'right', isValidOptFloat)
-      const uStr = validate(46, 49, 'up', isValidOptFloat)
-      const dStr = validate(49, 52, 'down', isValidOptFloat)
+      const lStr = validate(...ranges.left, 'left', isValidOptFloat)
+      const rStr = validate(...ranges.right, 'right', isValidOptFloat)
+      const uStr = validate(...ranges.up, 'up', isValidOptFloat)
+      const dStr = validate(...ranges.down, 'down', isValidOptFloat)
 
       if (errored) continue
 
@@ -489,7 +599,7 @@ export default async function parseFrcsSurveyFile(
       const right = parseLrud(rStr, distanceUnit)
 
       // to station name
-      const toStr = line.substring(0, 5)
+      const toStr = line.substring(...ranges.toStation)
       if (!toStr.trim()) {
         const shot: FrcsShot = {
           from,
@@ -513,7 +623,7 @@ export default async function parseFrcsSurveyFile(
         continue
       }
       if (!isValidStation(toStr)) {
-        error('Invalid station name', 0, 5)
+        error('Invalid station name', ...ranges.toStation)
       }
 
       let fromLruds = commentFromStationLruds.get(from)
@@ -527,7 +637,7 @@ export default async function parseFrcsSurveyFile(
               /[.*+?^${}()|[\]\\]/g,
               '\\$&'
             )}((\\s+(\\d+(\\.\\d*)?|\\.\\d+)){4})`
-        ).exec(line.substring(52))
+        ).exec(line.substring(maxRange))
         if (fromLrudMatch) {
           const [left, right, up, down] = fromLrudMatch[1]
             .trim()
@@ -540,10 +650,18 @@ export default async function parseFrcsSurveyFile(
       const comment = getComment()
 
       // azimuth and inclination
-      const azmFsStr = validate(19, 25, 'azimuth', isValidOptUFloat)
-      const azmBsStr = validate(25, 30, 'azimuth', isValidOptUFloat)
-      const incFsStr = line.substring(30, 35)
-      const incBsStr = line.substring(35, 40)
+      const azmFsStr = validate(
+        ...ranges.frontsightAzimuth,
+        'azimuth',
+        isValidOptUFloat
+      )
+      const azmBsStr = validate(
+        ...ranges.backsightAzimuth,
+        'azimuth',
+        isValidOptUFloat
+      )
+      const incFsStr = line.substring(...ranges.frontsightInclination)
+      const incBsStr = line.substring(...ranges.backsightInclination)
 
       if (errored) continue
 
@@ -558,12 +676,16 @@ export default async function parseFrcsSurveyFile(
 
       // parse distance
       if (inches) {
-        const feetStr = line.substring(10, 14)
-        const inchesStr = line.substring(14, 17)
+        const feetStr = line.substring(...ranges.distanceFeet)
+        const inchesStr = line.substring(...ranges.distanceInches)
         // feet and inches are not both optional
         if (!isValidUInt(feetStr) && !isValidUInt(inchesStr)) {
           const invalid = feetStr.trim() || inchesStr.trim()
-          error(invalid ? 'Invalid distance' : 'Missing distance', 10, 17)
+          error(
+            invalid ? 'Invalid distance' : 'Missing distance',
+            ranges.distanceFeet[0],
+            ranges.distanceInches[1]
+          )
           continue
         }
 
@@ -573,24 +695,40 @@ export default async function parseFrcsSurveyFile(
           Unitize.feet(parseFloat(feetStr) || 0)
         )
 
-        kind = parseKind(line[17])
+        const offset =
+          ranges.kind[0] === ranges.distance[1]
+            ? ranges.distanceInches[1] - ranges.distance[1]
+            : 0
+        kind = parseKind(
+          line
+            .substring(ranges.kind[0] + offset, ranges.kind[1] + offset)
+            .trim()
+        )
+        const exclude = line
+          .substring(ranges.exclude[0] + offset, ranges.exclude[1] + offset)
+          .trim()
         // NOTE there are two columns around here that can contain a *.
         // I think they might represent different values, but thisis confused by
         // the fact that for ft/in shots, if there is a D or H flag it occupies the
         // first column that can contain a * for decimal feet shots
-        excludeDistance = line[18] === '*' || line[18] === 's'
-        isSplay = line[18] === 's'
+        excludeDistance = exclude === '*' || exclude === 's'
+        isSplay = exclude === 's'
       } else {
         // decimal feet are not optional
-        const feetStr = validate(10, 16, 'distance', isValidUFloat)
+        const feetStr = validate(...ranges.distance, 'distance', isValidUFloat)
         distance = new UnitizedNumber(parseFloat(feetStr), distanceUnit)
-        kind = parseKind(line[16])
-        excludeDistance = line[17] === '*' || line[17] === 's'
-        isSplay = line[17] === 's'
+        kind = parseKind(line.substring(...ranges.kind).trim())
+        const exclude = line.substring(...ranges.exclude).trim()
+        excludeDistance = exclude === '*' || exclude === 's'
+        isSplay = exclude === 's'
       }
 
       if (kind !== FrcsShotKind.Normal) {
-        validate(30, 35, 'vertical-distance', isValidFloat)
+        validate(
+          ...ranges.frontsightInclination,
+          'vertical-distance',
+          isValidFloat
+        )
       }
 
       // convert horizontal and diagonal shots to standard
@@ -618,9 +756,17 @@ export default async function parseFrcsSurveyFile(
         backsightInclination = null
       } else {
         // frontsight inclination
-        validate(30, 35, 'inclination', isValidOptInclination)
-        // frontsight inclination
-        validate(35, 40, 'inclination', isValidOptInclination)
+        validate(
+          ...ranges.frontsightInclination,
+          'inclination',
+          isValidOptInclination
+        )
+        // backsight inclination
+        validate(
+          ...ranges.backsightInclination,
+          'inclination',
+          isValidOptInclination
+        )
         frontsightInclination = parseNumber(incFsStr, inclinationUnit)
         backsightInclination = parseNumber(incBsStr, inclinationUnit)
       }

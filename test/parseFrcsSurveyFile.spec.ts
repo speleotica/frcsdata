@@ -1,5 +1,11 @@
 import { describe, it } from 'mocha'
-import { Length, Angle, Unitize } from '@speleotica/unitized'
+import {
+  Length,
+  Angle,
+  Unitize,
+  Unit,
+  UnitizedNumber,
+} from '@speleotica/unitized'
 import { expect } from 'chai'
 import { FrcsShotKind } from '../src/FrcsShot'
 import * as node from '../src/node'
@@ -9,6 +15,7 @@ import fs from 'node:fs'
 import fsPromises from 'node:fs/promises'
 import { Readable } from 'node:stream'
 import { FrcsSurveyFile } from '../src'
+import { ParseFrcsSurveyFileOptions } from '../src/parseFrcsSurveyFile'
 
 describe('parseFrcsSurveyFile', () => {
   for (const [desc, parse] of [
@@ -27,9 +34,9 @@ describe('parseFrcsSurveyFile', () => {
     [
       'web',
       async () =>
+        // @ts-expect-error no chunk type
         web.parseFrcsSurveyFile(
           'cdata.fr',
-          // @ts-expect-error no chunk type
           Readable.toWeb(fs.createReadStream(require.resolve('./cdata.fr')))
         ),
     ],
@@ -496,4 +503,146 @@ describe('parseFrcsSurveyFile', () => {
       })
     })
   }
+  it(`custom column config`, async function () {
+    const data = `      *
+$ID: 12
+       *
+MM    DD  0.34
+           012A0
+   012A1   012A0  1.90    78.5 261.0 -31.         .3    .4   0.0  11.6
+   012A2   012A1 11.64              -90.0         .3    .4  11.6   0.0
+  012A2'   012A2  5.85         276.0+12.5        3.0   1.0  17.0    .1
+    `
+    const options: ParseFrcsSurveyFileOptions = {
+      columns: {
+        toStation: 8,
+        fromStation: 8,
+        distance: 6,
+        distanceFeet: 4,
+        distanceInches: 3,
+        kind: 1,
+        exclude: 1,
+        frontsightAzimuth: 6,
+        backsightAzimuth: 6,
+        frontsightInclination: 5,
+        backsightInclination: 5,
+        left: 6,
+        right: 6,
+        up: 6,
+        down: 6,
+      },
+    }
+    const parsed = await string.parseFrcsSurveyFile('test.txt', data, options)
+    // console.log(
+    //   JSON.stringify(
+    //     parsed,
+    //     (key, x) =>
+    //       x instanceof Unit || x instanceof UnitizedNumber ? x.toString() : x,
+    //     2
+    //   )
+    // )
+    expect(
+      JSON.parse(
+        JSON.stringify(
+          parsed,
+          (key, x) =>
+            x instanceof Unit || x instanceof UnitizedNumber ? x.toString() : x,
+          2
+        )
+      )
+    ).to.deep.equal({
+      cave: '$ID: 12',
+      location: null,
+      trips: [
+        {
+          header: {
+            name: '',
+            comment: null,
+            distanceUnit: 'm',
+            azimuthUnit: 'deg',
+            inclinationUnit: 'deg',
+            backsightAzimuthCorrected: false,
+            backsightInclinationCorrected: false,
+            hasBacksightAzimuth: false,
+            hasBacksightInclination: false,
+          },
+          shots: [
+            {
+              from: '012A0',
+              to: null,
+              kind: ' ',
+              distance: '0 m',
+              frontsightAzimuth: null,
+              backsightAzimuth: null,
+              frontsightInclination: null,
+              backsightInclination: null,
+              fromLruds: {
+                left: null,
+                right: null,
+                up: null,
+                down: null,
+              },
+              excludeDistance: true,
+              comment: null,
+            },
+            {
+              from: '012A0',
+              to: '012A1',
+              kind: ' ',
+              distance: '1.9 m',
+              frontsightAzimuth: '78.5 deg',
+              backsightAzimuth: '261 deg',
+              frontsightInclination: '-31 deg',
+              backsightInclination: null,
+              toLruds: {
+                left: '0.3 m',
+                right: '0.4 m',
+                up: '0 m',
+                down: '11.6 m',
+              },
+              excludeDistance: false,
+              comment: null,
+            },
+            {
+              from: '012A1',
+              to: '012A2',
+              kind: ' ',
+              distance: '11.64 m',
+              frontsightAzimuth: null,
+              backsightAzimuth: null,
+              frontsightInclination: '-90 deg',
+              backsightInclination: null,
+              toLruds: {
+                left: '0.3 m',
+                right: '0.4 m',
+                up: '11.6 m',
+                down: '0 m',
+              },
+              excludeDistance: false,
+              comment: null,
+            },
+            {
+              from: '012A2',
+              to: "012A2'",
+              kind: ' ',
+              distance: '5.85 m',
+              frontsightAzimuth: null,
+              backsightAzimuth: '276 deg',
+              frontsightInclination: '12.5 deg',
+              backsightInclination: null,
+              toLruds: {
+                left: '3 m',
+                right: '1 m',
+                up: '17 m',
+                down: '0.1 m',
+              },
+              excludeDistance: false,
+              comment: null,
+            },
+          ],
+        },
+      ],
+      errors: [],
+    })
+  })
 })
