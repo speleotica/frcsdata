@@ -290,8 +290,8 @@ export default async function parseFrcsSurveyFile(
   let inTripComment = true
   let tripCommentStartLine = 1
   let tripCommentEndLine = -1
-  let tripComment: Array<string> = []
-  let commentLines: Array<string> | null = null
+  const tripComment: Array<string> = []
+  const commentLines: Array<string> = []
   let trip: FrcsTrip | null = null
   let inBlockComment = false
   let section
@@ -321,9 +321,9 @@ export default async function parseFrcsSurveyFile(
   }
 
   function getComment(): string | null {
-    if (!commentLines) return null
+    if (!commentLines?.length) return null
     const comment = commentLines.join('\n').trim()
-    commentLines = null
+    commentLines.length = 0
     return comment || null
   }
 
@@ -500,13 +500,13 @@ export default async function parseFrcsSurveyFile(
       unitsChanged = false
       alternateUnits = parseUnits()
       nextShotUnits = alternateUnits
-    } else if (/^\s+\*/.test(line)) {
+    } else if (/^\s{1,8}\*/.test(line)) {
       inTripComment = !inTripComment
       alternateUnits = nextShotUnits = undefined
       unitsChanged = false
       if (inTripComment) {
         section = undefined
-        tripComment = []
+        tripComment.length = 0
         tripCommentStartLine = lineNumber
       } else {
         tripCommentEndLine = lineNumber
@@ -536,17 +536,19 @@ export default async function parseFrcsSurveyFile(
       if (match) {
         section = match[1].trim()
       }
-    } else if (line.charAt(0) === '*') {
+    } else if (/^(\s{9,}|)\*/.test(line)) {
       if (/^\*\s*%NC(\b|$)/.test(line)) {
         unitsChanged = true
+      }
+      if (/^\*\s*%/.test(line)) {
         continue
       }
-
-      inBlockComment = !inBlockComment
-      if (inBlockComment) commentLines = []
-      else {
-        const part = line.substring(1)
-        if (part) addCommentLine(part)
+      if (/[^\s*]/.test(line)) {
+        addCommentLine(line.replace(/^\s*\*/, ''))
+        inBlockComment = false
+      } else {
+        inBlockComment = !inBlockComment
+        if (inBlockComment) commentLines.length = 0
       }
     } else if (inBlockComment) {
       addCommentLine(line)
