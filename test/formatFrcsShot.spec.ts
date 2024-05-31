@@ -180,6 +180,6 @@ describe(`formatFrcsShot`, function () {
         down: Unitize.feet(4),
       },
     },
-    '  A27                                     0  3  5  4'
+    '       A27                                0  3  5  4'
   )
 })

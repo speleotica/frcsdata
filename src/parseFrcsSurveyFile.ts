@@ -1,4 +1,8 @@
-import { FrcsSurveyFile } from './FrcsSurveyFile'
+import {
+  FrcsShotColumnConfig,
+  FrcsSurveyFile,
+  defaultFrcsShotColumnConfig,
+} from './FrcsSurveyFile'
 import { FrcsTrip, FrcsUnits } from './FrcsTrip'
 import { Segment, SegmentParseError } from 'parse-segment'
 import {
@@ -132,42 +136,6 @@ function parseFromStationLruds(
   return [fromStr.trim(), { left, right, up, down }]
 }
 
-export type FrcsShotColumnConfig = {
-  toStation: number
-  fromStation: number
-  distance: number
-  distanceFeet: number
-  distanceInches: number
-  kind: number
-  exclude: number
-  frontsightAzimuth: number
-  backsightAzimuth: number
-  frontsightInclination: number
-  backsightInclination: number
-  left: number
-  right: number
-  up: number
-  down: number
-}
-
-const defaultFrcsShotColumnConfig: FrcsShotColumnConfig = {
-  toStation: 5,
-  fromStation: 5,
-  distance: 6,
-  distanceFeet: 4,
-  distanceInches: 3,
-  kind: 1,
-  exclude: 1,
-  frontsightAzimuth: 6,
-  backsightAzimuth: 6,
-  frontsightInclination: 5,
-  backsightInclination: 5,
-  left: 3,
-  right: 3,
-  up: 3,
-  down: 3,
-}
-
 type ColumnRanges = {
   toStation: [number, number]
   fromStation: [number, number]
@@ -284,9 +252,9 @@ export default async function parseFrcsSurveyFile(
   const trips: Array<FrcsTrip> = []
   const errors: Array<SegmentParseError> = []
 
-  let tripName
-  let tripTeam
-  let tripDate
+  let tripName: string | undefined
+  let tripTeam: string[] | undefined
+  let tripDate: Date | undefined
   let inTripComment = true
   let tripCommentStartLine = 1
   let tripCommentEndLine = -1
@@ -506,6 +474,8 @@ export default async function parseFrcsSurveyFile(
       unitsChanged = false
       if (inTripComment) {
         section = undefined
+        tripTeam = undefined
+        tripDate = undefined
         tripComment.length = 0
         tripCommentStartLine = lineNumber
       } else {
@@ -515,19 +485,20 @@ export default async function parseFrcsSurveyFile(
       if (lineNumber === tripCommentStartLine + 1) {
         tripName = line && line.trim()
       } else if (lineNumber === tripCommentStartLine + 2) {
-        const match = /^(.+?)\s*[-.]\s*(\d+)\/(\d+)\/(\d+)$/.exec(
-          line && line.trim()
-        )
+        const match = /^(.+?,.+?)\s*(?:[-.](.*))?$/.exec(line && line.trim())
         if (match) {
           let k = 1
           const team = match[k++]
-          const month = parseInt(match[k++])
-          const day = parseInt(match[k++])
-          const year = parseInt(match[k++])
-          tripDate = new Date(year < 70 ? year + 2000 : year, month - 1, day)
           tripTeam = team.split(
             team.indexOf(';') >= 0 ? /\s*;\s*/g : /\s*,\s*/g
           )
+          const dateMatch = /^(\d+)[-/](\d+)[-/](\d+)$/.exec(match[k++]?.trim())
+          if (dateMatch) {
+            const month = parseInt(dateMatch[1])
+            const day = parseInt(dateMatch[2])
+            const year = parseInt(dateMatch[3])
+            tripDate = new Date(year < 70 ? year + 2000 : year, month - 1, day)
+          }
         }
       } else if (lineNumber > 1) {
         tripComment.push(line)
@@ -809,6 +780,7 @@ export default async function parseFrcsSurveyFile(
 
   return {
     cave,
+    columns,
     location,
     trips,
     errors,

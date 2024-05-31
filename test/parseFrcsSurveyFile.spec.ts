@@ -42,12 +42,31 @@ describe('parseFrcsSurveyFile', () => {
       // console.log(JSON.stringify(parsed, reviver, 2))
       expect(JSON.parse(JSON.stringify(parsed, reviver, 2))).to.deep.equal({
         cave: 'Fisher Ridge Cave System',
+        columns: {
+          toStation: 5,
+          fromStation: 5,
+          distance: 6,
+          distanceFeet: 4,
+          distanceInches: 3,
+          kind: 1,
+          exclude: 1,
+          frontsightAzimuth: 6,
+          backsightAzimuth: 6,
+          frontsightInclination: 5,
+          backsightInclination: 5,
+          left: 3,
+          right: 3,
+          up: 3,
+          down: 3,
+        },
         location: 'Hart Co., KY',
         trips: [
           {
             header: {
               name: 'ENTRANCE DROPS, JOE\'S "I LOVE MY WIFE TRAVERSE", TRICKY TRAVERSE',
               comment: 'This File has Crumps test connected.  11/20/12',
+              date: '1981-02-15T06:00:00.000Z',
+              team: ['PETER QUICK', 'KEITH ORTIZ'],
               distanceUnit: 'ft',
               azimuthUnit: 'deg',
               inclinationUnit: 'deg',
@@ -226,6 +245,13 @@ describe('parseFrcsSurveyFile', () => {
             header: {
               name: 'TRICKY TRAVERSE AND THEN FIRST SURVEY IN UPPER CROWLWAY',
               comment: null,
+              team: [
+                'DAN CROWL',
+                'KEITH ORTIZ',
+                'CHIP HOPPER',
+                'PETER QUICK',
+                'LARRY BEAN    14 FEB 1981',
+              ],
               distanceUnit: 'in',
               azimuthUnit: 'deg',
               inclinationUnit: 'deg',
@@ -301,6 +327,8 @@ describe('parseFrcsSurveyFile', () => {
             header: {
               name: "DOUG'S DEMISE (50 FT DROP), CHRIS CROSS, CRAWL ABOVE DROP",
               comment: null,
+              date: '1981-03-06T06:00:00.000Z',
+              team: ['PETER QUICK', 'CHRIS GERACE', 'PHIL ODEN', 'CHIP HOPPER'],
               distanceUnit: 'ft',
               azimuthUnit: 'deg',
               inclinationUnit: 'deg',
@@ -502,6 +530,23 @@ MM    DD  0.34
     expect(JSON.parse(JSON.stringify(parsed, reviver, 2))).to.deep.equal({
       cave: '$ID: 12',
       location: null,
+      columns: {
+        toStation: 8,
+        fromStation: 8,
+        distance: 6,
+        distanceFeet: 4,
+        distanceInches: 3,
+        kind: 1,
+        exclude: 1,
+        frontsightAzimuth: 6,
+        backsightAzimuth: 6,
+        frontsightInclination: 5,
+        backsightInclination: 5,
+        left: 6,
+        right: 6,
+        up: 6,
+        down: 6,
+      },
       trips: [
         {
           header: {

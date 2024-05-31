@@ -9,6 +9,7 @@ import { FrcsTripSummary } from './FrcsTripSummary'
 import { FrcsTripSummaryFile } from './FrcsTripSummaryFile'
 import parseFrcsTripSummaryFile from './parseFrcsTripSummaryFile'
 import formatFrcsShot from './formatFrcsShot'
+import { formatFrcsSurveyFile } from './formatFrcsSurveyFile'
 
 export {
   FrcsShot,
@@ -24,4 +25,5 @@ export {
   FrcsTripSummaryFile,
   parseFrcsTripSummaryFile,
   formatFrcsShot,
+  formatFrcsSurveyFile,
 }
