@@ -65,7 +65,7 @@ describe('parseFrcsSurveyFile', () => {
             header: {
               name: 'ENTRANCE DROPS, JOE\'S "I LOVE MY WIFE TRAVERSE", TRICKY TRAVERSE',
               comment: 'This File has Crumps test connected.  11/20/12',
-              date: '1981-02-15T06:00:00.000Z',
+              date: new Date('1981 02 15').toISOString(),
               team: ['PETER QUICK', 'KEITH ORTIZ'],
               distanceUnit: 'ft',
               azimuthUnit: 'deg',
@@ -327,7 +327,7 @@ describe('parseFrcsSurveyFile', () => {
             header: {
               name: "DOUG'S DEMISE (50 FT DROP), CHRIS CROSS, CRAWL ABOVE DROP",
               comment: null,
-              date: '1981-03-06T06:00:00.000Z',
+              date: new Date('1981 03 06').toISOString(),
               team: ['PETER QUICK', 'CHRIS GERACE', 'PHIL ODEN', 'CHIP HOPPER'],
               distanceUnit: 'ft',
               azimuthUnit: 'deg',
