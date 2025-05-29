@@ -46,17 +46,11 @@ export function makeFormatFrcsShot({
         return formatNum(num.get(verbatim ? num.unit : unit || num.unit))
       }
       if (num == null || !Number.isFinite(num)) return ' '.repeat(width)
-      let formatted = trimZeroes(num.toFixed(2))
-      if (formatted.length <= width) return formatted.padStart(width, ' ')
-      formatted = trimZeroes(num.toFixed(1))
-      if (formatted.length <= width) return formatted.padStart(width, ' ')
-      formatted = trimZeroes(num.toFixed(0))
-      if (formatted.length <= width) return formatted.padStart(width, ' ')
-      if (formatted.length > width + 2) return formatted.substring(0, width)
-      return trimZeroes(num.toFixed(2 - formatted.length + width)).padStart(
-        width,
-        ' '
-      )
+      const precision = Math.max(0, width - String(Math.trunc(num)).length - 1)
+      const formatted = trimZeroes(num.toFixed(precision))
+      return formatted.length <= width
+        ? formatted.padStart(width, ' ')
+        : formatted.substring(0, width)
     }
     return formatNum
   }
