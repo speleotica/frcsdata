@@ -49,6 +49,27 @@ describe(`formatFrcsShot`, function () {
     'PDF28PDF27  31.7   174.3 174.1 -1.2 -1.6  2  30.51.5'
   )
   testCase(
+    'shot with excess precision',
+    {
+      kind: FrcsShotKind.Normal,
+      to: 'PDF28',
+      from: 'PDF27',
+      distance: Unitize.feet(31.7),
+      frontsightAzimuth: Unitize.degrees(174.3673),
+      backsightAzimuth: Unitize.degrees(174.1),
+      frontsightInclination: Unitize.degrees(-1.2),
+      backsightInclination: Unitize.degrees(-18.654),
+
+      toLruds: {
+        left: Unitize.feet(2),
+        right: Unitize.feet(3.24),
+        up: Unitize.feet(0.5),
+        down: Unitize.feet(12.5),
+      },
+    },
+    'PDF28PDF27  31.7  174.37 174.1 -1.2-18.7  23.20.5 13'
+  )
+  testCase(
     'excluded shot',
     {
       kind: FrcsShotKind.Normal,
