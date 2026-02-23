@@ -3,7 +3,7 @@ import _parseFrcsSurveyFile, {
 } from '../parseFrcsSurveyFile'
 import _parseFrcsPlotFile from '../parseFrcsPlotFile'
 import _parseFrcsTripSummaryFile from '../parseFrcsTripSummaryFile'
-import { FrcsSurveyFile } from '../FrcsSurveyFile'
+import type { FrcsSurveyFile, InvalidFrcsSurveyFile } from '../FrcsSurveyFile'
 
 class LinesTransform extends TransformStream<string> {
   parts: string[] = []
@@ -96,17 +96,17 @@ const convert = <T>(
 export function parseFrcsSurveyFile(
   file: File,
   options?: ParseFrcsSurveyFileOptions
-): Promise<FrcsSurveyFile>
+): Promise<FrcsSurveyFile | InvalidFrcsSurveyFile>
 export function parseFrcsSurveyFile(
   file: string,
   input: Blob | ReadableStream<Uint8Array>,
   options?: ParseFrcsSurveyFileOptions
-): Promise<FrcsSurveyFile>
+): Promise<FrcsSurveyFile | InvalidFrcsSurveyFile>
 export function parseFrcsSurveyFile(
   file: string | File,
   input?: Blob | ReadableStream<Uint8Array> | ParseFrcsSurveyFileOptions,
   options?: ParseFrcsSurveyFileOptions
-): Promise<FrcsSurveyFile> {
+): Promise<FrcsSurveyFile | InvalidFrcsSurveyFile> {
   if (file instanceof File)
     return _parseFrcsSurveyFile(file.name, linesOf(file), options)
   if (input instanceof Blob || input instanceof ReadableStream) {

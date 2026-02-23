@@ -4,4 +4,5 @@ const { getSpecs } = require('@jcoreio/toolchain-mocha')
 module.exports = {
   ...base,
   spec: getSpecs(['test']),
+  watchFiles: ['src/**', 'test/**'],
 }

@@ -1,8 +1,7 @@
-import { FrcsUnits } from './FrcsTrip'
-import { FrcsShot, FrcsShotKind } from './FrcsShot'
+import type { FrcsUnits, FrcsShot } from './FrcsSurveyFile'
 import { Length, Unit, UnitType, UnitizedNumber } from '@speleotica/unitized'
 import {
-  FrcsShotColumnConfig,
+  type FrcsShotColumnConfig,
   defaultFrcsShotColumnConfig,
 } from './FrcsSurveyFile'
 
@@ -22,6 +21,16 @@ export function makeFormatFrcsShot({
       throw new Error(`station is too long: ${station}`)
     }
     return station.padStart(columns.toStation, ' ')
+  }
+
+  function formatSpecialKind(specialKind: FrcsShot['specialKind']): string {
+    switch (specialKind) {
+      case 'diagonal':
+        return 'D'
+      case 'horizontal':
+        return 'H'
+    }
+    return ' '
   }
 
   function trimZeroes(str: string): string {
@@ -127,7 +136,7 @@ export function makeFormatFrcsShot({
     }
 
     const distColumnValue =
-      shot.kind === FrcsShotKind.Horizontal
+      shot.specialKind === 'horizontal'
         ? shot.horizontalDistance
         : shot.distance
 
@@ -137,28 +146,34 @@ export function makeFormatFrcsShot({
       inches
         ? formatFeet(distColumnValue)
         : formatDistance(distColumnValue, distanceUnit, isRecorded),
-      inches ? formatInches(distColumnValue) : shot.kind,
-      inches ? shot.kind : shot.excludeDistance ? '*' : ' ',
+      inches
+        ? formatInches(distColumnValue)
+        : formatSpecialKind(shot.specialKind),
+      inches
+        ? formatSpecialKind(shot.specialKind)
+        : shot.excludeDistance
+        ? '*'
+        : ' ',
       formatFsAzimuth(shot.frontsightAzimuth, azimuthUnit, isRecorded),
       formatBsAzimuth(shot.backsightAzimuth, azimuthUnit, isRecorded),
-      shot.kind === FrcsShotKind.Normal
-        ? formatFsInclination(
-            shot.frontsightInclination,
-            inclinationUnit,
-            isRecorded
-          )
-        : formatVerticalDistance(
+      shot.specialKind
+        ? formatVerticalDistance(
             shot.verticalDistance,
             distanceUnit,
             isRecorded
+          )
+        : formatFsInclination(
+            shot.frontsightInclination,
+            inclinationUnit,
+            isRecorded
           ),
-      shot.kind === FrcsShotKind.Normal
-        ? formatBsInclination(
+      shot.specialKind
+        ? EMPTY_BS_INCLINATION
+        : formatBsInclination(
             shot.backsightInclination,
             inclinationUnit,
             isRecorded
-          )
-        : EMPTY_BS_INCLINATION,
+          ),
       formatLeft(shot.toLruds?.left, distanceUnit, isRecorded),
       formatRight(shot.toLruds?.right, distanceUnit, isRecorded),
       formatUp(shot.toLruds?.up, distanceUnit, isRecorded),

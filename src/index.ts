@@ -1,6 +1,9 @@
-import { FrcsTrip, FrcsTripHeader } from './FrcsTrip'
-import { FrcsShot, FrcsShotKind } from './FrcsShot'
-import { FrcsSurveyFile } from './FrcsSurveyFile'
+import type {
+  FrcsShot,
+  FrcsSurveyFile,
+  FrcsTrip,
+  FrcsTripHeader,
+} from './FrcsSurveyFile'
 import parseFrcsSurveyFile from './parseFrcsSurveyFile'
 import { FrcsPlotShot } from './FrcsPlotShot'
 import { FrcsPlotFile } from './FrcsPlotFile'
@@ -13,7 +16,6 @@ import { formatFrcsSurveyFile } from './formatFrcsSurveyFile'
 
 export {
   FrcsShot,
-  FrcsShotKind,
   FrcsSurveyFile,
   FrcsTrip,
   FrcsTripHeader,

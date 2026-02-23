@@ -1,10 +1,14 @@
 import {
-  FrcsShotColumnConfig,
-  FrcsSurveyFile,
+  type FrcsShotColumnConfig,
   defaultFrcsShotColumnConfig,
 } from './FrcsSurveyFile'
-import { FrcsTrip, FrcsUnits } from './FrcsTrip'
-import { Segment, SegmentParseError } from 'parse-segment'
+import type {
+  FrcsSurveyFile,
+  FrcsTrip,
+  FrcsUnits,
+  FrcsShot,
+  InvalidFrcsSurveyFile,
+} from './FrcsSurveyFile'
 import {
   Angle,
   Length,
@@ -13,33 +17,33 @@ import {
   UnitType,
   Unitize,
 } from '@speleotica/unitized'
-import { FrcsShot, FrcsShotKind } from './FrcsShot'
+import { ParseError } from './ParseError'
 
 function parseNumber<T extends UnitType<T>>(
   s: string,
   unit: Unit<T>
-): UnitizedNumber<T> | null {
+): UnitizedNumber<T> | undefined {
   const value = parseFloat(s)
-  if (isNaN(value)) return null
+  if (isNaN(value)) return undefined
   return new UnitizedNumber(value, unit)
 }
 
 function parseAzimuth(
   s: string,
   unit: Unit<Angle>
-): UnitizedNumber<Angle> | null {
+): UnitizedNumber<Angle> | undefined {
   const parsed = parseNumber(s, unit)
   return parsed?.get(Angle.degrees) === 360 ? Unitize.degrees(0) : parsed
 }
 
-function parseKind(kind: string): FrcsShotKind {
+function parseSpecialKind(kind: string): FrcsShot['specialKind'] {
   switch (kind) {
     case 'H':
-      return FrcsShotKind.Horizontal
+      return 'horizontal'
     case 'D':
-      return FrcsShotKind.Diagonal
+      return 'diagonal'
     default:
-      return FrcsShotKind.Normal
+      return undefined
   }
 }
 
@@ -100,10 +104,10 @@ function isValidOptInclination(s: string): boolean {
 function parseLrud<T extends UnitType<T>>(
   s: string,
   unit: Unit<Length>
-): UnitizedNumber<Length> | null {
+): UnitizedNumber<Length> | undefined {
   const value = parseFloat(s)
   return !Number.isFinite(value) || value < 0
-    ? null
+    ? undefined
     : new UnitizedNumber(value, unit)
 }
 
@@ -192,7 +196,10 @@ function getColumnRanges(config: FrcsShotColumnConfig): ColumnRanges {
   return result
 }
 
-export type ParseFrcsSurveyFileOptions = { columns?: FrcsShotColumnConfig }
+export type ParseFrcsSurveyFileOptions = {
+  columns?: FrcsShotColumnConfig
+  outputColumns?: boolean
+}
 
 /**
    * Parses a raw cdata.fr survey file.  These look like so:
@@ -242,15 +249,18 @@ export type ParseFrcsSurveyFileOptions = { columns?: FrcsShotColumnConfig }
 export default async function parseFrcsSurveyFile(
   file: any, // eslint-disable-line @typescript-eslint/no-explicit-any
   lines: AsyncIterable<string>,
-  { columns = defaultFrcsShotColumnConfig }: ParseFrcsSurveyFileOptions = {}
-): Promise<FrcsSurveyFile> {
+  {
+    columns = defaultFrcsShotColumnConfig,
+    outputColumns = false,
+  }: ParseFrcsSurveyFileOptions = {}
+): Promise<FrcsSurveyFile | InvalidFrcsSurveyFile> {
   const ranges = getColumnRanges(columns)
   const maxRange = Math.max(...Object.values(ranges).map((r) => r[1]))
 
-  let cave: string | null = null
-  let location: string | null = null
-  const trips: Array<FrcsTrip> = []
-  const errors: Array<SegmentParseError> = []
+  let cave: string | undefined = undefined
+  let location: string | undefined = undefined
+  const trips: FrcsTrip[] = []
+  const errors: ParseError[] = []
 
   let tripName: string | undefined
   let tripTeam: string[] | undefined
@@ -260,7 +270,7 @@ export default async function parseFrcsSurveyFile(
   let tripCommentEndLine = -1
   const tripComment: Array<string> = []
   const commentLines: Array<string> = []
-  let trip: FrcsTrip | null = null
+  let trip: FrcsTrip | undefined = undefined
   let inBlockComment = false
   let section
   const commentFromStationLruds: Map<
@@ -270,7 +280,7 @@ export default async function parseFrcsSurveyFile(
 
   function addCommentLine(comment: string): void {
     if (trip) {
-      const distanceUnit = trip.header.distanceUnit
+      const distanceUnit = trip.units.distanceUnit
       const parsedFromStationLruds = parseFromStationLruds(
         comment,
         distanceUnit
@@ -288,11 +298,11 @@ export default async function parseFrcsSurveyFile(
     }
   }
 
-  function getComment(): string | null {
-    if (!commentLines?.length) return null
+  function getComment(): string | undefined {
+    if (!commentLines?.length) return undefined
     const comment = commentLines.join('\n').trim()
     commentLines.length = 0
-    return comment || null
+    return comment || undefined
   }
 
   let unitsChanged = false
@@ -305,22 +315,29 @@ export default async function parseFrcsSurveyFile(
   let errored = false
 
   const error = (
+    code: string,
     message: string,
     startColumn: number,
     endColumn: number
   ): void => {
     errored = true
-    errors.push(
-      new SegmentParseError(
-        message,
-        new Segment({
-          value: line,
-          source: file,
-          startLine: lineNumber,
-          startCol: 0,
-        }).substring(startColumn, endColumn)
-      )
-    )
+    errors.push({
+      type: 'error',
+      code,
+      message,
+      loc: {
+        start: {
+          line: lineNumber,
+          column: startColumn,
+          index: 0, // TODO
+        },
+        end: {
+          line: lineNumber,
+          column: endColumn,
+          index: 0, // TODO
+        },
+      },
+    })
   }
 
   const parseUnits = (): FrcsUnits => {
@@ -329,17 +346,17 @@ export default async function parseFrcsSurveyFile(
     let distanceUnit = parseLengthUnit(line.slice(0, 2))
     if (!distanceUnit) {
       distanceUnit = Length.feet
-      error('Invalid distance unit', 0, 2)
+      error('invalidDistanceUnit', 'Invalid distance unit', 0, 2)
     }
     let azimuthUnit = parseAngleUnit(line[6])
     if (!azimuthUnit) {
       azimuthUnit = Angle.degrees
-      error('Invalid azimuth unit', 6, 7)
+      error('invalidAzimuthUnit', 'Invalid azimuth unit', 6, 7)
     }
     let inclinationUnit = parseAngleUnit(line[7])
     if (!inclinationUnit) {
       inclinationUnit = Angle.degrees
-      error('Invalid inclination unit', 7, 8)
+      error('invalidInclinationUnit', 'Invalid inclination unit', 7, 8)
     }
     const backsightAzimuthCorrected = line[3] === 'C'
     const backsightInclinationCorrected = line[4] === 'C'
@@ -347,10 +364,20 @@ export default async function parseFrcsSurveyFile(
     const hasBacksightInclination = line[4] !== ' ' && line[4] !== '-'
 
     if (!/[-CB ]/.test(line[3])) {
-      error('Invalid backsight azimuth type', 3, 4)
+      error(
+        'invalidBacksightAzimuthType',
+        'Invalid backsight azimuth type',
+        3,
+        4
+      )
     }
     if (!/[-CB ]/.test(line[4])) {
-      error('Invalid backsight inclination type', 4, 5)
+      error(
+        'invalidBacksightInclinationType',
+        'Invalid backsight inclination type',
+        4,
+        5
+      )
     }
 
     return {
@@ -373,6 +400,7 @@ export default async function parseFrcsSurveyFile(
     const field = line.substring(startColumn, endColumn)
     if (!validator(field)) {
       error(
+        `invalid${fieldName[0].toUpperCase()}${fieldName.substring(1)}`,
         (field.trim() ? 'Invalid ' : 'Missing ') + fieldName,
         startColumn,
         endColumn
@@ -399,7 +427,7 @@ export default async function parseFrcsSurveyFile(
         distanceUnit,
         azimuthUnit,
         inclinationUnit,
-      } = trip.header
+      } = trip.units
       if (
         alternateUnits.backsightAzimuthCorrected !== backsightAzimuthCorrected
       ) {
@@ -527,18 +555,18 @@ export default async function parseFrcsSurveyFile(
       trip = {
         header: {
           name: tripName || '',
-          comment: (tripComment && tripComment.join('\n')) || null,
+          comment: (tripComment && tripComment.join('\n')) || undefined,
           section,
           date: tripDate,
           team: tripTeam,
-          ...parseUnits(),
         },
+        units: parseUnits(),
         shots: [],
       }
       trips.push(trip)
     } else if (trip) {
-      let { distanceUnit } = alternateUnits || trip.header
-      const { azimuthUnit, inclinationUnit } = alternateUnits || trip.header
+      let { distanceUnit } = alternateUnits || trip.units
+      const { azimuthUnit, inclinationUnit } = alternateUnits || trip.units
 
       const inches = distanceUnit === Length.inches
       if (inches) distanceUnit = Length.feet
@@ -576,13 +604,12 @@ export default async function parseFrcsSurveyFile(
       if (!toStr.trim()) {
         const shot: FrcsShot = {
           from,
-          to: null,
-          kind: FrcsShotKind.Normal,
+          to: undefined,
           distance: new UnitizedNumber(0, distanceUnit),
-          frontsightAzimuth: null,
-          backsightAzimuth: null,
-          frontsightInclination: null,
-          backsightInclination: null,
+          frontsightAzimuth: undefined,
+          backsightAzimuth: undefined,
+          frontsightInclination: undefined,
+          backsightInclination: undefined,
           fromLruds: {
             left,
             right,
@@ -596,7 +623,7 @@ export default async function parseFrcsSurveyFile(
         continue
       }
       if (!isValidStation(toStr)) {
-        error('Invalid station name', ...ranges.toStation)
+        error('invalidStationName', 'Invalid station name', ...ranges.toStation)
       }
 
       let fromLruds = commentFromStationLruds.get(from)
@@ -638,12 +665,12 @@ export default async function parseFrcsSurveyFile(
 
       if (errored) continue
 
-      let kind: FrcsShotKind
+      let specialKind: FrcsShot['specialKind']
       let distance: UnitizedNumber<Length>
       let horizontalDistance: UnitizedNumber<Length> | undefined
       let verticalDistance: UnitizedNumber<Length> | undefined
-      let frontsightInclination: UnitizedNumber<Angle> | null
-      let backsightInclination: UnitizedNumber<Angle> | null
+      let frontsightInclination: UnitizedNumber<Angle> | undefined
+      let backsightInclination: UnitizedNumber<Angle> | undefined
       let excludeDistance: boolean
       let isSplay: boolean
 
@@ -655,6 +682,7 @@ export default async function parseFrcsSurveyFile(
         if (!isValidUInt(feetStr) && !isValidUInt(inchesStr)) {
           const invalid = feetStr.trim() || inchesStr.trim()
           error(
+            invalid ? 'invalidDistance' : 'missingDistance',
             invalid ? 'Invalid distance' : 'Missing distance',
             ranges.distanceFeet[0],
             ranges.distanceInches[1]
@@ -672,7 +700,7 @@ export default async function parseFrcsSurveyFile(
           ranges.kind[0] === ranges.distance[1]
             ? ranges.distanceInches[1] - ranges.distance[1]
             : 0
-        kind = parseKind(
+        specialKind = parseSpecialKind(
           line
             .substring(ranges.kind[0] + offset, ranges.kind[1] + offset)
             .trim()
@@ -690,13 +718,13 @@ export default async function parseFrcsSurveyFile(
         // decimal feet are not optional
         const feetStr = validate(...ranges.distance, 'distance', isValidUFloat)
         distance = new UnitizedNumber(parseFloat(feetStr), distanceUnit)
-        kind = parseKind(line.substring(...ranges.kind).trim())
+        specialKind = parseSpecialKind(line.substring(...ranges.kind).trim())
         const exclude = line.substring(...ranges.exclude).trim()
         excludeDistance = exclude === '*' || exclude === 's'
         isSplay = exclude === 's'
       }
 
-      if (kind !== FrcsShotKind.Normal) {
+      if (specialKind) {
         validate(
           ...ranges.frontsightInclination,
           'vertical-distance',
@@ -708,7 +736,7 @@ export default async function parseFrcsSurveyFile(
       // in this case incFs is the vertical offset between stations
       // fortunately it appears we can always count on incFs being specified
       // and incBs not being specified for these types of shots
-      if (kind === FrcsShotKind.Horizontal) {
+      if (specialKind === 'horizontal') {
         // distance is horizontal offset and incFsStr is vertical offset
         horizontalDistance = distance
         const h = horizontalDistance.get(distanceUnit)
@@ -719,14 +747,14 @@ export default async function parseFrcsSurveyFile(
           verticalDistance,
           horizontalDistance
         )
-        backsightInclination = null
-      } else if (kind === FrcsShotKind.Diagonal) {
+        backsightInclination = undefined
+      } else if (specialKind === 'diagonal') {
         // distance is as usual, but incFsStr is vertical offset
         const d = distance.get(distanceUnit)
         const v = parseFloat(incFsStr)
         verticalDistance = new UnitizedNumber(v, distanceUnit)
         frontsightInclination = Angle.asin(v / d)
-        backsightInclination = null
+        backsightInclination = undefined
       } else {
         // frontsight inclination
         validate(
@@ -755,7 +783,7 @@ export default async function parseFrcsSurveyFile(
       const shot: FrcsShot = {
         from,
         to: toStr.trim(),
-        kind,
+        specialKind,
         distance,
         frontsightAzimuth,
         backsightAzimuth,
@@ -778,11 +806,22 @@ export default async function parseFrcsSurveyFile(
     }
   }
 
+  if (errors.length) {
+    return {
+      INVALID: {
+        cave,
+        columns: outputColumns ? columns : undefined,
+        location,
+        trips,
+      },
+      errors,
+    }
+  }
+
   return {
     cave,
-    columns,
+    columns: outputColumns ? columns : undefined,
     location,
     trips,
-    errors,
   }
 }

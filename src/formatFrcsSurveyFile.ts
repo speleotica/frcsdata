@@ -1,6 +1,5 @@
 import { Angle, Length, Unit } from '@speleotica/unitized'
-import { FrcsSurveyFile } from './FrcsSurveyFile'
-import { FrcsUnits } from './FrcsTrip'
+import type { FrcsSurveyFile, FrcsUnits } from './FrcsSurveyFile'
 import { makeFormatFrcsShot } from './formatFrcsShot'
 
 export async function* formatFrcsSurveyFile(
@@ -12,7 +11,7 @@ export async function* formatFrcsSurveyFile(
   }
   for (let tripIndex = 0; tripIndex < file.trips.length; tripIndex++) {
     const trip = file.trips[tripIndex]
-    const { shots, header } = trip
+    const { shots, header, units } = trip
     const { name, team, date, comment } = header
     if (tripIndex > 0) yield ' *\n'
     yield name.replace(/\n?$/, '\n')
@@ -23,7 +22,7 @@ export async function* formatFrcsSurveyFile(
     if (line2) yield `${line2}\n`
     if (comment) yield comment.replace(/\n?$/, '\n')
     yield ' *\n'
-    yield formatUnits(header)
+    yield formatUnits(units)
 
     let alternateUnits: FrcsUnits | undefined
 
@@ -44,7 +43,7 @@ export async function* formatFrcsSurveyFile(
       }
       yield formatFrcsShot(
         shot.recorded || shot,
-        alternateUnits || header
+        alternateUnits || units
       ).replace(/\n?$/, '\n')
     }
   }
