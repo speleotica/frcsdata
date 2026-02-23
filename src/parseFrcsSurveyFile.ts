@@ -517,9 +517,9 @@ export default async function parseFrcsSurveyFile(
         if (match) {
           let k = 1
           const team = match[k++]
-          tripTeam = team.split(
-            team.indexOf(';') >= 0 ? /\s*;\s*/g : /\s*,\s*/g
-          )
+          tripTeam = team
+            .split(team.indexOf(';') >= 0 ? /\s*;\s*/g : /\s*,\s*/g)
+            .map(normalizeTeamMemberName)
           const dateMatch = /^(\d+)[-/](\d+)[-/](\d+)$/.exec(match[k++]?.trim())
           if (dateMatch) {
             const month = parseInt(dateMatch[1])
@@ -824,4 +824,15 @@ export default async function parseFrcsSurveyFile(
     location,
     trips,
   }
+}
+
+function normalizeTeamMemberName(name: string) {
+  if (name.toUpperCase() === name) {
+    name = name.replace(
+      /(\S)(\S*)/g,
+      (match, head, tail) => `${head}${tail.toLowerCase()}`
+    )
+  }
+  name = name.replace(/_/g, ' ')
+  return name
 }

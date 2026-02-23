@@ -1,11 +1,11 @@
 import z from 'zod'
-import { ZodValidOrInvalidFrcsSurveyFile } from '../src/ZodFrcsSurveyFile'
+import { ZodValidOrInvalidFrcsSurveyFileJson } from '../src/ZodFrcsSurveyFileJson'
 
 const ParseFrcsSurveyFileIt = z.object({
   it: z.string(),
   procedure: z.literal('parseFrcsSurveyFile'),
   input: z.string(),
-  output: ZodValidOrInvalidFrcsSurveyFile,
+  output: ZodValidOrInvalidFrcsSurveyFileJson,
 })
 
 const It = ParseFrcsSurveyFileIt

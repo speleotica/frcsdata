@@ -1,0 +1,313 @@
+- describe: trip headers
+  specs:
+    - it: lowercases all-caps team member names
+      procedure: parseFrcsSurveyFile
+      input: |2
+            Fisher Ridge Cave System, Hart Co., KY
+        ENTRANCE DROPS, JOE'S "I LOVE MY WIFE TRAVERSE", TRICKY TRAVERSE
+        PETER QUICK, KEITH ORTIZ   -  2-15-81
+        This File has Crumps test connected.  11/20/12
+         *
+        FT C  DD
+      output:
+        cave: Fisher Ridge Cave System
+        location: Hart Co., KY
+        trips:
+          - header:
+              name: ENTRANCE DROPS, JOE'S "I LOVE MY WIFE TRAVERSE", TRICKY TRAVERSE
+              comment: This File has Crumps test connected.  11/20/12
+              date: 1981-02-15
+              team:
+                - Peter Quick
+                - Keith Ortiz
+            units:
+              distanceUnit: ft
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: true
+              backsightInclinationCorrected: false
+              hasBacksightAzimuth: true
+              hasBacksightInclination: false
+            shots: []
+    - it: replaces _ with space in team member names
+      procedure: parseFrcsSurveyFile
+      input: |2
+            Fisher Ridge
+        Bed of Nails continued
+        Sean Lewis, Niles Lathrop, Felipe Roz_Borscevicius.  12/30/2025
+         *
+        FT CC DD
+      output:
+        cave: Fisher Ridge
+        trips:
+          - header:
+              name: Bed of Nails continued
+              date: 2025-12-30
+              team:
+                - Sean Lewis
+                - Niles Lathrop
+                - Felipe Roz Borscevicius
+            units:
+              distanceUnit: ft
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: true
+              backsightInclinationCorrected: true
+              hasBacksightAzimuth: true
+              hasBacksightInclination: true
+            shots: []
+    - it: feet and tenths
+      procedure: parseFrcsSurveyFile
+      input: |2
+            Fisher Ridge
+        Variant 1
+         *
+        FT CC DD
+         *
+        Variant 2
+         *
+        FF CC DD
+      output:
+        cave: Fisher Ridge
+        trips:
+          - header:
+              name: Variant 1
+            units:
+              distanceUnit: ft
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: true
+              backsightInclinationCorrected: true
+              hasBacksightAzimuth: true
+              hasBacksightInclination: true
+            shots: []
+          - header:
+              name: Variant 2
+            units:
+              distanceUnit: ft
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: true
+              backsightInclinationCorrected: true
+              hasBacksightAzimuth: true
+              hasBacksightInclination: true
+            shots: []
+    - it: meters
+      procedure: parseFrcsSurveyFile
+      input: |2
+            Fisher Ridge
+        Variant 1
+         *
+        M  CC DD
+         *
+        Variant 2
+         *
+        MM CC DD
+         *
+        Variant 3
+         *
+        MT CC DD
+      output:
+        cave: Fisher Ridge
+        trips:
+          - header:
+              name: Variant 1
+            units:
+              distanceUnit: m
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: true
+              backsightInclinationCorrected: true
+              hasBacksightAzimuth: true
+              hasBacksightInclination: true
+            shots: []
+          - header:
+              name: Variant 2
+            units:
+              distanceUnit: m
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: true
+              backsightInclinationCorrected: true
+              hasBacksightAzimuth: true
+              hasBacksightInclination: true
+            shots: []
+          - header:
+              name: Variant 3
+            units:
+              distanceUnit: m
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: true
+              backsightInclinationCorrected: true
+              hasBacksightAzimuth: true
+              hasBacksightInclination: true
+            shots: []
+    - it: feet and inches
+      procedure: parseFrcsSurveyFile
+      input: |2
+            Fisher Ridge
+        Bed of Nails continued
+         *
+        FI CC DD
+      output:
+        cave: Fisher Ridge
+        trips:
+          - header:
+              name: Bed of Nails continued
+            units:
+              distanceUnit: in
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: true
+              backsightInclinationCorrected: true
+              hasBacksightAzimuth: true
+              hasBacksightInclination: true
+            shots: []
+    - it: uncorrected azimuth
+      procedure: parseFrcsSurveyFile
+      input: |2
+            Fisher Ridge
+        Bed of Nails continued
+         *
+        FT BC DD
+      output:
+        cave: Fisher Ridge
+        trips:
+          - header:
+              name: Bed of Nails continued
+            units:
+              distanceUnit: ft
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: false
+              backsightInclinationCorrected: true
+              hasBacksightAzimuth: true
+              hasBacksightInclination: true
+            shots: []
+    - it: uncorrected inclination
+      procedure: parseFrcsSurveyFile
+      input: |2
+            Fisher Ridge
+        Bed of Nails continued
+         *
+        FT CB DD
+      output:
+        cave: Fisher Ridge
+        trips:
+          - header:
+              name: Bed of Nails continued
+            units:
+              distanceUnit: ft
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: true
+              backsightInclinationCorrected: false
+              hasBacksightAzimuth: true
+              hasBacksightInclination: true
+            shots: []
+    - it: no azimuth backsight
+      procedure: parseFrcsSurveyFile
+      input: |2
+            Fisher Ridge
+        Bed of Nails continued
+         *
+        FT  C DD
+      output:
+        cave: Fisher Ridge
+        trips:
+          - header:
+              name: Bed of Nails continued
+            units:
+              distanceUnit: ft
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: false
+              backsightInclinationCorrected: true
+              hasBacksightAzimuth: false
+              hasBacksightInclination: true
+            shots: []
+    - it: no inclination backsight
+      procedure: parseFrcsSurveyFile
+      input: |2
+            Fisher Ridge
+        Bed of Nails continued
+         *
+        FT C  DD
+      output:
+        cave: Fisher Ridge
+        trips:
+          - header:
+              name: Bed of Nails continued
+            units:
+              distanceUnit: ft
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: true
+              backsightInclinationCorrected: false
+              hasBacksightAzimuth: true
+              hasBacksightInclination: false
+            shots: []
+    - it: no backsights
+      procedure: parseFrcsSurveyFile
+      input: |2
+            Fisher Ridge
+        Bed of Nails continued
+         *
+        FT    DD
+      output:
+        cave: Fisher Ridge
+        trips:
+          - header:
+              name: Bed of Nails continued
+            units:
+              distanceUnit: ft
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: false
+              backsightInclinationCorrected: false
+              hasBacksightAzimuth: false
+              hasBacksightInclination: false
+            shots: []
+    - it: gradians
+      procedure: parseFrcsSurveyFile
+      input: |2
+            Fisher Ridge
+        Bed of Nails continued
+         *
+        FT CC GG
+      output:
+        cave: Fisher Ridge
+        trips:
+          - header:
+              name: Bed of Nails continued
+            units:
+              distanceUnit: ft
+              azimuthUnit: grad
+              inclinationUnit: grad
+              backsightAzimuthCorrected: true
+              backsightInclinationCorrected: true
+              hasBacksightAzimuth: true
+              hasBacksightInclination: true
+            shots: []
+    - it: mils
+      procedure: parseFrcsSurveyFile
+      input: |2
+            Fisher Ridge
+        Bed of Nails continued
+         *
+        FT CC MM
+      output:
+        cave: Fisher Ridge
+        trips:
+          - header:
+              name: Bed of Nails continued
+            units:
+              distanceUnit: ft
+              azimuthUnit: mil
+              inclinationUnit: mil
+              backsightAzimuthCorrected: true
+              backsightInclinationCorrected: true
+              hasBacksightAzimuth: true
+              hasBacksightInclination: true
+            shots: []

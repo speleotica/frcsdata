@@ -7,7 +7,7 @@ import { YamlTestcasesSchema } from './YamlTestcasesSchema'
 import { describe, it } from 'mocha'
 import { parseFrcsSurveyFile } from '../src/string/index'
 import { expect } from 'chai'
-import { ZodValidOrInvalidFrcsSurveyFile } from '../src/ZodFrcsSurveyFile'
+import { ZodValidOrInvalidFrcsSurveyFileToJson } from '../src/ZodFrcsSurveyFileToJson'
 import { formatYamlOutput } from './formatYamlOutput'
 
 const testcases = globSync(path.join(__dirname, 'yaml/**/*.{yml,yaml}'), {
@@ -27,7 +27,7 @@ function convert(testcase: (typeof testcases)[number]) {
         const { input, output } = testcase
         const actual = JSON.parse(
           JSON.stringify(
-            ZodValidOrInvalidFrcsSurveyFile.parse(
+            ZodValidOrInvalidFrcsSurveyFileToJson.parse(
               await parseFrcsSurveyFile('cdata.fr', input)
             )
           )
