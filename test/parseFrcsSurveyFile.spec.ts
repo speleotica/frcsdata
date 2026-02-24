@@ -42,23 +42,6 @@ describe('parseFrcsSurveyFile', () => {
       // console.log(JSON.stringify(parsed, reviver, 2))
       expect(JSON.parse(JSON.stringify(parsed, reviver, 2))).to.deep.equal({
         cave: 'Fisher Ridge Cave System',
-        columns: {
-          toStation: 5,
-          fromStation: 5,
-          distance: 6,
-          distanceFeet: 4,
-          distanceInches: 3,
-          kind: 1,
-          exclude: 1,
-          frontsightAzimuth: 6,
-          backsightAzimuth: 6,
-          frontsightInclination: 5,
-          backsightInclination: 5,
-          left: 3,
-          right: 3,
-          up: 3,
-          down: 3,
-        },
         location: 'Hart Co., KY',
         trips: [
           {
@@ -66,7 +49,7 @@ describe('parseFrcsSurveyFile', () => {
               name: 'ENTRANCE DROPS, JOE\'S "I LOVE MY WIFE TRAVERSE", TRICKY TRAVERSE',
               comment: 'This File has Crumps test connected.  11/20/12',
               date: new Date('1981 02 15').toISOString(),
-              team: ['PETER QUICK', 'KEITH ORTIZ'],
+              team: ['Peter Quick', 'Keith Ortiz'],
             },
             units: {
               distanceUnit: 'ft',
@@ -218,11 +201,11 @@ describe('parseFrcsSurveyFile', () => {
             header: {
               name: 'TRICKY TRAVERSE AND THEN FIRST SURVEY IN UPPER CROWLWAY',
               team: [
-                'DAN CROWL',
-                'KEITH ORTIZ',
-                'CHIP HOPPER',
-                'PETER QUICK',
-                'LARRY BEAN    14 FEB 1981',
+                'Dan Crowl',
+                'Keith Ortiz',
+                'Chip Hopper',
+                'Peter Quick',
+                'Larry Bean    14 Feb 1981',
               ],
             },
             units: {
@@ -292,7 +275,7 @@ describe('parseFrcsSurveyFile', () => {
             header: {
               name: "DOUG'S DEMISE (50 FT DROP), CHRIS CROSS, CRAWL ABOVE DROP",
               date: new Date('1981 03 06').toISOString(),
-              team: ['PETER QUICK', 'CHRIS GERACE', 'PHIL ODEN', 'CHIP HOPPER'],
+              team: ['Peter Quick', 'Chris Gerace', 'Phil Oden', 'Chip Hopper'],
             },
             units: {
               distanceUnit: 'ft',
@@ -477,23 +460,6 @@ MM    DD  0.34
     // console.log(JSON.stringify(parsed, reviver, 2))
     expect(JSON.parse(JSON.stringify(parsed, reviver, 2))).to.deep.equal({
       cave: '$ID: 12',
-      columns: {
-        toStation: 8,
-        fromStation: 8,
-        distance: 6,
-        distanceFeet: 4,
-        distanceInches: 3,
-        kind: 1,
-        exclude: 1,
-        frontsightAzimuth: 6,
-        backsightAzimuth: 6,
-        frontsightInclination: 5,
-        backsightInclination: 5,
-        left: 6,
-        right: 6,
-        up: 6,
-        down: 6,
-      },
       trips: [
         {
           header: {

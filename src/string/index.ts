@@ -5,7 +5,7 @@ import _parseFrcsTripSummaryFile from '../parseFrcsTripSummaryFile'
 async function* linesOf(s: string): AsyncIterable<string> {
   yield* s.split(/\r\n?|\n/gm)
 }
-const convert =
+const convertLineBased =
   <T, Rest extends any[]>(
     fn: (
       file: string,
@@ -16,6 +16,19 @@ const convert =
   (file: string, str: string, ...rest: Rest): Promise<T> =>
     fn(file, linesOf(str), ...rest)
 
-export const parseFrcsSurveyFile = convert(_parseFrcsSurveyFile)
-export const parseFrcsPlotFile = convert(_parseFrcsPlotFile)
-export const parseFrcsTripSummaryFile = convert(_parseFrcsTripSummaryFile)
+const convertChunkBased =
+  <T, Rest extends any[]>(
+    fn: (
+      file: string,
+      lines: Iterable<string> | AsyncIterable<string>,
+      ...rest: Rest
+    ) => Promise<T>
+  ) =>
+  (file: string, str: string, ...rest: Rest): Promise<T> =>
+    fn(file, [str], ...rest)
+
+export const parseFrcsSurveyFile = convertChunkBased(_parseFrcsSurveyFile)
+export const parseFrcsPlotFile = convertLineBased(_parseFrcsPlotFile)
+export const parseFrcsTripSummaryFile = convertLineBased(
+  _parseFrcsTripSummaryFile
+)

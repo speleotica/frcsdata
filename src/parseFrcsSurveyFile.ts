@@ -18,6 +18,7 @@ import {
   Unitize,
 } from '@speleotica/unitized'
 import { ParseError } from './ParseError'
+import { chunksToLines } from './chunksToLines'
 
 function parseNumber<T extends UnitType<T>>(
   s: string,
@@ -199,6 +200,7 @@ function getColumnRanges(config: FrcsShotColumnConfig): ColumnRanges {
 export type ParseFrcsSurveyFileOptions = {
   columns?: FrcsShotColumnConfig
   outputColumns?: boolean
+  normalizeNames?: boolean
 }
 
 /**
@@ -248,10 +250,11 @@ export type ParseFrcsSurveyFileOptions = {
   */
 export default async function parseFrcsSurveyFile(
   file: any, // eslint-disable-line @typescript-eslint/no-explicit-any
-  lines: AsyncIterable<string>,
+  chunks: Iterable<string> | AsyncIterable<string>,
   {
     columns = defaultFrcsShotColumnConfig,
     outputColumns = false,
+    normalizeNames = true,
   }: ParseFrcsSurveyFileOptions = {}
 ): Promise<FrcsSurveyFile | InvalidFrcsSurveyFile> {
   const ranges = getColumnRanges(columns)
@@ -268,15 +271,15 @@ export default async function parseFrcsSurveyFile(
   let inTripComment = true
   let tripCommentStartLine = 1
   let tripCommentEndLine = -1
-  const tripComment: Array<string> = []
-  const commentLines: Array<string> = []
+  const tripComment: string[] = []
+  const commentLines: string[] = []
   let trip: FrcsTrip | undefined = undefined
   let inBlockComment = false
   let section
-  const commentFromStationLruds: Map<
+  const commentFromStationLruds = new Map<
     string,
     NonNullable<FrcsShot['fromLruds']>
-  > = new Map()
+  >()
 
   function addCommentLine(comment: string): void {
     if (trip) {
@@ -311,6 +314,7 @@ export default async function parseFrcsSurveyFile(
 
   let lineNumber = 0
   let line: string
+  let lineStartIndex = 0
 
   let errored = false
 
@@ -329,12 +333,12 @@ export default async function parseFrcsSurveyFile(
         start: {
           line: lineNumber,
           column: startColumn,
-          index: 0, // TODO
+          index: lineStartIndex + startColumn,
         },
         end: {
           line: lineNumber,
           column: endColumn,
-          index: 0, // TODO
+          index: lineStartIndex + endColumn,
         },
       },
     })
@@ -472,7 +476,7 @@ export default async function parseFrcsSurveyFile(
 
   let began = false
 
-  for await (line of lines) {
+  for await ({ line, startIndex: lineStartIndex } of chunksToLines(chunks)) {
     errored = false
 
     lineNumber++
@@ -517,9 +521,10 @@ export default async function parseFrcsSurveyFile(
         if (match) {
           let k = 1
           const team = match[k++]
-          tripTeam = team
-            .split(team.indexOf(';') >= 0 ? /\s*;\s*/g : /\s*,\s*/g)
-            .map(normalizeTeamMemberName)
+          tripTeam = team.split(
+            team.indexOf(';') >= 0 ? /\s*;\s*/g : /\s*,\s*/g
+          )
+          if (normalizeNames) tripTeam = tripTeam.map(normalizeTeamMemberName)
           const dateMatch = /^(\d+)[-/](\d+)[-/](\d+)$/.exec(match[k++]?.trim())
           if (dateMatch) {
             const month = parseInt(dateMatch[1])

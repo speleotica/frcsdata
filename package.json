@@ -48,6 +48,7 @@
   "dependencies": {
     "@babel/runtime": "^7.18.6",
     "@speleotica/unitized": "^2.0.0",
+    "dedent-js": "^1.0.1",
     "glob": "^13.0.6",
     "parse-segment": "^1.5.4",
     "yaml": "^2.8.2",

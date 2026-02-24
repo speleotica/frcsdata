@@ -75,7 +75,7 @@ function linesOf(
   )
 }
 
-const convert = <T>(
+const convertLineBased = <T>(
   fn: (file: string, lines: AsyncIterable<string>) => Promise<T>
 ) => {
   function converted(file: File): Promise<T>
@@ -93,6 +93,16 @@ const convert = <T>(
   return converted
 }
 
+function chunksOf(
+  input: Blob | ReadableStream<Uint8Array>
+): AsyncIterable<string> {
+  return readableStreamValues(
+    (input instanceof ReadableStream ? input : input.stream()).pipeThrough(
+      new TextDecoderStream()
+    )
+  )
+}
+
 export function parseFrcsSurveyFile(
   file: File,
   options?: ParseFrcsSurveyFileOptions
@@ -108,12 +118,14 @@ export function parseFrcsSurveyFile(
   options?: ParseFrcsSurveyFileOptions
 ): Promise<FrcsSurveyFile | InvalidFrcsSurveyFile> {
   if (file instanceof File)
-    return _parseFrcsSurveyFile(file.name, linesOf(file), options)
+    return _parseFrcsSurveyFile(file.name, chunksOf(file), options)
   if (input instanceof Blob || input instanceof ReadableStream) {
-    return _parseFrcsSurveyFile(file, linesOf(input), options)
+    return _parseFrcsSurveyFile(file, chunksOf(input), options)
   }
   throw new Error(`input ust be a Blob or ReadableStream if file is not a File`)
 }
 
-export const parseFrcsPlotFile = convert(_parseFrcsPlotFile)
-export const parseFrcsTripSummaryFile = convert(_parseFrcsTripSummaryFile)
+export const parseFrcsPlotFile = convertLineBased(_parseFrcsPlotFile)
+export const parseFrcsTripSummaryFile = convertLineBased(
+  _parseFrcsTripSummaryFile
+)

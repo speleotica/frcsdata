@@ -3,18 +3,20 @@ import { expect } from 'chai'
 import { formatFrcsSurveyFile } from '../src/formatFrcsSurveyFile'
 import { parseFrcsSurveyFile } from '../src/node'
 import { slurp } from './slurp'
+import { inspect } from 'util'
 
 describe(`formatFrcsSurveyFile`, function () {
   it(`works`, async function () {
-    expect(
-      (
-        await slurp(
-          formatFrcsSurveyFile(
-            await parseFrcsSurveyFile(require.resolve('./cdata.fr'))
-          )
-        )
-      ).join('')
-    ).to.equal(`      Fisher Ridge Cave System, Hart Co., KY
+    const parsed = await parseFrcsSurveyFile(require.resolve('./cdata.fr'), {
+      normalizeNames: false,
+    })
+    if ('INVALID' in parsed) {
+      throw new Error(
+        `expected no parse errors, but got: ${inspect(parsed.errors)}`
+      )
+    }
+    expect((await slurp(formatFrcsSurveyFile(parsed))).join('')).to
+      .equal(`      Fisher Ridge Cave System, Hart Co., KY
 ENTRANCE DROPS, JOE'S "I LOVE MY WIFE TRAVERSE", TRICKY TRAVERSE
 PETER QUICK, KEITH ORTIZ. 2/15/81
 This File has Crumps test connected.  11/20/12
