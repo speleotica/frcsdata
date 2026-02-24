@@ -162,7 +162,18 @@ export type FrcsShot = FrcsShotBase & {
   recorded?: FrcsShotBase & { units?: FrcsUnits }
 }
 
-export type InvalidFrcsShot = Invalid<Partial<FrcsShot>>
+export type InvalidFrcsShot = Invalid<
+  Partial<
+    Replace<
+      FrcsShot,
+      {
+        recorded?:
+          | (FrcsShotBase & { units?: FrcsUnits })
+          | Invalid<Partial<FrcsShotBase> & { units?: InvalidFrcsUnits }>
+      }
+    >
+  >
+>
 
 export const defaultFrcsShotColumnConfig: FrcsShotColumnConfig = {
   toStation: 5,

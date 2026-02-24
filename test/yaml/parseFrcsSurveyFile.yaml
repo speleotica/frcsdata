@@ -12,24 +12,24 @@
               AE20     0                          1  3  0  2
         *      %FS
         *     AE20     0        0        0        Bug-can't put before so put after-so can't make 2 fixed 10/28/12
-        AE19 AE20   9.3    60.0  60.0-36.0       2 12  0 20
-        AE18 AE19  24.5     0.0   0.0-90.0       6 10 25  0
-        AE17 AE18   8.0   350.5 350.5 17.0       3  5  0  0
-        AE16 AE17   6.7     0.0   0.0-90.0       3  5  6  1
-        AE15 AE16  12.6    70.5  71.0-18.0       4  0  2  1
-        AE14 AE15  10.0    21.5  20.0  6.0       5  5  0  3
-        AE13 AE14  26.8   288.0 286.0-50.0       0  7 20  5
+         AE19 AE20   9.3    60.0  60.0-36.0       2 12  0 20
+         AE18 AE19  24.5     0.0   0.0-90.0       6 10 25  0
+         AE17 AE18   8.0   350.5 350.5 17.0       3  5  0  0
+         AE16 AE17   6.7     0.0   0.0-90.0       3  5  6  1
+         AE15 AE16  12.6    70.5  71.0-18.0       4  0  2  1
+         AE14 AE15  10.0    21.5  20.0  6.0       5  5  0  3
+         AE13 AE14  26.8   288.0 286.0-50.0       0  7 20  5
         *
         *SHORT CANYON AT THE BASE OF THE SECOND DROP
-        AE12 AE13  20.7   236.0 236.0 34.0       3  5  4  4
+         AE12 AE13  20.7   236.0 236.0 34.0       3  5  4  4
          *
         TRICKY TRAVERSE AND THEN FIRST SURVEY IN UPPER CROWLWAY
         DAN CROWL, KEITH ORTIZ, CHIP HOPPER, PETER QUICK, LARRY BEAN    14 FEB 1981
          *
         FI B  DD
-          A2   A1  48 10  292.0 110.0-42.0       5 10 35  5    A1 2 7 3 4.5
-          A3   A2  12  5  333.5 153.5 35.0       3  1 15  5
-          A4   A3   4  2    0.0   0.0 90.0       3  1 10 10
+           A2   A1  48 10  292.0 110.0-42.0       5 10 35  5    A1 2 7 3 4.5
+           A3   A2  12  5  333.5 153.5 35.0       3  1 15  5
+           A4   A3   4  2    0.0   0.0 90.0       3  1 10 10
          *
         DOUG'S DEMISE (50 FT DROP), CHRIS CROSS, CRAWL ABOVE DROP
         PETER QUICK, CHRIS GERACE, PHIL ODEN, CHIP HOPPER - 3-6-81
@@ -41,14 +41,373 @@
         "Skill Issue Complex" and other Nebulous Borehole leads
          *
         FT BB DD
-        AJA2 AJA1  15.4   146.4 326.8-61.7 61.7  4  4 36  2
+         AJA2 AJA1  15.4   146.4 326.8-61.7 61.7  4  4 36  2
         *      %NC
         FT CC DD
-        WEG1AJF16  12.9   337.7 338.5 29.0 29.0  7 14 30  8
-        WEG2 WEG1  27.1   349.4 349.4 11.1 10.8 50 15  4 10
+         WEG1AJF16  12.9   337.7 338.5 29.0 29.0  7 14 30  8
+         WEG2 WEG1  27.1   349.4 349.4 11.1 10.8 50 15  4 10
       output:
-        INVALID:
-          cave: Fisher Ridge Cave System
-          location: Hart Co., KY
-          trips: []
-        errors: []
+        cave: Fisher Ridge Cave System
+        location: Hart Co., KY
+        trips:
+          - header:
+              name: ENTRANCE DROPS, JOE'S "I LOVE MY WIFE TRAVERSE", TRICKY TRAVERSE
+              comment: This File has Crumps test connected.  11/20/12
+              date: 1981-02-15
+              team:
+                - Peter Quick
+                - Keith Ortiz
+            units:
+              distanceUnit: ft
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: true
+              backsightInclinationCorrected: false
+              hasBacksightAzimuth: true
+              hasBacksightInclination: false
+            shots:
+              - {
+                  from: AE20,
+                  distance: [0, ft],
+                  fromLruds:
+                    {
+                      left: [1, ft],
+                      right: [3, ft],
+                      up: [0, ft],
+                      down: [2, ft],
+                    },
+                  excludeDistance: true,
+                }
+              - {
+                  from: AE20,
+                  to: AE19,
+                  distance: [9.3, ft],
+                  frontsightAzimuth: [60, deg],
+                  frontsightInclination: [-36, deg],
+                  backsightAzimuth: [60, deg],
+                  toLruds:
+                    {
+                      left: [2, ft],
+                      right: [12, ft],
+                      up: [0, ft],
+                      down: [20, ft],
+                    },
+                  comment:
+                    AE20     0        0        0        Bug-can't put before so put
+                    after-so can't make 2 fixed 10/28/12,
+                }
+              - {
+                  from: AE19,
+                  to: AE18,
+                  distance: [24.5, ft],
+                  frontsightAzimuth: [0, deg],
+                  frontsightInclination: [-90, deg],
+                  backsightAzimuth: [0, deg],
+                  toLruds:
+                    {
+                      left: [6, ft],
+                      right: [10, ft],
+                      up: [25, ft],
+                      down: [0, ft],
+                    },
+                }
+              - {
+                  from: AE18,
+                  to: AE17,
+                  distance: [8, ft],
+                  frontsightAzimuth: [350.5, deg],
+                  frontsightInclination: [17, deg],
+                  backsightAzimuth: [350.5, deg],
+                  toLruds:
+                    {
+                      left: [3, ft],
+                      right: [5, ft],
+                      up: [0, ft],
+                      down: [0, ft],
+                    },
+                }
+              - {
+                  from: AE17,
+                  to: AE16,
+                  distance: [6.7, ft],
+                  frontsightAzimuth: [0, deg],
+                  frontsightInclination: [-90, deg],
+                  backsightAzimuth: [0, deg],
+                  toLruds:
+                    {
+                      left: [3, ft],
+                      right: [5, ft],
+                      up: [6, ft],
+                      down: [1, ft],
+                    },
+                }
+              - {
+                  from: AE16,
+                  to: AE15,
+                  distance: [12.6, ft],
+                  frontsightAzimuth: [70.5, deg],
+                  frontsightInclination: [-18, deg],
+                  backsightAzimuth: [71, deg],
+                  toLruds:
+                    {
+                      left: [4, ft],
+                      right: [0, ft],
+                      up: [2, ft],
+                      down: [1, ft],
+                    },
+                }
+              - {
+                  from: AE15,
+                  to: AE14,
+                  distance: [10, ft],
+                  frontsightAzimuth: [21.5, deg],
+                  frontsightInclination: [6, deg],
+                  backsightAzimuth: [20, deg],
+                  toLruds:
+                    {
+                      left: [5, ft],
+                      right: [5, ft],
+                      up: [0, ft],
+                      down: [3, ft],
+                    },
+                }
+              - {
+                  from: AE14,
+                  to: AE13,
+                  distance: [26.8, ft],
+                  frontsightAzimuth: [288, deg],
+                  frontsightInclination: [-50, deg],
+                  backsightAzimuth: [286, deg],
+                  toLruds:
+                    {
+                      left: [0, ft],
+                      right: [7, ft],
+                      up: [20, ft],
+                      down: [5, ft],
+                    },
+                }
+              - {
+                  from: AE13,
+                  to: AE12,
+                  distance: [20.7, ft],
+                  frontsightAzimuth: [236, deg],
+                  frontsightInclination: [34, deg],
+                  backsightAzimuth: [236, deg],
+                  toLruds:
+                    {
+                      left: [3, ft],
+                      right: [5, ft],
+                      up: [4, ft],
+                      down: [4, ft],
+                    },
+                  comment: SHORT CANYON AT THE BASE OF THE SECOND DROP,
+                }
+          - header:
+              name: TRICKY TRAVERSE AND THEN FIRST SURVEY IN UPPER CROWLWAY
+              team:
+                - Dan Crowl
+                - Keith Ortiz
+                - Chip Hopper
+                - Peter Quick
+                - Larry Bean    14 Feb 1981
+            units:
+              distanceUnit: in
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: false
+              backsightInclinationCorrected: false
+              hasBacksightAzimuth: true
+              hasBacksightInclination: false
+            shots:
+              - {
+                  from: A1,
+                  to: A2,
+                  distance: [586, in],
+                  frontsightAzimuth: [292, deg],
+                  frontsightInclination: [-42, deg],
+                  backsightAzimuth: [110, deg],
+                  fromLruds:
+                    {
+                      left: [2, ft],
+                      right: [7, ft],
+                      up: [3, ft],
+                      down: [4.5, ft],
+                    },
+                  toLruds:
+                    {
+                      left: [5, ft],
+                      right: [10, ft],
+                      up: [35, ft],
+                      down: [5, ft],
+                    },
+                }
+              - {
+                  from: A2,
+                  to: A3,
+                  distance: [149, in],
+                  frontsightAzimuth: [333.5, deg],
+                  frontsightInclination: [35, deg],
+                  backsightAzimuth: [153.5, deg],
+                  toLruds:
+                    {
+                      left: [3, ft],
+                      right: [1, ft],
+                      up: [15, ft],
+                      down: [5, ft],
+                    },
+                }
+              - {
+                  from: A3,
+                  to: A4,
+                  distance: [50, in],
+                  frontsightAzimuth: [0, deg],
+                  frontsightInclination: [90, deg],
+                  backsightAzimuth: [0, deg],
+                  toLruds:
+                    {
+                      left: [3, ft],
+                      right: [1, ft],
+                      up: [10, ft],
+                      down: [10, ft],
+                    },
+                }
+          - header:
+              name: DOUG'S DEMISE (50 FT DROP), CHRIS CROSS, CRAWL ABOVE DROP
+              date: 1981-03-06
+              team:
+                - Peter Quick
+                - Chris Gerace
+                - Phil Oden
+                - Chip Hopper
+            units:
+              distanceUnit: ft
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: true
+              backsightInclinationCorrected: false
+              hasBacksightAzimuth: true
+              hasBacksightInclination: false
+            shots:
+              - {
+                  from: B30,
+                  to: B31,
+                  distance: [13.7, ft],
+                  frontsightAzimuth: [0, deg],
+                  frontsightInclination: [40, deg],
+                  backsightAzimuth: [0, deg],
+                  toLruds: { left: [2, ft], right: [4, ft], up: [6, ft] },
+                }
+              - {
+                  from: B30,
+                  to: B30sp,
+                  distance: [13.7, ft],
+                  frontsightAzimuth: [0, deg],
+                  frontsightInclination: [40, deg],
+                  backsightAzimuth: [0, deg],
+                  toLruds: { left: [2, ft], right: [4, ft], up: [6, ft] },
+                  excludeDistance: true,
+                  isSplay: true,
+                }
+          - header:
+              name: '"Skill Issue Complex" and other Nebulous Borehole leads'
+            units:
+              distanceUnit: ft
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: false
+              backsightInclinationCorrected: false
+              hasBacksightAzimuth: true
+              hasBacksightInclination: true
+            shots:
+              - {
+                  from: AJA1,
+                  to: AJA2,
+                  distance: [15.4, ft],
+                  frontsightAzimuth: [146.4, deg],
+                  frontsightInclination: [-61.7, deg],
+                  backsightAzimuth: [326.8, deg],
+                  backsightInclination: [61.7, deg],
+                  toLruds:
+                    {
+                      left: [4, ft],
+                      right: [4, ft],
+                      up: [36, ft],
+                      down: [2, ft],
+                    },
+                }
+              - {
+                  from: AJF16,
+                  to: WEG1,
+                  distance: [12.9, ft],
+                  frontsightAzimuth: [337.7, deg],
+                  frontsightInclination: [29, deg],
+                  backsightAzimuth: [158.5, deg],
+                  backsightInclination: [-29, deg],
+                  toLruds:
+                    {
+                      left: [7, ft],
+                      right: [14, ft],
+                      up: [30, ft],
+                      down: [8, ft],
+                    },
+                  recorded:
+                    {
+                      from: AJF16,
+                      to: WEG1,
+                      distance: [12.9, ft],
+                      frontsightAzimuth: [337.7, deg],
+                      frontsightInclination: [29, deg],
+                      backsightAzimuth: [338.5, deg],
+                      backsightInclination: [29, deg],
+                      toLruds:
+                        {
+                          left: [7, ft],
+                          right: [14, ft],
+                          up: [30, ft],
+                          down: [8, ft],
+                        },
+                      units:
+                        {
+                          distanceUnit: ft,
+                          azimuthUnit: deg,
+                          inclinationUnit: deg,
+                          backsightAzimuthCorrected: true,
+                          backsightInclinationCorrected: true,
+                          hasBacksightAzimuth: true,
+                          hasBacksightInclination: true,
+                        },
+                    },
+                }
+              - {
+                  from: WEG1,
+                  to: WEG2,
+                  distance: [27.1, ft],
+                  frontsightAzimuth: [349.4, deg],
+                  frontsightInclination: [11.1, deg],
+                  backsightAzimuth: [169.39999999999998, deg],
+                  backsightInclination: [-10.8, deg],
+                  toLruds:
+                    {
+                      left: [50, ft],
+                      right: [15, ft],
+                      up: [4, ft],
+                      down: [10, ft],
+                    },
+                  recorded:
+                    {
+                      from: WEG1,
+                      to: WEG2,
+                      distance: [27.1, ft],
+                      frontsightAzimuth: [349.4, deg],
+                      frontsightInclination: [11.1, deg],
+                      backsightAzimuth: [349.4, deg],
+                      backsightInclination: [10.8, deg],
+                      toLruds:
+                        {
+                          left: [50, ft],
+                          right: [15, ft],
+                          up: [4, ft],
+                          down: [10, ft],
+                        },
+                    },
+                }
