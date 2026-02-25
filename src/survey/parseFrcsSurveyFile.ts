@@ -12,193 +12,30 @@ import type {
   InvalidFrcsTrip,
   InvalidFrcsShot,
 } from './FrcsSurveyFile'
-import {
-  Angle,
-  Length,
-  Unit,
-  UnitizedNumber,
-  UnitType,
-  Unitize,
-} from '@speleotica/unitized'
+import { Angle, Length, UnitizedNumber, Unitize } from '@speleotica/unitized'
 import { ParseError } from '../ParseError'
 import { chunksToLines } from '../chunksToLines'
-
-function parseNumber<T extends UnitType<T>>(
-  s: string,
-  unit: Unit<T>
-): UnitizedNumber<T> | undefined {
-  const value = parseFloat(s)
-  if (isNaN(value)) return undefined
-  return new UnitizedNumber(value, unit)
-}
-
-function parseAzimuth(
-  s: string,
-  unit: Unit<Angle>
-): UnitizedNumber<Angle> | undefined {
-  const parsed = parseNumber(s, unit)
-  return parsed?.get(Angle.degrees) === 360 ? Unitize.degrees(0) : parsed
-}
-
-function parseSpecialKind(kind: string): FrcsShot['specialKind'] {
-  switch (kind) {
-    case 'H':
-      return 'horizontal'
-    case 'D':
-      return 'diagonal'
-    default:
-      return undefined
-  }
-}
-
-function parseLengthUnit(unit: string): Unit<Length> | undefined {
-  switch (unit) {
-    case 'FI':
-      return Length.inches
-    case 'FF':
-    case 'FT':
-      return Length.feet
-    case 'MT':
-    case 'MM':
-    case 'M ':
-      return Length.meters
-  }
-  return undefined
-}
-function parseAngleUnit(unit: string): Unit<Angle> | undefined {
-  switch (unit) {
-    case 'D':
-      return Angle.degrees
-    case 'G':
-      return Angle.gradians
-    case 'M':
-      return Angle.milsNATO
-  }
-  return undefined
-}
-
-// determines if a cell contains a valid station name.
-function isValidStation(s: string): boolean {
-  return /^\s*\S+\s*$/.test(s)
-}
-// determines if a cell contains a valid unsigned integer.
-function isValidUInt(s: string): boolean {
-  return /^\s*[0-9]+\s*$/.test(s)
-}
-// determines if a cell contains a valid float.
-function isValidFloat(s: string): boolean {
-  return /^\s*[-+]?([0-9]+(\.[0-9]*)?|\.[0-9]+)\s*$/.test(s)
-}
-// determines if a cell contains a valid unsigned float or whitespace.
-function isValidOptFloat(s: string): boolean {
-  return /^\s*[-+]?[0-9]*(\.[0-9]*)?\s*$/.test(s)
-}
-// determines if a cell contains a valid unsigned float or whitespace.
-function isValidOptUFloat(s: string): boolean {
-  return /^\s*[0-9]*(\.[0-9]*)?\s*$/.test(s)
-}
-// determines if a cell contains a valid unsigned float.
-function isValidUFloat(s: string): boolean {
-  return /^\s*([0-9]+(\.[0-9]*)?|\.[0-9]+)\s*$/.test(s)
-}
-// determines if a cell contains a valid inclination or whitespace.
-function isValidOptInclination(s: string): boolean {
-  return /^\s*[-+]?[0-9]*(\.[0-9]*)?\s*$/.test(s)
-}
-function parseLrud<T extends UnitType<T>>(
-  s: string,
-  unit: Unit<Length>
-): UnitizedNumber<Length> | undefined {
-  const value = parseFloat(s)
-  return !Number.isFinite(value) || value < 0
-    ? undefined
-    : new UnitizedNumber(value, unit)
-}
-
-function parseFromStationLruds(
-  line: string,
-  distanceUnit: Unit<Length>
-): [string, NonNullable<FrcsShot['fromLruds']>] | undefined {
-  const fromStr = line.substring(0, 5)
-  if (!/^\s*\S+$/.test(fromStr)) return undefined
-  const gap = line.substring(5, 40)
-  if (gap.trim()) return undefined
-  const lrudStr = line.substring(40, 52)
-  if (!/\d/.test(lrudStr)) return undefined
-  const lStr = line.substring(40, 43)
-  const rStr = line.substring(43, 46)
-  const uStr = line.substring(46, 49)
-  const dStr = line.substring(49, 52)
-  if (
-    !isValidOptFloat(lStr) ||
-    !isValidOptFloat(rStr) ||
-    !isValidOptFloat(uStr) ||
-    !isValidOptFloat(dStr)
-  ) {
-    return undefined
-  }
-  const up = parseLrud(uStr, distanceUnit)
-  const down = parseLrud(dStr, distanceUnit)
-  const left = parseLrud(lStr, distanceUnit)
-  const right = parseLrud(rStr, distanceUnit)
-  return [fromStr.trim(), { left, right, up, down }]
-}
-
-type ColumnRanges = {
-  toStation: [number, number]
-  fromStation: [number, number]
-  distance: [number, number]
-  distanceFeet: [number, number]
-  distanceInches: [number, number]
-  kind: [number, number]
-  exclude: [number, number]
-  frontsightAzimuth: [number, number]
-  backsightAzimuth: [number, number]
-  frontsightInclination: [number, number]
-  backsightInclination: [number, number]
-  left: [number, number]
-  right: [number, number]
-  up: [number, number]
-  down: [number, number]
-}
-
-function getColumnRanges(config: FrcsShotColumnConfig): ColumnRanges {
-  const result: ColumnRanges = {
-    toStation: [0, 0],
-    fromStation: [0, 0],
-    distance: [0, 0],
-    distanceFeet: [0, 0],
-    distanceInches: [0, 0],
-    kind: [0, 0],
-    exclude: [0, 0],
-    frontsightAzimuth: [0, 0],
-    backsightAzimuth: [0, 0],
-    frontsightInclination: [0, 0],
-    backsightInclination: [0, 0],
-    left: [0, 0],
-    right: [0, 0],
-    up: [0, 0],
-    down: [0, 0],
-  }
-
-  let c = 0
-  for (const [key, value] of Object.entries(config) as [
-    keyof FrcsShotColumnConfig,
-    FrcsShotColumnConfig[keyof FrcsShotColumnConfig]
-  ][]) {
-    if (key === 'distanceFeet' || key === 'distanceInches') continue
-    result[key][0] = c
-    result[key][1] = c + value
-    c += value
-  }
-  if (config.distanceFeet) {
-    result.distanceFeet[0] = result.distance[0]
-    result.distanceFeet[1] = result.distance[0] + config.distanceFeet
-    result.distanceInches[0] = result.distanceFeet[1]
-    result.distanceInches[1] = result.distanceFeet[1] + config.distanceInches
-  }
-  return result
-}
+import {
+  isValidStation,
+  isValidOptFloat,
+  isValidOptUFloat,
+  isValidUInt,
+  isValidUFloat,
+  isValidFloat,
+  isValidOptInclination,
+} from './validators'
+import { getColumnRanges } from './getColumnRanges'
+import {
+  parseFromStationLruds,
+  parseLengthUnit,
+  parseAngleUnit,
+  parseMonth,
+  parseLrud,
+  parseSpecialKind,
+  parseNumber,
+  parseAzimuth,
+} from './parsers'
+import { normalizeTeamMemberName } from './normalizeTeamMemberName'
 
 export type ParseFrcsSurveyFileOptions = {
   columns?: FrcsShotColumnConfig
@@ -284,36 +121,6 @@ export default async function parseFrcsSurveyFile(
     NonNullable<FrcsShot['fromLruds']>
   >()
 
-  function addCommentLine(comment: string): void {
-    if (trip) {
-      const distanceUnit =
-        unwrapInvalid(alternateUnits)?.distanceUnit ||
-        unwrapInvalid(unwrapInvalid(trip).units).distanceUnit ||
-        Length.feet
-      const parsedFromStationLruds = parseFromStationLruds(
-        comment,
-        distanceUnit
-      )
-      if (parsedFromStationLruds) {
-        commentFromStationLruds.set(
-          parsedFromStationLruds[0],
-          parsedFromStationLruds[1]
-        )
-        return
-      }
-    }
-    if (commentLines) {
-      commentLines.push(comment)
-    }
-  }
-
-  function getComment(): string | undefined {
-    if (!commentLines?.length) return undefined
-    const comment = commentLines.join('\n').trim()
-    commentLines.length = 0
-    return comment || undefined
-  }
-
   let unitsChanged = false
   let alternateUnits: FrcsUnits | InvalidFrcsUnits | undefined
   let nextShotUnits: FrcsUnits | InvalidFrcsUnits | undefined
@@ -323,205 +130,6 @@ export default async function parseFrcsSurveyFile(
   let lineStartIndex = 0
 
   let lineErrors: number[] = []
-
-  const error = (
-    code: string,
-    message: string,
-    startColumn: number,
-    endColumn: number
-  ): number => {
-    errors.push({
-      type: 'error',
-      code,
-      message,
-      loc: {
-        start: {
-          line: lineNumber,
-          column: startColumn,
-          index: lineStartIndex + startColumn,
-        },
-        end: {
-          line: lineNumber,
-          column: endColumn,
-          index: lineStartIndex + endColumn,
-        },
-      },
-    })
-    if (!lineErrors) lineErrors = []
-    lineErrors.push(errors.length - 1)
-    return errors.length - 1
-  }
-
-  const parseUnits = (): FrcsUnits | InvalidFrcsUnits => {
-    // FT CC DD
-    // 01234567
-    const distanceUnit = parseLengthUnit(line.slice(0, 2))
-    if (!distanceUnit) {
-      error('invalidDistanceUnit', 'Invalid distance unit', 0, 2)
-    }
-    const azimuthUnit = parseAngleUnit(line[6])
-    if (!azimuthUnit) {
-      error('invalidAzimuthUnit', 'Invalid azimuth unit', 6, 7)
-    }
-    const inclinationUnit = parseAngleUnit(line[7])
-    if (!inclinationUnit) {
-      error('invalidInclinationUnit', 'Invalid inclination unit', 7, 8)
-    }
-    const backsightAzimuthCorrected = line[3] === 'C'
-    const backsightInclinationCorrected = line[4] === 'C'
-    const hasBacksightAzimuth = line[3] !== ' ' && line[3] !== '-'
-    const hasBacksightInclination = line[4] !== ' ' && line[4] !== '-'
-
-    if (!/[-CB ]/.test(line[3])) {
-      error(
-        'invalidBacksightAzimuthType',
-        'Invalid backsight azimuth type',
-        3,
-        4
-      )
-    }
-    if (!/[-CB ]/.test(line[4])) {
-      error(
-        'invalidBacksightInclinationType',
-        'Invalid backsight inclination type',
-        4,
-        5
-      )
-    }
-
-    if (!distanceUnit || !azimuthUnit || !inclinationUnit) {
-      return {
-        INVALID: {
-          distanceUnit,
-          azimuthUnit,
-          inclinationUnit,
-          backsightAzimuthCorrected,
-          backsightInclinationCorrected,
-          hasBacksightAzimuth,
-          hasBacksightInclination,
-        },
-        errors: lineErrors,
-      }
-    }
-
-    return {
-      distanceUnit,
-      azimuthUnit,
-      inclinationUnit,
-      backsightAzimuthCorrected,
-      backsightInclinationCorrected,
-      hasBacksightAzimuth,
-      hasBacksightInclination,
-    }
-  }
-
-  const validate = (
-    startColumn: number,
-    endColumn: number,
-    fieldName: string,
-    validator: (value: string) => boolean
-  ): string => {
-    const field = line.substring(startColumn, endColumn)
-    if (!validator(field)) {
-      error(
-        `invalid${fieldName[0].toUpperCase()}${fieldName.substring(1)}`,
-        (field.trim() ? 'Invalid ' : 'Missing ') + fieldName,
-        startColumn,
-        endColumn
-      )
-    }
-    return field
-  }
-
-  const addShot = (shot: FrcsShot | InvalidFrcsShot) => {
-    if (!trip) return
-    if (alternateUnits) {
-      const recorded:
-        | FrcsShot['recorded']
-        | InvalidFrcsShot['INVALID']['recorded'] = shot
-      if ('INVALID' in shot) {
-        shot.INVALID = {
-          ...shot.INVALID,
-          recorded,
-        }
-      } else if ('INVALID' in recorded) {
-        shot = {
-          INVALID: {
-            ...shot,
-            recorded,
-          },
-        }
-      } else {
-        shot = { ...shot, recorded }
-      }
-      if (nextShotUnits) {
-        unwrapInvalid(recorded).units = nextShotUnits
-        nextShotUnits = undefined
-      }
-      const {
-        backsightAzimuthCorrected,
-        backsightInclinationCorrected,
-        distanceUnit,
-        azimuthUnit,
-        inclinationUnit,
-      } = unwrapInvalid(unwrapInvalid(trip).units)
-      const unwrappedAlternateUnits = unwrapInvalid(alternateUnits)
-      const unwrappedShot = unwrapInvalid(shot)
-      {
-        const alternateUnits = unwrappedAlternateUnits
-        const shot = unwrappedShot
-        if (
-          alternateUnits.backsightAzimuthCorrected !== backsightAzimuthCorrected
-        ) {
-          shot.backsightAzimuth = shot.backsightAzimuth
-            ? Angle.opposite(shot.backsightAzimuth)
-            : undefined
-        }
-        if (
-          alternateUnits.backsightInclinationCorrected !==
-          backsightInclinationCorrected
-        ) {
-          shot.backsightInclination = shot.backsightInclination?.negate()
-        }
-        if (distanceUnit && distanceUnit !== alternateUnits.distanceUnit) {
-          shot.distance = shot.distance?.in(distanceUnit)
-          if (shot.fromLruds) {
-            shot.fromLruds.left = shot.fromLruds.left?.in(distanceUnit)
-            shot.fromLruds.right = shot.fromLruds.right?.in(distanceUnit)
-            shot.fromLruds.up = shot.fromLruds.up?.in(distanceUnit)
-            shot.fromLruds.down = shot.fromLruds.down?.in(distanceUnit)
-          }
-          if (shot.toLruds) {
-            shot.toLruds.left = shot.toLruds.left?.in(distanceUnit)
-            shot.toLruds.right = shot.toLruds.right?.in(distanceUnit)
-            shot.toLruds.up = shot.toLruds.up?.in(distanceUnit)
-            shot.toLruds.down = shot.toLruds.down?.in(distanceUnit)
-          }
-        }
-        if (azimuthUnit && azimuthUnit !== alternateUnits.azimuthUnit) {
-          shot.frontsightAzimuth = shot.frontsightAzimuth?.in(azimuthUnit)
-          shot.backsightAzimuth = shot.backsightAzimuth?.in(azimuthUnit)
-        }
-        if (
-          inclinationUnit &&
-          inclinationUnit !== alternateUnits.inclinationUnit
-        ) {
-          shot.frontsightInclination =
-            shot.frontsightInclination?.in(inclinationUnit)
-          shot.backsightInclination =
-            shot.backsightInclination?.in(inclinationUnit)
-        }
-      }
-    }
-    if ('INVALID' in trip) {
-      trip.INVALID.shots.push(shot)
-    } else if ('INVALID' in shot) {
-      trip = { INVALID: trip }
-      trip.INVALID.shots.push(shot)
-    } else {
-      trip.shots.push(shot)
-    }
-  }
 
   let began = false
 
@@ -946,50 +554,239 @@ export default async function parseFrcsSurveyFile(
     },
     errors,
   }
-}
 
-function normalizeTeamMemberName(name: string) {
-  if (name.toUpperCase() === name) {
-    name = name.replace(
-      /(\S)(\S*)/g,
-      (match, head, tail) => `${head}${tail.toLowerCase()}`
-    )
+  ////////////////////////////////////////////////////////////////////////////////////////////
+
+  function getComment(): string | undefined {
+    if (!commentLines?.length) return undefined
+    const comment = commentLines.join('\n').trim()
+    commentLines.length = 0
+    return comment || undefined
   }
-  name = name.replace(/_/g, ' ')
-  return name
+
+  function addCommentLine(comment: string): void {
+    if (trip) {
+      const distanceUnit =
+        unwrapInvalid(alternateUnits)?.distanceUnit ||
+        unwrapInvalid(unwrapInvalid(trip).units).distanceUnit ||
+        Length.feet
+      const parsedFromStationLruds = parseFromStationLruds(
+        comment,
+        distanceUnit
+      )
+      if (parsedFromStationLruds) {
+        commentFromStationLruds.set(
+          parsedFromStationLruds[0],
+          parsedFromStationLruds[1]
+        )
+        return
+      }
+    }
+    if (commentLines) {
+      commentLines.push(comment)
+    }
+  }
+
+  function error(
+    code: string,
+    message: string,
+    startColumn: number,
+    endColumn: number
+  ): number {
+    errors.push({
+      type: 'error',
+      code,
+      message,
+      loc: {
+        start: {
+          line: lineNumber,
+          column: startColumn,
+          index: lineStartIndex + startColumn,
+        },
+        end: {
+          line: lineNumber,
+          column: endColumn,
+          index: lineStartIndex + endColumn,
+        },
+      },
+    })
+    if (!lineErrors) lineErrors = []
+    lineErrors.push(errors.length - 1)
+    return errors.length - 1
+  }
+
+  function parseUnits(): FrcsUnits | InvalidFrcsUnits {
+    // FT CC DD
+    // 01234567
+    const distanceUnit = parseLengthUnit(line.slice(0, 2))
+    if (!distanceUnit) {
+      error('invalidDistanceUnit', 'Invalid distance unit', 0, 2)
+    }
+    const azimuthUnit = parseAngleUnit(line[6])
+    if (!azimuthUnit) {
+      error('invalidAzimuthUnit', 'Invalid azimuth unit', 6, 7)
+    }
+    const inclinationUnit = parseAngleUnit(line[7])
+    if (!inclinationUnit) {
+      error('invalidInclinationUnit', 'Invalid inclination unit', 7, 8)
+    }
+    const backsightAzimuthCorrected = line[3] === 'C'
+    const backsightInclinationCorrected = line[4] === 'C'
+    const hasBacksightAzimuth = line[3] !== ' ' && line[3] !== '-'
+    const hasBacksightInclination = line[4] !== ' ' && line[4] !== '-'
+
+    if (!/[-CB ]/.test(line[3])) {
+      error(
+        'invalidBacksightAzimuthType',
+        'Invalid backsight azimuth type',
+        3,
+        4
+      )
+    }
+    if (!/[-CB ]/.test(line[4])) {
+      error(
+        'invalidBacksightInclinationType',
+        'Invalid backsight inclination type',
+        4,
+        5
+      )
+    }
+
+    if (!distanceUnit || !azimuthUnit || !inclinationUnit) {
+      return {
+        INVALID: {
+          distanceUnit,
+          azimuthUnit,
+          inclinationUnit,
+          backsightAzimuthCorrected,
+          backsightInclinationCorrected,
+          hasBacksightAzimuth,
+          hasBacksightInclination,
+        },
+        errors: lineErrors,
+      }
+    }
+
+    return {
+      distanceUnit,
+      azimuthUnit,
+      inclinationUnit,
+      backsightAzimuthCorrected,
+      backsightInclinationCorrected,
+      hasBacksightAzimuth,
+      hasBacksightInclination,
+    }
+  }
+
+  function validate(
+    startColumn: number,
+    endColumn: number,
+    fieldName: string,
+    validator: (value: string) => boolean
+  ): string {
+    const field = line.substring(startColumn, endColumn)
+    if (!validator(field)) {
+      error(
+        `invalid${fieldName[0].toUpperCase()}${fieldName.substring(1)}`,
+        (field.trim() ? 'Invalid ' : 'Missing ') + fieldName,
+        startColumn,
+        endColumn
+      )
+    }
+    return field
+  }
+
+  function addShot(shot: FrcsShot | InvalidFrcsShot) {
+    if (!trip) return
+    if (alternateUnits) {
+      const recorded:
+        | FrcsShot['recorded']
+        | InvalidFrcsShot['INVALID']['recorded'] = shot
+      if ('INVALID' in shot) {
+        shot.INVALID = {
+          ...shot.INVALID,
+          recorded,
+        }
+      } else if ('INVALID' in recorded) {
+        shot = {
+          INVALID: {
+            ...shot,
+            recorded,
+          },
+        }
+      } else {
+        shot = { ...shot, recorded }
+      }
+      if (nextShotUnits) {
+        unwrapInvalid(recorded).units = nextShotUnits
+        nextShotUnits = undefined
+      }
+      const {
+        backsightAzimuthCorrected,
+        backsightInclinationCorrected,
+        distanceUnit,
+        azimuthUnit,
+        inclinationUnit,
+      } = unwrapInvalid(unwrapInvalid(trip).units)
+      const unwrappedAlternateUnits = unwrapInvalid(alternateUnits)
+      const unwrappedShot = unwrapInvalid(shot)
+      {
+        const alternateUnits = unwrappedAlternateUnits
+        const shot = unwrappedShot
+        if (
+          alternateUnits.backsightAzimuthCorrected !== backsightAzimuthCorrected
+        ) {
+          shot.backsightAzimuth = shot.backsightAzimuth
+            ? Angle.opposite(shot.backsightAzimuth)
+            : undefined
+        }
+        if (
+          alternateUnits.backsightInclinationCorrected !==
+          backsightInclinationCorrected
+        ) {
+          shot.backsightInclination = shot.backsightInclination?.negate()
+        }
+        if (distanceUnit && distanceUnit !== alternateUnits.distanceUnit) {
+          shot.distance = shot.distance?.in(distanceUnit)
+          if (shot.fromLruds) {
+            shot.fromLruds.left = shot.fromLruds.left?.in(distanceUnit)
+            shot.fromLruds.right = shot.fromLruds.right?.in(distanceUnit)
+            shot.fromLruds.up = shot.fromLruds.up?.in(distanceUnit)
+            shot.fromLruds.down = shot.fromLruds.down?.in(distanceUnit)
+          }
+          if (shot.toLruds) {
+            shot.toLruds.left = shot.toLruds.left?.in(distanceUnit)
+            shot.toLruds.right = shot.toLruds.right?.in(distanceUnit)
+            shot.toLruds.up = shot.toLruds.up?.in(distanceUnit)
+            shot.toLruds.down = shot.toLruds.down?.in(distanceUnit)
+          }
+        }
+        if (azimuthUnit && azimuthUnit !== alternateUnits.azimuthUnit) {
+          shot.frontsightAzimuth = shot.frontsightAzimuth?.in(azimuthUnit)
+          shot.backsightAzimuth = shot.backsightAzimuth?.in(azimuthUnit)
+        }
+        if (
+          inclinationUnit &&
+          inclinationUnit !== alternateUnits.inclinationUnit
+        ) {
+          shot.frontsightInclination =
+            shot.frontsightInclination?.in(inclinationUnit)
+          shot.backsightInclination =
+            shot.backsightInclination?.in(inclinationUnit)
+        }
+      }
+    }
+    if ('INVALID' in trip) {
+      trip.INVALID.shots.push(shot)
+    } else if ('INVALID' in shot) {
+      trip = { INVALID: trip }
+      trip.INVALID.shots.push(shot)
+    } else {
+      trip.shots.push(shot)
+    }
+  }
 }
 
 function unwrapInvalid<T>(t: T): T extends { INVALID: infer I } ? I : T {
   return (t instanceof Object && 'INVALID' in t ? t.INVALID : t) as any
-}
-
-function parseMonth(month: string) {
-  switch (month.substring(0, 3).toLowerCase()) {
-    case 'jan':
-      return 1
-    case 'feb':
-      return 2
-    case 'mar':
-      return 3
-    case 'apr':
-      return 4
-    case 'may':
-      return 5
-    case 'jun':
-      return 6
-    case 'jul':
-      return 7
-    case 'aug':
-      return 8
-    case 'oct':
-      return 9
-    case 'sep':
-      return 10
-    case 'nov':
-      return 11
-    case 'dec':
-      return 12
-    default:
-      throw new Error(`invalid month: ${month}`)
-  }
 }
