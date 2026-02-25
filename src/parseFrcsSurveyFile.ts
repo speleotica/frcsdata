@@ -631,6 +631,7 @@ export default async function parseFrcsSurveyFile(
         }
       } else {
         trip = {
+          tripNumber: 1,
           header,
           units,
           shots: [],
@@ -913,6 +914,19 @@ export default async function parseFrcsSurveyFile(
   }
 
   if (trip) trips.push(trip)
+
+  trips
+    .map((trip, index) => ({ trip: unwrapInvalid(trip), index }))
+    .sort((a, b) => {
+      const aDate = unwrapInvalid(a.trip.header).date
+      const bDate = unwrapInvalid(b.trip.header).date
+      return (
+        (aDate != null && bDate != null
+          ? aDate.getTime() - bDate.getTime()
+          : 0) || a.index - b.index
+      )
+    })
+    .forEach(({ trip }, index) => (trip.tripNumber = index + 1))
 
   if (!errors.length && trips.every((t): t is FrcsTrip => !('INVALID' in t))) {
     return {

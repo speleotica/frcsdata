@@ -13,7 +13,8 @@
         cave: Fisher Ridge Cave System
         location: Hart Co., KY
         trips:
-          - header:
+          - tripNumber: 1
+            header:
               name: ENTRANCE DROPS, JOE'S "I LOVE MY WIFE TRAVERSE", TRICKY TRAVERSE
               comment: This File has Crumps test connected.  11/20/12
               date: 1981-02-15
@@ -40,7 +41,8 @@
       output:
         cave: Fisher Ridge
         trips:
-          - header:
+          - tripNumber: 1
+            header:
               name: Bed of Nails continued
               date: 2025-12-30
               team:
@@ -70,7 +72,8 @@
       output:
         cave: Fisher Ridge
         trips:
-          - header:
+          - tripNumber: 1
+            header:
               name: Variant 1
             units:
               distanceUnit: ft
@@ -81,7 +84,8 @@
               hasBacksightAzimuth: true
               hasBacksightInclination: true
             shots: []
-          - header:
+          - tripNumber: 2
+            header:
               name: Variant 2
             units:
               distanceUnit: ft
@@ -110,7 +114,8 @@
       output:
         cave: Fisher Ridge
         trips:
-          - header:
+          - tripNumber: 1
+            header:
               name: Variant 1
             units:
               distanceUnit: m
@@ -121,7 +126,8 @@
               hasBacksightAzimuth: true
               hasBacksightInclination: true
             shots: []
-          - header:
+          - tripNumber: 2
+            header:
               name: Variant 2
             units:
               distanceUnit: m
@@ -132,7 +138,8 @@
               hasBacksightAzimuth: true
               hasBacksightInclination: true
             shots: []
-          - header:
+          - tripNumber: 3
+            header:
               name: Variant 3
             units:
               distanceUnit: m
@@ -153,7 +160,8 @@
       output:
         cave: Fisher Ridge
         trips:
-          - header:
+          - tripNumber: 1
+            header:
               name: Bed of Nails continued
             units:
               distanceUnit: in
@@ -174,7 +182,8 @@
       output:
         cave: Fisher Ridge
         trips:
-          - header:
+          - tripNumber: 1
+            header:
               name: Bed of Nails continued
             units:
               distanceUnit: ft
@@ -195,7 +204,8 @@
       output:
         cave: Fisher Ridge
         trips:
-          - header:
+          - tripNumber: 1
+            header:
               name: Bed of Nails continued
             units:
               distanceUnit: ft
@@ -216,7 +226,8 @@
       output:
         cave: Fisher Ridge
         trips:
-          - header:
+          - tripNumber: 1
+            header:
               name: Bed of Nails continued
             units:
               distanceUnit: ft
@@ -237,7 +248,8 @@
       output:
         cave: Fisher Ridge
         trips:
-          - header:
+          - tripNumber: 1
+            header:
               name: Bed of Nails continued
             units:
               distanceUnit: ft
@@ -258,7 +270,8 @@
       output:
         cave: Fisher Ridge
         trips:
-          - header:
+          - tripNumber: 1
+            header:
               name: Bed of Nails continued
             units:
               distanceUnit: ft
@@ -279,7 +292,8 @@
       output:
         cave: Fisher Ridge
         trips:
-          - header:
+          - tripNumber: 1
+            header:
               name: Bed of Nails continued
             units:
               distanceUnit: ft
@@ -300,7 +314,8 @@
       output:
         cave: Fisher Ridge
         trips:
-          - header:
+          - tripNumber: 1
+            header:
               name: Bed of Nails continued
             units:
               distanceUnit: ft

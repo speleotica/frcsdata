@@ -95,17 +95,24 @@ export type FrcsTripHeader = {
 export type InvalidFrcsTripHeader = Invalid<Partial<FrcsTripHeader>>
 
 export type FrcsTrip = {
+  tripNumber: number
   header: FrcsTripHeader
   units: FrcsUnits
   shots: FrcsShot[]
   loc?: SourceLoc
 }
 
-export type InvalidFrcsTrip = Invalid<{
-  header: FrcsTripHeader | InvalidFrcsTripHeader
-  units: FrcsUnits | InvalidFrcsUnits
-  shots: (FrcsShot | InvalidFrcsShot)[]
-}>
+export type InvalidFrcsTrip = Invalid<
+  Replace<
+    FrcsTrip,
+    {
+      tripNumber?: number
+      header: FrcsTripHeader | InvalidFrcsTripHeader
+      units: FrcsUnits | InvalidFrcsUnits
+      shots: (FrcsShot | InvalidFrcsShot)[]
+    }
+  >
+>
 
 export type FrcsShotBase = {
   /**

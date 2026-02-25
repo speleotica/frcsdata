@@ -44,6 +44,7 @@ describe('parseFrcsSurveyFile', () => {
         location: 'Hart Co., KY',
         trips: [
           {
+            tripNumber: 2,
             header: {
               name: 'ENTRANCE DROPS, JOE\'S "I LOVE MY WIFE TRAVERSE", TRICKY TRAVERSE',
               comment: 'This File has Crumps test connected.  11/20/12',
@@ -197,6 +198,7 @@ describe('parseFrcsSurveyFile', () => {
             ],
           },
           {
+            tripNumber: 1,
             header: {
               name: 'TRICKY TRAVERSE AND THEN FIRST SURVEY IN UPPER CROWLWAY',
               date: new Date('1981/02/14').toISOString(),
@@ -272,6 +274,7 @@ describe('parseFrcsSurveyFile', () => {
             ],
           },
           {
+            tripNumber: 3,
             header: {
               name: "DOUG'S DEMISE (50 FT DROP), CHRIS CROSS, CRAWL ABOVE DROP",
               date: new Date('1981 03 06').toISOString(),
@@ -319,6 +322,7 @@ describe('parseFrcsSurveyFile', () => {
             ],
           },
           {
+            tripNumber: 4,
             header: {
               name: '"Skill Issue Complex" and other Nebulous Borehole leads',
             },
@@ -462,6 +466,7 @@ MM    DD  0.34
       cave: '$ID: 12',
       trips: [
         {
+          tripNumber: 1,
           header: {
             name: '',
           },

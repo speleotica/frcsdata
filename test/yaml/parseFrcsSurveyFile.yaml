@@ -50,7 +50,8 @@
         cave: Fisher Ridge Cave System
         location: Hart Co., KY
         trips:
-          - header:
+          - tripNumber: 2
+            header:
               name: ENTRANCE DROPS, JOE'S "I LOVE MY WIFE TRAVERSE", TRICKY TRAVERSE
               comment: This File has Crumps test connected.  11/20/12
               date: 1981-02-15
@@ -202,7 +203,8 @@
                     },
                   comment: SHORT CANYON AT THE BASE OF THE SECOND DROP,
                 }
-          - header:
+          - tripNumber: 1
+            header:
               name: TRICKY TRAVERSE AND THEN FIRST SURVEY IN UPPER CROWLWAY
               date: 1981-02-14
               team:
@@ -272,7 +274,8 @@
                       down: [10, ft],
                     },
                 }
-          - header:
+          - tripNumber: 3
+            header:
               name: DOUG'S DEMISE (50 FT DROP), CHRIS CROSS, CRAWL ABOVE DROP
               date: 1981-03-06
               team:
@@ -309,7 +312,8 @@
                   excludeDistance: true,
                   isSplay: true,
                 }
-          - header:
+          - tripNumber: 4
+            header:
               name: '"Skill Issue Complex" and other Nebulous Borehole leads'
             units:
               distanceUnit: ft

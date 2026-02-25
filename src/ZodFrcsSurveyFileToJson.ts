@@ -204,6 +204,7 @@ const ZodFrcsTripHeader = z.strictObject({
 ZodFrcsTripHeader satisfies DeepMapJsonSchema<FrcsTripHeader>
 
 const ZodFrcsTrip = z.strictObject({
+  tripNumber: z.number().int().min(1),
   header: ZodFrcsTripHeader,
   units: ZodFrcsUnits,
   shots: z.array(ZodFrcsShot),
@@ -268,6 +269,7 @@ ZodInvalidFrcsTripHeader satisfies DeepMapJsonSchema<InvalidFrcsTripHeader>
 
 const ZodInvalidFrcsTrip = Invalid(
   z.strictObject({
+    tripNumber: z.number().int().min(1).optional(),
     header: z.union([ZodInvalidFrcsTripHeader, ZodFrcsTripHeader]),
     units: z.union([ZodInvalidFrcsUnits, ZodFrcsUnits]),
     shots: z.array(z.union([ZodInvalidFrcsShot, ZodFrcsShot])),
