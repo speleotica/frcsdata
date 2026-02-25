@@ -39,7 +39,6 @@ describe('parseFrcsSurveyFile', () => {
   ] as [string, () => Promise<FrcsSurveyFile>][]) {
     it(desc, async function () {
       const parsed = await parse()
-      // console.log(JSON.stringify(parsed, reviver, 2))
       expect(JSON.parse(JSON.stringify(parsed, reviver, 2))).to.deep.equal({
         cave: 'Fisher Ridge Cave System',
         location: 'Hart Co., KY',
@@ -200,12 +199,13 @@ describe('parseFrcsSurveyFile', () => {
           {
             header: {
               name: 'TRICKY TRAVERSE AND THEN FIRST SURVEY IN UPPER CROWLWAY',
+              date: new Date('1981/02/14').toISOString(),
               team: [
                 'Dan Crowl',
                 'Keith Ortiz',
                 'Chip Hopper',
                 'Peter Quick',
-                'Larry Bean    14 Feb 1981',
+                'Larry Bean',
               ],
             },
             units: {

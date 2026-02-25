@@ -566,21 +566,27 @@ export default async function parseFrcsSurveyFile(
       if (lineNumber === tripCommentStartLine + 1) {
         tripName = line && line.trim()
       } else if (lineNumber === tripCommentStartLine + 2) {
-        const match = /^(.+?,.+?)\s*(?:[-.](.*))?$/.exec(line && line.trim())
-        if (match) {
-          let k = 1
-          const team = match[k++]
-          tripTeam = team.split(
-            team.indexOf(';') >= 0 ? /\s*;\s*/g : /\s*,\s*/g
+        const dateMatch =
+          /(?:[-.]\s*)?((\d+)[-/](\d+)[-/](\d{2,4})|((\d+)[-/ ](jan|january|feb|february|mar|march|apr|april|may|jun|june|jul|july|aug|august|sep|sept|september|oct|october|nov|november|dec|december)[-/ ](\d{2,4})))/i.exec(
+            line
           )
+        if (dateMatch) {
+          const team = line.substring(0, dateMatch.index)
+          tripTeam = team
+            .split(team.indexOf(';') >= 0 ? ';' : ',')
+            .map((member) => member.trim())
           if (normalizeNames) tripTeam = tripTeam.map(normalizeTeamMemberName)
-          const dateMatch = /^(\d+)[-/](\d+)[-/](\d+)$/.exec(match[k++]?.trim())
-          if (dateMatch) {
-            const month = parseInt(dateMatch[1])
-            const day = parseInt(dateMatch[2])
-            const year = parseInt(dateMatch[3])
-            tripDate = new Date(year < 70 ? year + 2000 : year, month - 1, day)
+          let month, day, year
+          if (dateMatch[2]) {
+            month = parseInt(dateMatch[2])
+            day = parseInt(dateMatch[3])
+            year = parseInt(dateMatch[4])
+          } else {
+            day = parseInt(dateMatch[6])
+            month = parseMonth(dateMatch[7])
+            year = parseInt(dateMatch[8])
           }
+          tripDate = new Date(year < 70 ? year + 2000 : year, month - 1, day)
         }
       } else if (lineNumber > 1) {
         tripComment.push(line)
@@ -941,4 +947,35 @@ function normalizeTeamMemberName(name: string) {
 
 function unwrapInvalid<T>(t: T): T extends { INVALID: infer I } ? I : T {
   return (t instanceof Object && 'INVALID' in t ? t.INVALID : t) as any
+}
+
+function parseMonth(month: string) {
+  switch (month.substring(0, 3).toLowerCase()) {
+    case 'jan':
+      return 1
+    case 'feb':
+      return 2
+    case 'mar':
+      return 3
+    case 'apr':
+      return 4
+    case 'may':
+      return 5
+    case 'jun':
+      return 6
+    case 'jul':
+      return 7
+    case 'aug':
+      return 8
+    case 'oct':
+      return 9
+    case 'sep':
+      return 10
+    case 'nov':
+      return 11
+    case 'dec':
+      return 12
+    default:
+      throw new Error(`invalid month: ${month}`)
+  }
 }

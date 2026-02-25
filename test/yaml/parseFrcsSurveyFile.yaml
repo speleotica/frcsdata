@@ -204,12 +204,13 @@
                 }
           - header:
               name: TRICKY TRAVERSE AND THEN FIRST SURVEY IN UPPER CROWLWAY
+              date: 1981-02-14
               team:
                 - Dan Crowl
                 - Keith Ortiz
                 - Chip Hopper
                 - Peter Quick
-                - Larry Bean    14 Feb 1981
+                - Larry Bean
             units:
               distanceUnit: in
               azimuthUnit: deg
