@@ -139,11 +139,10 @@ export default async function parseFrcsSurveyFile(
     lineNumber++
 
     if (!began) {
+      began = true
       if (/^\s+\*/.test(line)) {
-        lineNumber++
         continue
       }
-      began = true
       const match = /^\s*([^,]+)(,(.*))?/.exec(line)
       if (match) {
         cave = match[1].trim()

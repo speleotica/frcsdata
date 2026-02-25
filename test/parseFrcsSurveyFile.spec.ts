@@ -463,12 +463,11 @@ MM    DD  0.34
     const parsed = await string.parseFrcsSurveyFile('test.txt', data, options)
     // console.log(JSON.stringify(parsed, reviver, 2))
     expect(JSON.parse(JSON.stringify(parsed, reviver, 2))).to.deep.equal({
-      cave: '$ID: 12',
       trips: [
         {
           tripNumber: 1,
           header: {
-            name: '',
+            name: '$ID: 12',
           },
           units: {
             distanceUnit: 'm',

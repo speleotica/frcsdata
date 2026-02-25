@@ -138,8 +138,11 @@ const ZodFrcsShotBase = z.strictObject({
   excludeDistance: z
     .boolean()
     .optional()
-    .transform((b) => (b === false ? undefined : b)),
-  isSplay: z.boolean().optional(),
+    .transform((b) => b || undefined),
+  isSplay: z
+    .boolean()
+    .optional()
+    .transform((b) => b || undefined),
   comment: z.string().optional(),
   loc: ZodSourceLoc.optional(),
   locs: z
