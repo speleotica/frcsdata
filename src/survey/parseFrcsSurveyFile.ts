@@ -20,8 +20,8 @@ import {
   UnitType,
   Unitize,
 } from '@speleotica/unitized'
-import { ParseError } from './ParseError'
-import { chunksToLines } from './chunksToLines'
+import { ParseError } from '../ParseError'
+import { chunksToLines } from '../chunksToLines'
 
 function parseNumber<T extends UnitType<T>>(
   s: string,

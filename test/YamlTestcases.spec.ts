@@ -7,7 +7,7 @@ import { YamlTestcasesSchema } from './YamlTestcasesSchema'
 import { describe, it } from 'mocha'
 import { parseFrcsSurveyFile } from '../src/string/index'
 import { expect } from 'chai'
-import { ZodValidOrInvalidFrcsSurveyFileToJson } from '../src/ZodFrcsSurveyFileToJson'
+import { ZodValidOrInvalidFrcsSurveyFileToJson } from '../src/survey/ZodFrcsSurveyFileToJson'
 import { formatYamlOutput } from './formatYamlOutput'
 
 const testcases = globSync(path.join(__dirname, 'yaml/**/*.{yml,yaml}'), {

@@ -6,7 +6,7 @@ export type ParseErrorSeverity = z.output<typeof ParseErrorSeverity>
 
 export const ParseError = z.strictObject({
   type: ParseErrorSeverity,
-  code: z.string().nonempty(),
+  code: z.string().min(1),
   message: z.string().optional(),
   loc: SourceLoc.optional(),
 })

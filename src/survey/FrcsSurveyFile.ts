@@ -1,5 +1,5 @@
-import { ParseError } from './ParseError.js'
-import { SourceLoc } from './SourceLoc.js'
+import { ParseError } from '../ParseError.js'
+import { SourceLoc } from '../SourceLoc.js'
 import { Unit, Length, Angle, UnitizedNumber } from '@speleotica/unitized'
 
 type Invalid<T> = {

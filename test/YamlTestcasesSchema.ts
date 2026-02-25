@@ -1,5 +1,5 @@
 import z from 'zod'
-import { ZodValidOrInvalidFrcsSurveyFileJson } from '../src/ZodFrcsSurveyFileJson'
+import { ZodValidOrInvalidFrcsSurveyFileJson } from '../src/survey/ZodFrcsSurveyFileJson'
 
 const ParseFrcsSurveyFileIt = z.object({
   it: z.string(),

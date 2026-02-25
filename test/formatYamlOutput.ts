@@ -1,5 +1,8 @@
 /* eslint-disable no-console */
-import { FrcsSurveyFile, InvalidFrcsSurveyFile } from '../src/FrcsSurveyFile.js'
+import {
+  FrcsSurveyFile,
+  InvalidFrcsSurveyFile,
+} from '../src/survey/FrcsSurveyFile.js'
 import * as YAML from 'yaml'
 
 export function formatYamlOutput(file: FrcsSurveyFile | InvalidFrcsSurveyFile) {

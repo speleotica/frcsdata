@@ -1,7 +1,7 @@
 import { Angle, Length, Unit, UnitizedNumber } from '@speleotica/unitized'
 import z from 'zod'
-import type { DeepMapJson } from './FrcsSurveyFileJson'
-import type { SourceLoc } from './SourceLoc'
+import type { DeepMapJson, JsonAngle, JsonLength } from './FrcsSurveyFileJson'
+import type { SourceLoc } from '../SourceLoc'
 import type {
   FrcsShot,
   FrcsSurveyFile,
@@ -14,23 +14,75 @@ import type {
   InvalidFrcsTripHeader,
   InvalidFrcsUnits,
 } from './FrcsSurveyFile'
-import { ParseError } from './ParseError'
+import { ParseError } from '../ParseError'
 
-type DeepMapJsonSchema<T> = z.ZodType<DeepMapJson<T>>
+type DeepMapJsonSchema<T> = z.ZodType<DeepMapJson<T>, any, T>
 
-const ZodLengthUnit = z.enum(['m', 'km', 'cm', 'ft', 'in', 'yd', 'mi'])
+const ZodLengthUnit = z
+  .instanceof<typeof Unit<Length>>(Unit)
+  .transform((unit) => {
+    switch (unit) {
+      case Length.meters:
+        return 'm'
+      case Length.kilometers:
+        return 'km'
+      case Length.centimeters:
+        return 'cm'
+      case Length.feet:
+        return 'ft'
+      case Length.inches:
+        return 'in'
+      case Length.yards:
+        return 'yd'
+      case Length.miles:
+        return 'mi'
+    }
+    throw new Error('invalid unit')
+  })
 
 ZodLengthUnit satisfies DeepMapJsonSchema<Unit<Length>>
 
-const ZodAngleUnit = z.enum(['deg', 'rad', 'grad', 'mil', '%'])
+const ZodAngleUnit = z
+  .instanceof<typeof Unit<Angle>>(Unit)
+  .transform((unit) => {
+    switch (unit) {
+      case Angle.degrees:
+        return 'deg'
+      case Angle.radians:
+        return 'rad'
+      case Angle.gradians:
+        return 'grad'
+      case Angle.milsNATO:
+        return 'mil'
+      case Angle.percentGrade:
+        return '%'
+    }
+    throw new Error('invalid unit')
+  })
 
 ZodAngleUnit satisfies DeepMapJsonSchema<Unit<Angle>>
 
-const ZodLength = z.tuple([z.number(), ZodLengthUnit])
+const ZodLength = z
+  .instanceof<typeof UnitizedNumber<Length>>(UnitizedNumber)
+  .transform(
+    (length) =>
+      [
+        length.get(length.unit),
+        ZodLengthUnit.parse(length.unit),
+      ] satisfies JsonLength
+  )
 
 ZodLength satisfies DeepMapJsonSchema<UnitizedNumber<Length>>
 
-const ZodAngle = z.tuple([z.number(), ZodAngleUnit])
+const ZodAngle = z
+  .instanceof<typeof UnitizedNumber<Angle>>(UnitizedNumber)
+  .transform(
+    (angle) =>
+      [
+        angle.get(angle.unit),
+        ZodAngleUnit.parse(angle.unit),
+      ] satisfies JsonAngle
+  )
 
 ZodAngle satisfies DeepMapJsonSchema<UnitizedNumber<Angle>>
 
@@ -129,14 +181,13 @@ const ZodFrcsShot = ZodFrcsShotBase.extend({
 
 ZodFrcsShot satisfies DeepMapJsonSchema<FrcsShot>
 
+const ZodDate = z.date().transform((d) => d.toISOString().substring(0, 10))
+
 const ZodFrcsTripHeader = z.strictObject({
   name: z.string(),
   comment: z.string().optional(),
   section: z.string().optional(),
-  date: z
-    .string()
-    .regex(/\d{4}-\d{2}-\d{2}/, 'must be in yyyy-mm-dd format')
-    .optional(),
+  date: ZodDate.optional(),
   team: z.array(z.string()).optional(),
   loc: ZodSourceLoc.optional(),
   locs: z
@@ -162,7 +213,7 @@ const ZodFrcsTrip = z.strictObject({
 
 ZodFrcsTrip satisfies DeepMapJsonSchema<FrcsTrip>
 
-export const ZodFrcsSurveyFileJson = z.strictObject({
+export const ZodFrcsSurveyFileToJson = z.strictObject({
   cave: z.string().optional(),
   columns: z
     .strictObject({
@@ -195,7 +246,7 @@ export const ZodFrcsSurveyFileJson = z.strictObject({
     .optional(),
 })
 
-ZodFrcsSurveyFileJson satisfies DeepMapJsonSchema<FrcsSurveyFile>
+ZodFrcsSurveyFileToJson satisfies DeepMapJsonSchema<FrcsSurveyFile>
 
 function Invalid<T extends z.ZodTypeAny>(schema: T) {
   return z.strictObject({
@@ -227,16 +278,16 @@ const ZodInvalidFrcsTrip = Invalid(
 
 ZodInvalidFrcsTrip satisfies DeepMapJsonSchema<InvalidFrcsTrip>
 
-export const ZodInvalidFrcsSurveyFileJson = z.strictObject({
-  INVALID: ZodFrcsSurveyFileJson.extend({
+export const ZodInvalidFrcsSurveyFileToJson = z.strictObject({
+  INVALID: ZodFrcsSurveyFileToJson.extend({
     trips: z.array(z.union([ZodInvalidFrcsTrip, ZodFrcsTrip])),
   }),
   errors: z.array(ParseError),
 })
 
-ZodInvalidFrcsSurveyFileJson satisfies DeepMapJsonSchema<InvalidFrcsSurveyFile>
+ZodInvalidFrcsSurveyFileToJson satisfies DeepMapJsonSchema<InvalidFrcsSurveyFile>
 
-export const ZodValidOrInvalidFrcsSurveyFileJson = z.union([
-  ZodInvalidFrcsSurveyFileJson,
-  ZodFrcsSurveyFileJson,
+export const ZodValidOrInvalidFrcsSurveyFileToJson = z.union([
+  ZodInvalidFrcsSurveyFileToJson,
+  ZodFrcsSurveyFileToJson,
 ])

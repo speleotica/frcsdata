@@ -1,8 +1,8 @@
 import { FrcsSurveyFile, InvalidFrcsSurveyFile } from './FrcsSurveyFile'
 
 import { Unit, Length, Angle, UnitizedNumber } from '@speleotica/unitized'
-import { ParseError } from './ParseError.js'
-import { SourceLoc } from './SourceLoc.js'
+import { ParseError } from '../ParseError.js'
+import { SourceLoc } from '../SourceLoc.js'
 
 export type JsonLengthUnit = 'm' | 'km' | 'cm' | 'ft' | 'mi' | 'yd' | 'in'
 export type JsonAngleUnit = 'rad' | 'deg' | 'grad' | 'mil' | '%'

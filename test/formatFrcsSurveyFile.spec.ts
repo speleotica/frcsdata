@@ -1,6 +1,6 @@
 import { describe, it } from 'mocha'
 import { expect } from 'chai'
-import { formatFrcsSurveyFile } from '../src/formatFrcsSurveyFile'
+import { formatFrcsSurveyFile } from '../src/survey/formatFrcsSurveyFile'
 import { parseFrcsSurveyFile } from '../src/node'
 import { slurp } from './slurp'
 import { inspect } from 'util'

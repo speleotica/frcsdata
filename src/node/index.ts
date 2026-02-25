@@ -1,6 +1,6 @@
 import fs from 'fs'
 import readline from 'readline'
-import _parseFrcsSurveyFile from '../parseFrcsSurveyFile'
+import _parseFrcsSurveyFile from '../survey/parseFrcsSurveyFile'
 import _parseFrcsPlotFile from '../parseFrcsPlotFile'
 import _parseFrcsTripSummaryFile from '../parseFrcsTripSummaryFile'
 

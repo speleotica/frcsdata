@@ -1,8 +1,8 @@
 import { describe, it } from 'mocha'
 import { expect } from 'chai'
 
-import type { FrcsShot, FrcsUnits } from '../src/FrcsSurveyFile'
-import formatFrcsShot from '../src/formatFrcsShot'
+import type { FrcsShot, FrcsUnits } from '../src/survey/FrcsSurveyFile'
+import formatFrcsShot from '../src/survey/formatFrcsShot'
 import { Angle, Length, Unitize } from '@speleotica/unitized'
 
 describe(`formatFrcsShot`, function () {

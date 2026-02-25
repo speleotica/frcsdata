@@ -3,16 +3,16 @@ import type {
   FrcsSurveyFile,
   FrcsTrip,
   FrcsTripHeader,
-} from './FrcsSurveyFile'
-import parseFrcsSurveyFile from './parseFrcsSurveyFile'
+} from './survey/FrcsSurveyFile'
+import parseFrcsSurveyFile from './survey/parseFrcsSurveyFile'
 import { FrcsPlotShot } from './FrcsPlotShot'
 import { FrcsPlotFile } from './FrcsPlotFile'
 import parseFrcsPlotFile from './parseFrcsPlotFile'
 import { FrcsTripSummary } from './FrcsTripSummary'
 import { FrcsTripSummaryFile } from './FrcsTripSummaryFile'
 import parseFrcsTripSummaryFile from './parseFrcsTripSummaryFile'
-import formatFrcsShot from './formatFrcsShot'
-import { formatFrcsSurveyFile } from './formatFrcsSurveyFile'
+import formatFrcsShot from './survey/formatFrcsShot'
+import { formatFrcsSurveyFile } from './survey/formatFrcsSurveyFile'
 
 export {
   FrcsShot,

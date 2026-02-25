@@ -1,9 +1,12 @@
 import _parseFrcsSurveyFile, {
   ParseFrcsSurveyFileOptions,
-} from '../parseFrcsSurveyFile'
+} from '../survey/parseFrcsSurveyFile'
 import _parseFrcsPlotFile from '../parseFrcsPlotFile'
 import _parseFrcsTripSummaryFile from '../parseFrcsTripSummaryFile'
-import type { FrcsSurveyFile, InvalidFrcsSurveyFile } from '../FrcsSurveyFile'
+import type {
+  FrcsSurveyFile,
+  InvalidFrcsSurveyFile,
+} from '../survey/FrcsSurveyFile'
 
 class LinesTransform extends TransformStream<string> {
   parts: string[] = []
