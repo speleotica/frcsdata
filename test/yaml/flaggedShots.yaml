@@ -1,0 +1,117 @@
+- describe: flagged shots
+  specs:
+    - it: excluded shot
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        trip
+         *
+        FT CC DD
+          B19  B17   8.4 *  13.5  13.5 -0.5      12  0  4  3
+      output:
+        trips:
+          - tripNumber: 1
+            header:
+              name: trip
+            units:
+              distanceUnit: ft
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: true
+              backsightInclinationCorrected: true
+              hasBacksightAzimuth: true
+              hasBacksightInclination: true
+            shots:
+              - {
+                  from: B17,
+                  to: B19,
+                  distance: [8.4, ft],
+                  frontsightAzimuth: [13.5, deg],
+                  frontsightInclination: [-0.5, deg],
+                  backsightAzimuth: [13.5, deg],
+                  toLruds:
+                    {
+                      left: [12, ft],
+                      right: [0, ft],
+                      up: [4, ft],
+                      down: [3, ft],
+                    },
+                  excludeDistance: true,
+                }
+    - it: excluded shot in feet and inches
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        trip
+         *
+        FI CC DD
+          PC1  PB4  20  7 *115.5 114.5-10.0       3  3  5  1
+      output:
+        trips:
+          - tripNumber: 1
+            header:
+              name: trip
+            units:
+              distanceUnit: in
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: true
+              backsightInclinationCorrected: true
+              hasBacksightAzimuth: true
+              hasBacksightInclination: true
+            shots:
+              - {
+                  from: PB4,
+                  to: PC1,
+                  distance: [247, in],
+                  frontsightAzimuth: [115.5, deg],
+                  frontsightInclination: [-10, deg],
+                  backsightAzimuth: [114.5, deg],
+                  toLruds:
+                    {
+                      left: [3, ft],
+                      right: [3, ft],
+                      up: [5, ft],
+                      down: [1, ft],
+                    },
+                  excludeDistance: true,
+                }
+    - it: splay shot
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        trip
+         *
+        FT CC DD
+          B19  B17   8.4 s  13.5  13.5 -0.5      12  0  4  3
+      output:
+        trips:
+          - tripNumber: 1
+            header:
+              name: trip
+            units:
+              distanceUnit: ft
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: true
+              backsightInclinationCorrected: true
+              hasBacksightAzimuth: true
+              hasBacksightInclination: true
+            shots:
+              - {
+                  from: B17,
+                  to: B19,
+                  distance: [8.4, ft],
+                  frontsightAzimuth: [13.5, deg],
+                  frontsightInclination: [-0.5, deg],
+                  backsightAzimuth: [13.5, deg],
+                  toLruds:
+                    {
+                      left: [12, ft],
+                      right: [0, ft],
+                      up: [4, ft],
+                      down: [3, ft],
+                    },
+                  excludeDistance: true,
+                  isSplay: true,
+                }

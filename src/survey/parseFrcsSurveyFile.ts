@@ -337,7 +337,8 @@ export default async function parseFrcsSurveyFile(
 
       // azimuth and inclination
       const azmFsStr = validate(
-        ...ranges.frontsightAzimuth,
+        ranges.frontsightAzimuth[0] + (inches ? 1 : 0),
+        ranges.frontsightAzimuth[1],
         'azimuth',
         isValidOptUFloat
       )
@@ -432,7 +433,9 @@ export default async function parseFrcsSurveyFile(
         distance = new UnitizedNumber(Math.sqrt(h * h + v * v), distanceUnit)
         frontsightInclination =
           verticalDistance && horizontalDistance
-            ? Angle.atan2(verticalDistance, horizontalDistance)
+            ? Angle.atan2(verticalDistance, horizontalDistance).in(
+                inclinationUnit
+              )
             : undefined
         backsightInclination = undefined
       } else if (specialKind === 'diagonal') {
@@ -442,7 +445,7 @@ export default async function parseFrcsSurveyFile(
         verticalDistance = Number.isFinite(v)
           ? new UnitizedNumber(v, distanceUnit)
           : undefined
-        frontsightInclination = Angle.asin(v / d)
+        frontsightInclination = Angle.asin(v / d).in(inclinationUnit)
         backsightInclination = undefined
       } else {
         // frontsight inclination

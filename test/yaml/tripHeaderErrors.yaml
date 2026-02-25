@@ -1,0 +1,156 @@
+- describe: trip header errors
+  specs:
+    - it: invalid distance unit
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        trip
+         *
+        FH CC DD
+      output:
+        INVALID:
+          trips:
+            - INVALID:
+                tripNumber: 1
+                header:
+                  name: trip
+                units:
+                  INVALID:
+                    azimuthUnit: deg
+                    inclinationUnit: deg
+                    backsightAzimuthCorrected: true
+                    backsightInclinationCorrected: true
+                    hasBacksightAzimuth: true
+                    hasBacksightInclination: true
+                  errors:
+                    - 0
+                shots: []
+        errors:
+          - type: error
+            code: invalidDistanceUnit
+            message: Invalid distance unit
+            loc:
+              start: { line: 4, column: 0, index: 11 }
+              end: { line: 4, column: 2, index: 13 }
+    - it: invalid azimuth unit
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        trip
+         *
+        FT CC QD
+      output:
+        INVALID:
+          trips:
+            - INVALID:
+                tripNumber: 1
+                header:
+                  name: trip
+                units:
+                  INVALID:
+                    distanceUnit: ft
+                    inclinationUnit: deg
+                    backsightAzimuthCorrected: true
+                    backsightInclinationCorrected: true
+                    hasBacksightAzimuth: true
+                    hasBacksightInclination: true
+                  errors:
+                    - 0
+                shots: []
+        errors:
+          - type: error
+            code: invalidAzimuthUnit
+            message: Invalid azimuth unit
+            loc:
+              start: { line: 4, column: 6, index: 17 }
+              end: { line: 4, column: 7, index: 18 }
+    - it: invalid inclination unit
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        trip
+         *
+        FT CC DH
+      output:
+        INVALID:
+          trips:
+            - INVALID:
+                tripNumber: 1
+                header:
+                  name: trip
+                units:
+                  INVALID:
+                    distanceUnit: ft
+                    azimuthUnit: deg
+                    backsightAzimuthCorrected: true
+                    backsightInclinationCorrected: true
+                    hasBacksightAzimuth: true
+                    hasBacksightInclination: true
+                  errors:
+                    - 0
+                shots: []
+        errors:
+          - type: error
+            code: invalidInclinationUnit
+            message: Invalid inclination unit
+            loc:
+              start: { line: 4, column: 7, index: 18 }
+              end: { line: 4, column: 8, index: 19 }
+    - it: invalid backsight azimuth
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        trip
+         *
+        FT QC DD
+      output:
+        INVALID:
+          trips:
+            - tripNumber: 1
+              header:
+                name: trip
+              units:
+                distanceUnit: ft
+                azimuthUnit: deg
+                inclinationUnit: deg
+                backsightAzimuthCorrected: false
+                backsightInclinationCorrected: true
+                hasBacksightAzimuth: true
+                hasBacksightInclination: true
+              shots: []
+        errors:
+          - type: error
+            code: invalidBacksightAzimuthType
+            message: Invalid backsight azimuth type
+            loc:
+              start: { line: 4, column: 3, index: 14 }
+              end: { line: 4, column: 4, index: 15 }
+    - it: invalid backsight inclination
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        trip
+         *
+        FT CJ DD
+      output:
+        INVALID:
+          trips:
+            - tripNumber: 1
+              header:
+                name: trip
+              units:
+                distanceUnit: ft
+                azimuthUnit: deg
+                inclinationUnit: deg
+                backsightAzimuthCorrected: true
+                backsightInclinationCorrected: false
+                hasBacksightAzimuth: true
+                hasBacksightInclination: true
+              shots: []
+        errors:
+          - type: error
+            code: invalidBacksightInclinationType
+            message: Invalid backsight inclination type
+            loc:
+              start: { line: 4, column: 4, index: 15 }
+              end: { line: 4, column: 5, index: 16 }

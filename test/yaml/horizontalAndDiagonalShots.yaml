@@ -1,0 +1,201 @@
+- describe: horizontal and diagonal shots
+  specs:
+    - it: horizontal shot in feet and tenths
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        trip
+         *
+        FT CC DD
+          B19  B17   8.4H   13.5  13.5 -0.5      12  0  4  3
+      output:
+        trips:
+          - tripNumber: 1
+            header:
+              name: trip
+            units:
+              distanceUnit: ft
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: true
+              backsightInclinationCorrected: true
+              hasBacksightAzimuth: true
+              hasBacksightInclination: true
+            shots:
+              - {
+                  from: B17,
+                  to: B19,
+                  specialKind: horizontal,
+                  distance: [8.414867794564572, ft],
+                  horizontalDistance: [8.4, ft],
+                  verticalDistance: [-0.5, ft],
+                  frontsightAzimuth: [13.5, deg],
+                  frontsightInclination: [-3.4064437549947186, deg],
+                  backsightAzimuth: [13.5, deg],
+                  toLruds:
+                    {
+                      left: [12, ft],
+                      right: [0, ft],
+                      up: [4, ft],
+                      down: [3, ft],
+                    },
+                }
+    - it: horizontal shot in feet and inches
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        trip
+         *
+        FI CC DD
+          B19  B17   8  4H  13.5  13.5 -0.5      12  0  4  3
+      output:
+        trips:
+          - tripNumber: 1
+            header:
+              name: trip
+            units:
+              distanceUnit: in
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: true
+              backsightInclinationCorrected: true
+              hasBacksightAzimuth: true
+              hasBacksightInclination: true
+            shots:
+              - {
+                  from: B17,
+                  to: B19,
+                  specialKind: horizontal,
+                  distance: [8.348319857578796, ft],
+                  horizontalDistance: [100, in],
+                  verticalDistance: [-0.5, ft],
+                  frontsightAzimuth: [13.5, deg],
+                  frontsightInclination: [-3.433630362450523, deg],
+                  backsightAzimuth: [13.5, deg],
+                  toLruds:
+                    {
+                      left: [12, ft],
+                      right: [0, ft],
+                      up: [4, ft],
+                      down: [3, ft],
+                    },
+                }
+    - it: excluded horizontal shot in feet and inches
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        trip
+         *
+        FI CC DD
+          B19  B17   8  4H* 13.5  13.5 -0.5      12  0  4  3
+      output:
+        trips:
+          - tripNumber: 1
+            header:
+              name: trip
+            units:
+              distanceUnit: in
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: true
+              backsightInclinationCorrected: true
+              hasBacksightAzimuth: true
+              hasBacksightInclination: true
+            shots:
+              - {
+                  from: B17,
+                  to: B19,
+                  specialKind: horizontal,
+                  distance: [8.348319857578796, ft],
+                  horizontalDistance: [100, in],
+                  verticalDistance: [-0.5, ft],
+                  frontsightAzimuth: [13.5, deg],
+                  frontsightInclination: [-3.433630362450523, deg],
+                  backsightAzimuth: [13.5, deg],
+                  toLruds:
+                    {
+                      left: [12, ft],
+                      right: [0, ft],
+                      up: [4, ft],
+                      down: [3, ft],
+                    },
+                  excludeDistance: true,
+                }
+    - it: diagonal shot in feet and tenths
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        trip
+         *
+        FT CC DD
+          B19  B17   8.4D   13.5  13.5 -0.5      12  0  4  3
+      output:
+        trips:
+          - tripNumber: 1
+            header:
+              name: trip
+            units:
+              distanceUnit: ft
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: true
+              backsightInclinationCorrected: true
+              hasBacksightAzimuth: true
+              hasBacksightInclination: true
+            shots:
+              - {
+                  from: B17,
+                  to: B19,
+                  specialKind: diagonal,
+                  distance: [8.4, ft],
+                  verticalDistance: [-0.5, ft],
+                  frontsightAzimuth: [13.5, deg],
+                  frontsightInclination: [-3.412480210152714, deg],
+                  backsightAzimuth: [13.5, deg],
+                  toLruds:
+                    {
+                      left: [12, ft],
+                      right: [0, ft],
+                      up: [4, ft],
+                      down: [3, ft],
+                    },
+                }
+    - it: diagonal shot in feet and inches
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        trip
+         *
+        FI CC DD
+          B19  B17   8  4D  13.5  13.5 -0.5      12  0  4  3
+      output:
+        trips:
+          - tripNumber: 1
+            header:
+              name: trip
+            units:
+              distanceUnit: in
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: true
+              backsightInclinationCorrected: true
+              hasBacksightAzimuth: true
+              hasBacksightInclination: true
+            shots:
+              - {
+                  from: B17,
+                  to: B19,
+                  specialKind: diagonal,
+                  distance: [100, in],
+                  verticalDistance: [-0.5, ft],
+                  frontsightAzimuth: [13.5, deg],
+                  frontsightInclination: [-3.439812767515197, deg],
+                  backsightAzimuth: [13.5, deg],
+                  toLruds:
+                    {
+                      left: [12, ft],
+                      right: [0, ft],
+                      up: [4, ft],
+                      down: [3, ft],
+                    },
+                }
