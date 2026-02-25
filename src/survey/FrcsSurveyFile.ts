@@ -11,7 +11,10 @@ type Invalid<T> = {
   errors?: number[]
 }
 
-type Replace<T, U> = Omit<T, keyof U> & U
+// eslint-disable-next-line @typescript-eslint/ban-types
+type Prettify<T> = { [K in keyof T]: T[K] } & {}
+
+type Replace<T, U> = Prettify<Omit<T, keyof U> & U>
 
 export type FrcsSurveyFile = {
   cave?: string
@@ -84,11 +87,11 @@ export type FrcsTripHeader = {
   team?: string[]
   loc?: SourceLoc
   locs?: {
-    name?: SourceLoc
+    name: SourceLoc
     comment?: SourceLoc
     section?: SourceLoc
     date?: SourceLoc
-    team?: SourceLoc
+    team?: SourceLoc[]
   }
 }
 
@@ -175,7 +178,7 @@ export type InvalidFrcsShot = Invalid<
       FrcsShot,
       {
         recorded?:
-          | (FrcsShotBase & { units?: FrcsUnits })
+          | FrcsShot['recorded']
           | Invalid<Partial<FrcsShotBase> & { units?: InvalidFrcsUnits }>
       }
     >

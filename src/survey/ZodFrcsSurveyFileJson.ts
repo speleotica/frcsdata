@@ -141,11 +141,11 @@ const ZodFrcsTripHeader = z.strictObject({
   loc: ZodSourceLoc.optional(),
   locs: z
     .strictObject({
-      name: ZodSourceLoc.optional(),
+      name: ZodSourceLoc,
       comment: ZodSourceLoc.optional(),
       section: ZodSourceLoc.optional(),
       date: ZodSourceLoc.optional(),
-      team: ZodSourceLoc.optional(),
+      team: z.array(ZodSourceLoc).optional(),
     })
     .optional(),
 })
