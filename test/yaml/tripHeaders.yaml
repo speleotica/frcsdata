@@ -326,3 +326,110 @@
               hasBacksightAzimuth: true
               hasBacksightInclination: true
             shots: []
+    - it: sections and tricky comments
+      procedure: parseFrcsSurveyFile
+      input: |2
+            cave
+        D TRAIL.
+        Norm Pace, Don Mills, Rich Ely, George Miel. 12/25/65
+        *** OLD CAVE SECTION ***
+        ORIG 3B
+         *
+        FT CB DD
+          A44  A43  57.9   177.0        0.0       9 11  0  0
+        *
+
+        D TRAIL.
+        Norm Pace, Don Mills, Rich Ely, George Miel. 12/25/65
+        ORIGINAL NOTES AVAILABLE.  DECLINATION NOT SPECIFIED
+        XYZ COORDINATES VERIFIED WITH MINTON PRINTOUT
+
+        Add date and crew per JWS cards and MIG Newsletter p46. Other surveys are
+        part of this survey. Date only given as the first of 3 trips and several
+        days over "Christmas". cjh 12/13/21
+        The other surveys #17 (Dust Bin) and first 16 stations of #3 (A). 7/31/22
+
+        *** OLD CAVE ***
+        ORIG 14
+        FT CB DD
+        *
+           D1  A35  70.0   334.0        0.0       0 12  1  2
+      output:
+        cave: cave
+        trips:
+          - tripNumber: 1
+            header:
+              name: D TRAIL.
+              section: OLD CAVE SECTION
+              comment: |-
+                *** OLD CAVE SECTION ***
+                ORIG 3B
+              date: 2065-12-25
+              team:
+                - Norm Pace
+                - Don Mills
+                - Rich Ely
+                - George Miel
+            units:
+              distanceUnit: ft
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: true
+              backsightInclinationCorrected: false
+              hasBacksightAzimuth: true
+              hasBacksightInclination: true
+            shots:
+              - {
+                  from: A43,
+                  to: A44,
+                  distance: [57.9, ft],
+                  frontsightAzimuth: [177, deg],
+                  frontsightInclination: [0, deg],
+                  toLruds:
+                    {
+                      left: [9, ft],
+                      right: [11, ft],
+                      up: [0, ft],
+                      down: [0, ft],
+                    },
+                }
+              - {
+                  from: A35,
+                  to: D1,
+                  distance: [70, ft],
+                  frontsightAzimuth: [334, deg],
+                  frontsightInclination: [0, deg],
+                  toLruds:
+                    {
+                      left: [0, ft],
+                      right: [12, ft],
+                      up: [1, ft],
+                      down: [2, ft],
+                    },
+                  comment: 'D TRAIL.
+
+                    Norm Pace, Don Mills, Rich Ely, George Miel. 12/25/65
+
+                    ORIGINAL NOTES AVAILABLE.  DECLINATION NOT SPECIFIED
+
+                    XYZ COORDINATES VERIFIED WITH MINTON PRINTOUT
+
+
+                    Add date and crew per JWS cards and MIG Newsletter p46. Other
+                    surveys are
+
+                    part of this survey. Date only given as the first of 3 trips and
+                    several
+
+                    days over "Christmas". cjh 12/13/21
+
+                    The other surveys #17 (Dust Bin) and first 16 stations of #3 (A).
+                    7/31/22
+
+
+                    *** OLD CAVE ***
+
+                    ORIG 14
+
+                    FT CB DD',
+                }

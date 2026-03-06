@@ -158,7 +158,7 @@ export default async function parseFrcsSurveyFile(
       unitsChanged = false
       alternateUnits = parseUnits()
       nextShotUnits = alternateUnits
-    } else if (/^\s{1,8}\*/.test(line)) {
+    } else if (/^\s{1,8}\*(?!\*)/.test(line)) {
       inTripComment = !inTripComment
       alternateUnits = nextShotUnits = undefined
       unitsChanged = false
@@ -221,11 +221,11 @@ export default async function parseFrcsSurveyFile(
       } else if (lineNumber > 1) {
         tripComment.push(line)
       }
-      const match = /^\*\*\*([^*])\*\*\*/.exec(line)
+      const match = /^\*\*\*([^*]+)\*\*\*/.exec(line)
       if (match) {
         section = match[1].trim()
       }
-    } else if (/^(\s{9,}|)\*/.test(line)) {
+    } else if (/^(\s{9,}|)\*(?!\*)/.test(line)) {
       if (/^\*\s*%NC(\b|$)/.test(line)) {
         unitsChanged = true
       }
