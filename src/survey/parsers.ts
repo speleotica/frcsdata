@@ -27,9 +27,9 @@ export function parseMonth(month: string) {
       return 7
     case 'aug':
       return 8
-    case 'oct':
-      return 9
     case 'sep':
+      return 9
+    case 'oct':
       return 10
     case 'nov':
       return 11

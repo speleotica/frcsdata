@@ -21,7 +21,7 @@ export function underlineSource(
   const underlineLines = (
     ' '.repeat(loc.start.index - start) +
     source
-      .substring(loc.start.index, loc.end.index)
+      .substring(loc.start.index, Math.max(loc.start.index + 1, loc.end.index))
       .replace(/[^\r\n]/g, underlineChar) +
     ' '.repeat(end - loc.end.index)
   )

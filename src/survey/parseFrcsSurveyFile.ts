@@ -176,7 +176,7 @@ export default async function parseFrcsSurveyFile(
         tripName = line && line.trim()
       } else if (lineNumber === tripCommentStartLine + 2) {
         const dateMatch =
-          /(?:[-.]\s*)?((\d+)[-/](\d+)[-/](\d{2,4})|((\d+)[-/ ](jan|january|feb|february|mar|march|apr|april|may|jun|june|jul|july|aug|august|sep|sept|september|oct|october|nov|november|dec|december)[-/ ](\d{2,4})))/i.exec(
+          /(?:[-.]\s*)?((\d+)[-/](\d+)[-/](\d{2,4})|((\d+)[-/ ](january|february|march|april|may|june|july|august|september|october|november|december|(?:jan|feb|mar|apr|jun|jul|aug|sept?|oct|nov|dec)\.?)[-/ ](\d{2,4}))|((january|february|march|april|may|june|july|august|september|october|november|december|(?:jan|feb|mar|apr|jun|jul|aug|sept?|oct|nov|dec)\.?)\s+(\d+)(?:,\s*|,?\s+)(\d{2,4})))/i.exec(
             line
           )
         if (dateMatch) {
@@ -184,18 +184,39 @@ export default async function parseFrcsSurveyFile(
           tripTeam = team
             .split(team.indexOf(';') >= 0 ? ';' : ',')
             .map((member) => member.trim())
+          if (!tripTeam.length) {
+            addIssue(
+              'warning',
+              'missingTeam',
+              'Missing team',
+              0,
+              dateMatch.index
+            )
+          }
           if (normalizeNames) tripTeam = tripTeam.map(normalizeTeamMemberName)
           let month, day, year
           if (dateMatch[2]) {
             month = parseInt(dateMatch[2])
             day = parseInt(dateMatch[3])
             year = parseInt(dateMatch[4])
-          } else {
+          } else if (dateMatch[6]) {
             day = parseInt(dateMatch[6])
             month = parseMonth(dateMatch[7])
             year = parseInt(dateMatch[8])
+          } else {
+            month = parseMonth(dateMatch[10])
+            day = parseInt(dateMatch[11])
+            year = parseInt(dateMatch[12])
           }
           tripDate = new Date(year < 70 ? year + 2000 : year, month - 1, day)
+        } else {
+          addIssue(
+            'warning',
+            'missingDate',
+            'Missing date',
+            line.length,
+            line.length
+          )
         }
       } else if (lineNumber > 1) {
         tripComment.push(line)

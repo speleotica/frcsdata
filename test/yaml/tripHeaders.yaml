@@ -326,3 +326,192 @@
               hasBacksightAzimuth: true
               hasBacksightInclination: true
             shots: []
+    - it: date - SEPT 10, 1983
+      procedure: parseFrcsSurveyFile
+      input: |2
+            cave
+        trip
+        Jim, Bob -  SEPT 10, 1983
+         *
+        FT C  DD
+      output:
+        cave: cave
+        trips:
+          - tripNumber: 1
+            header:
+              name: trip
+              date: 1983-09-10
+              team:
+                - Jim
+                - Bob
+            units:
+              distanceUnit: ft
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: true
+              backsightInclinationCorrected: false
+              hasBacksightAzimuth: true
+              hasBacksightInclination: false
+            shots: []
+    - it: date - SEP 10,1983
+      procedure: parseFrcsSurveyFile
+      input: |2
+            cave
+        trip
+        Jim, Bob -  SEP 10,1983
+         *
+        FT C  DD
+      output:
+        cave: cave
+        trips:
+          - tripNumber: 1
+            header:
+              name: trip
+              date: 1983-09-10
+              team:
+                - Jim
+                - Bob
+            units:
+              distanceUnit: ft
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: true
+              backsightInclinationCorrected: false
+              hasBacksightAzimuth: true
+              hasBacksightInclination: false
+            shots: []
+    - it: date - 10 SEP 1983
+      procedure: parseFrcsSurveyFile
+      input: |2
+            cave
+        trip
+        Jim, Bob -  10 SEP 1983
+         *
+        FT C  DD
+      output:
+        cave: cave
+        trips:
+          - tripNumber: 1
+            header:
+              name: trip
+              date: 1983-09-10
+              team:
+                - Jim
+                - Bob
+            units:
+              distanceUnit: ft
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: true
+              backsightInclinationCorrected: false
+              hasBacksightAzimuth: true
+              hasBacksightInclination: false
+            shots: []
+    - it: date - 10/SEP/1983
+      procedure: parseFrcsSurveyFile
+      input: |2
+            cave
+        trip
+        Jim, Bob -  10/SEP/1983
+         *
+        FT C  DD
+      output:
+        cave: cave
+        trips:
+          - tripNumber: 1
+            header:
+              name: trip
+              date: 1983-09-10
+              team:
+                - Jim
+                - Bob
+            units:
+              distanceUnit: ft
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: true
+              backsightInclinationCorrected: false
+              hasBacksightAzimuth: true
+              hasBacksightInclination: false
+            shots: []
+    - it: date - 10/03/1983
+      procedure: parseFrcsSurveyFile
+      input: |2
+            cave
+        trip
+        Jim, Bob -  10/03/1983
+         *
+        FT C  DD
+      output:
+        cave: cave
+        trips:
+          - tripNumber: 1
+            header:
+              name: trip
+              date: 1983-10-03
+              team:
+                - Jim
+                - Bob
+            units:
+              distanceUnit: ft
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: true
+              backsightInclinationCorrected: false
+              hasBacksightAzimuth: true
+              hasBacksightInclination: false
+            shots: []
+    - it: date - 10-3-83
+      procedure: parseFrcsSurveyFile
+      input: |2
+            cave
+        trip
+        Jim, Bob -  10-3-83
+         *
+        FT C  DD
+      output:
+        cave: cave
+        trips:
+          - tripNumber: 1
+            header:
+              name: trip
+              date: 1983-10-03
+              team:
+                - Jim
+                - Bob
+            units:
+              distanceUnit: ft
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: true
+              backsightInclinationCorrected: false
+              hasBacksightAzimuth: true
+              hasBacksightInclination: false
+            shots: []
+    - it: date - 10-3-25
+      procedure: parseFrcsSurveyFile
+      input: |2
+            cave
+        trip
+        Jim, Bob -  10-3-25
+         *
+        FT C  DD
+      output:
+        cave: cave
+        trips:
+          - tripNumber: 1
+            header:
+              name: trip
+              date: 2025-10-03
+              team:
+                - Jim
+                - Bob
+            units:
+              distanceUnit: ft
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: true
+              backsightInclinationCorrected: false
+              hasBacksightAzimuth: true
+              hasBacksightInclination: false
+            shots: []

@@ -35,14 +35,16 @@ export async function check(file: string) {
     0
   )
 
-  if (errorCount)
+  if (errorCount) {
     console.log(
       chalk.red(`✘ ${errorCount} error${errorCount === 1 ? '' : 's'}`)
     )
-  if (warningCount)
+  }
+  if (warningCount) {
     console.log(
       chalk.yellow(`⚠ ${warningCount} warning${warningCount === 1 ? '' : 's'}`)
     )
+  }
 
   process.exit(issues.some((i) => i.type === 'error') ? 1 : 0)
 }
