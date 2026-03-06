@@ -1,0 +1,725 @@
+- describe: shot errors
+  specs:
+    - it: missing distance
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        trip
+         *
+        FT CC DD
+          B19  B17          13.5  13.5 -0.5      12  0  4  3
+      output:
+        INVALID:
+          trips:
+            - INVALID:
+                tripNumber: 1
+                header:
+                  name: trip
+                units:
+                  distanceUnit: ft
+                  azimuthUnit: deg
+                  inclinationUnit: deg
+                  backsightAzimuthCorrected: true
+                  backsightInclinationCorrected: true
+                  hasBacksightAzimuth: true
+                  hasBacksightInclination: true
+                shots:
+                  - {
+                      INVALID:
+                        {
+                          from: B17,
+                          to: B19,
+                          frontsightAzimuth: [13.5, deg],
+                          frontsightInclination: [-0.5, deg],
+                          backsightAzimuth: [13.5, deg],
+                          toLruds:
+                            {
+                              left: [12, ft],
+                              right: [0, ft],
+                              up: [4, ft],
+                              down: [3, ft],
+                            },
+                        },
+                      issues: [0],
+                    }
+        issues:
+          - type: error
+            code: missingDistance
+            message: Missing distance
+            loc:
+              start: { line: 5, column: 10, index: 30 }
+              end: { line: 5, column: 16, index: 36 }
+    - it: missing feet and inches
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        trip
+         *
+        FI CC DD
+          B19  B17          13.5  13.5 -0.5      12  0  4  3
+      output:
+        INVALID:
+          trips:
+            - INVALID:
+                tripNumber: 1
+                header:
+                  name: trip
+                units:
+                  distanceUnit: in
+                  azimuthUnit: deg
+                  inclinationUnit: deg
+                  backsightAzimuthCorrected: true
+                  backsightInclinationCorrected: true
+                  hasBacksightAzimuth: true
+                  hasBacksightInclination: true
+                shots:
+                  - {
+                      INVALID:
+                        {
+                          from: B17,
+                          to: B19,
+                          frontsightAzimuth: [13.5, deg],
+                          frontsightInclination: [-0.5, deg],
+                          backsightAzimuth: [13.5, deg],
+                          toLruds:
+                            {
+                              left: [12, ft],
+                              right: [0, ft],
+                              up: [4, ft],
+                              down: [3, ft],
+                            },
+                        },
+                      issues: [0],
+                    }
+        issues:
+          - type: error
+            code: missingDistance
+            message: Missing distance
+            loc:
+              start: { line: 5, column: 10, index: 30 }
+              end: { line: 5, column: 17, index: 37 }
+    - it: invalid distance
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        trip
+         *
+        FT CC DD
+          B19  B17   a.4    13.5  13.5 -0.5      12  0  4  3
+      output:
+        INVALID:
+          trips:
+            - INVALID:
+                tripNumber: 1
+                header:
+                  name: trip
+                units:
+                  distanceUnit: ft
+                  azimuthUnit: deg
+                  inclinationUnit: deg
+                  backsightAzimuthCorrected: true
+                  backsightInclinationCorrected: true
+                  hasBacksightAzimuth: true
+                  hasBacksightInclination: true
+                shots:
+                  - {
+                      INVALID:
+                        {
+                          from: B17,
+                          to: B19,
+                          frontsightAzimuth: [13.5, deg],
+                          frontsightInclination: [-0.5, deg],
+                          backsightAzimuth: [13.5, deg],
+                          toLruds:
+                            {
+                              left: [12, ft],
+                              right: [0, ft],
+                              up: [4, ft],
+                              down: [3, ft],
+                            },
+                        },
+                      issues: [0],
+                    }
+        issues:
+          - type: error
+            code: invalidDistance
+            message: Invalid distance
+            loc:
+              start: { line: 5, column: 10, index: 30 }
+              end: { line: 5, column: 16, index: 36 }
+    - it: invalid feet
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        trip
+         *
+        FI CC DD
+          B19  B17   .  4   13.5  13.5 -0.5      12  0  4  3
+      output:
+        INVALID:
+          trips:
+            - INVALID:
+                tripNumber: 1
+                header:
+                  name: trip
+                units:
+                  distanceUnit: in
+                  azimuthUnit: deg
+                  inclinationUnit: deg
+                  backsightAzimuthCorrected: true
+                  backsightInclinationCorrected: true
+                  hasBacksightAzimuth: true
+                  hasBacksightInclination: true
+                shots:
+                  - {
+                      INVALID:
+                        {
+                          from: B17,
+                          to: B19,
+                          frontsightAzimuth: [13.5, deg],
+                          frontsightInclination: [-0.5, deg],
+                          backsightAzimuth: [13.5, deg],
+                          toLruds:
+                            {
+                              left: [12, ft],
+                              right: [0, ft],
+                              up: [4, ft],
+                              down: [3, ft],
+                            },
+                        },
+                      issues: [0],
+                    }
+        issues:
+          - type: error
+            code: invalidFeet
+            message: Invalid feet
+            loc:
+              start: { line: 5, column: 10, index: 30 }
+              end: { line: 5, column: 14, index: 34 }
+    - it: invalid inches
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        trip
+         *
+        FI CC DD
+          B19  B17   8  .   13.5  13.5 -0.5      12  0  4  3
+      output:
+        INVALID:
+          trips:
+            - INVALID:
+                tripNumber: 1
+                header:
+                  name: trip
+                units:
+                  distanceUnit: in
+                  azimuthUnit: deg
+                  inclinationUnit: deg
+                  backsightAzimuthCorrected: true
+                  backsightInclinationCorrected: true
+                  hasBacksightAzimuth: true
+                  hasBacksightInclination: true
+                shots:
+                  - {
+                      INVALID:
+                        {
+                          from: B17,
+                          to: B19,
+                          frontsightAzimuth: [13.5, deg],
+                          frontsightInclination: [-0.5, deg],
+                          backsightAzimuth: [13.5, deg],
+                          toLruds:
+                            {
+                              left: [12, ft],
+                              right: [0, ft],
+                              up: [4, ft],
+                              down: [3, ft],
+                            },
+                        },
+                      issues: [0],
+                    }
+        issues:
+          - type: error
+            code: invalidInches
+            message: Invalid inches
+            loc:
+              start: { line: 5, column: 14, index: 34 }
+              end: { line: 5, column: 17, index: 37 }
+    - it: invalid frontsight azimuth
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        trip
+         *
+        FT CC DD
+          B19  B17   8.4      .   13.5 -0.5      12  0  4  3
+      output:
+        INVALID:
+          trips:
+            - INVALID:
+                tripNumber: 1
+                header:
+                  name: trip
+                units:
+                  distanceUnit: ft
+                  azimuthUnit: deg
+                  inclinationUnit: deg
+                  backsightAzimuthCorrected: true
+                  backsightInclinationCorrected: true
+                  hasBacksightAzimuth: true
+                  hasBacksightInclination: true
+                shots:
+                  - {
+                      INVALID:
+                        {
+                          from: B17,
+                          to: B19,
+                          distance: [8.4, ft],
+                          frontsightInclination: [-0.5, deg],
+                          backsightAzimuth: [13.5, deg],
+                          toLruds:
+                            {
+                              left: [12, ft],
+                              right: [0, ft],
+                              up: [4, ft],
+                              down: [3, ft],
+                            },
+                        },
+                      issues: [0],
+                    }
+        issues:
+          - type: error
+            code: invalidAzimuth
+            message: Invalid azimuth
+            loc:
+              start: { line: 5, column: 18, index: 38 }
+              end: { line: 5, column: 24, index: 44 }
+    - it: invalid backsight azimuth
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        trip
+         *
+        FT CC DD
+          B19  B17   8.4    13.5    .  -0.5      12  0  4  3
+      output:
+        INVALID:
+          trips:
+            - INVALID:
+                tripNumber: 1
+                header:
+                  name: trip
+                units:
+                  distanceUnit: ft
+                  azimuthUnit: deg
+                  inclinationUnit: deg
+                  backsightAzimuthCorrected: true
+                  backsightInclinationCorrected: true
+                  hasBacksightAzimuth: true
+                  hasBacksightInclination: true
+                shots:
+                  - {
+                      INVALID:
+                        {
+                          from: B17,
+                          to: B19,
+                          distance: [8.4, ft],
+                          frontsightInclination: [-0.5, deg],
+                          frontsightAzimuth: [13.5, deg],
+                          toLruds:
+                            {
+                              left: [12, ft],
+                              right: [0, ft],
+                              up: [4, ft],
+                              down: [3, ft],
+                            },
+                        },
+                      issues: [0],
+                    }
+        issues:
+          - type: error
+            code: invalidAzimuth
+            message: Invalid azimuth
+            loc:
+              start: { line: 5, column: 24, index: 44 }
+              end: { line: 5, column: 30, index: 50 }
+    - it: invalid frontsight inclination
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        trip
+         *
+        FT CC DD
+          B19  B17   8.4    13.8  13.5 -    24.0 12  0  4  3
+      output:
+        INVALID:
+          trips:
+            - INVALID:
+                tripNumber: 1
+                header:
+                  name: trip
+                units:
+                  distanceUnit: ft
+                  azimuthUnit: deg
+                  inclinationUnit: deg
+                  backsightAzimuthCorrected: true
+                  backsightInclinationCorrected: true
+                  hasBacksightAzimuth: true
+                  hasBacksightInclination: true
+                shots:
+                  - {
+                      INVALID:
+                        {
+                          from: B17,
+                          to: B19,
+                          distance: [8.4, ft],
+                          frontsightAzimuth: [13.8, deg],
+                          backsightAzimuth: [13.5, deg],
+                          backsightInclination: [24, deg],
+                          toLruds:
+                            {
+                              left: [12, ft],
+                              right: [0, ft],
+                              up: [4, ft],
+                              down: [3, ft],
+                            },
+                        },
+                      issues: [0],
+                    }
+        issues:
+          - type: error
+            code: invalidInclination
+            message: Invalid inclination
+            loc:
+              start: { line: 5, column: 30, index: 50 }
+              end: { line: 5, column: 35, index: 55 }
+    - it: invalid backsight inclination
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        trip
+         *
+        FT CC DD
+          B19  B17   8.4    13.8  13.5 24.0   .  12  0  4  3
+      output:
+        INVALID:
+          trips:
+            - INVALID:
+                tripNumber: 1
+                header:
+                  name: trip
+                units:
+                  distanceUnit: ft
+                  azimuthUnit: deg
+                  inclinationUnit: deg
+                  backsightAzimuthCorrected: true
+                  backsightInclinationCorrected: true
+                  hasBacksightAzimuth: true
+                  hasBacksightInclination: true
+                shots:
+                  - {
+                      INVALID:
+                        {
+                          from: B17,
+                          to: B19,
+                          distance: [8.4, ft],
+                          frontsightAzimuth: [13.8, deg],
+                          backsightAzimuth: [13.5, deg],
+                          frontsightInclination: [24, deg],
+                          toLruds:
+                            {
+                              left: [12, ft],
+                              right: [0, ft],
+                              up: [4, ft],
+                              down: [3, ft],
+                            },
+                        },
+                      issues: [0],
+                    }
+        issues:
+          - type: error
+            code: invalidInclination
+            message: Invalid inclination
+            loc:
+              start: { line: 5, column: 35, index: 55 }
+              end: { line: 5, column: 40, index: 60 }
+    - it: invalid left
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        trip
+         *
+        FT CC DD
+          B19  B17   2.4    13.5  13.5 -0.5       a  0  4  3
+      output:
+        INVALID:
+          trips:
+            - INVALID:
+                tripNumber: 1
+                header:
+                  name: trip
+                units:
+                  distanceUnit: ft
+                  azimuthUnit: deg
+                  inclinationUnit: deg
+                  backsightAzimuthCorrected: true
+                  backsightInclinationCorrected: true
+                  hasBacksightAzimuth: true
+                  hasBacksightInclination: true
+                shots:
+                  - {
+                      INVALID:
+                        {
+                          from: B17,
+                          to: B19,
+                          distance: [2.4, ft],
+                          frontsightAzimuth: [13.5, deg],
+                          frontsightInclination: [-0.5, deg],
+                          backsightAzimuth: [13.5, deg],
+                          toLruds:
+                            { right: [0, ft], up: [4, ft], down: [3, ft] },
+                        },
+                      issues: [0],
+                    }
+        issues:
+          - type: error
+            code: invalidLeft
+            message: Invalid left
+            loc:
+              start: { line: 5, column: 40, index: 60 }
+              end: { line: 5, column: 43, index: 63 }
+    - it: invalid right
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        trip
+         *
+        FT CC DD
+          B19  B17   2.4    13.5  13.5 -0.5      12  -  4  3
+      output:
+        INVALID:
+          trips:
+            - INVALID:
+                tripNumber: 1
+                header:
+                  name: trip
+                units:
+                  distanceUnit: ft
+                  azimuthUnit: deg
+                  inclinationUnit: deg
+                  backsightAzimuthCorrected: true
+                  backsightInclinationCorrected: true
+                  hasBacksightAzimuth: true
+                  hasBacksightInclination: true
+                shots:
+                  - {
+                      INVALID:
+                        {
+                          from: B17,
+                          to: B19,
+                          distance: [2.4, ft],
+                          frontsightAzimuth: [13.5, deg],
+                          frontsightInclination: [-0.5, deg],
+                          backsightAzimuth: [13.5, deg],
+                          toLruds:
+                            { left: [12, ft], up: [4, ft], down: [3, ft] },
+                        },
+                      issues: [0],
+                    }
+        issues:
+          - type: error
+            code: invalidRight
+            message: Invalid right
+            loc:
+              start: { line: 5, column: 43, index: 63 }
+              end: { line: 5, column: 46, index: 66 }
+    - it: invalid up
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        trip
+         *
+        FT CC DD
+          B19  B17   2.4    13.5  13.5 -0.5      12  0  a  3
+      output:
+        INVALID:
+          trips:
+            - INVALID:
+                tripNumber: 1
+                header:
+                  name: trip
+                units:
+                  distanceUnit: ft
+                  azimuthUnit: deg
+                  inclinationUnit: deg
+                  backsightAzimuthCorrected: true
+                  backsightInclinationCorrected: true
+                  hasBacksightAzimuth: true
+                  hasBacksightInclination: true
+                shots:
+                  - {
+                      INVALID:
+                        {
+                          from: B17,
+                          to: B19,
+                          distance: [2.4, ft],
+                          frontsightAzimuth: [13.5, deg],
+                          frontsightInclination: [-0.5, deg],
+                          backsightAzimuth: [13.5, deg],
+                          toLruds:
+                            { left: [12, ft], right: [0, ft], down: [3, ft] },
+                        },
+                      issues: [0],
+                    }
+        issues:
+          - type: error
+            code: invalidUp
+            message: Invalid up
+            loc:
+              start: { line: 5, column: 46, index: 66 }
+              end: { line: 5, column: 49, index: 69 }
+    - it: invalid down
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        trip
+         *
+        FT CC DD
+          B19  B17   2.4    13.5  13.5 -0.5      12  0  1  .
+      output:
+        INVALID:
+          trips:
+            - INVALID:
+                tripNumber: 1
+                header:
+                  name: trip
+                units:
+                  distanceUnit: ft
+                  azimuthUnit: deg
+                  inclinationUnit: deg
+                  backsightAzimuthCorrected: true
+                  backsightInclinationCorrected: true
+                  hasBacksightAzimuth: true
+                  hasBacksightInclination: true
+                shots:
+                  - {
+                      INVALID:
+                        {
+                          from: B17,
+                          to: B19,
+                          distance: [2.4, ft],
+                          frontsightAzimuth: [13.5, deg],
+                          frontsightInclination: [-0.5, deg],
+                          backsightAzimuth: [13.5, deg],
+                          toLruds:
+                            { left: [12, ft], right: [0, ft], up: [1, ft] },
+                        },
+                      issues: [0],
+                    }
+        issues:
+          - type: error
+            code: invalidDown
+            message: Invalid down
+            loc:
+              start: { line: 5, column: 49, index: 69 }
+              end: { line: 5, column: 52, index: 72 }
+    - it: invalid shot flag
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        trip
+         *
+        FT CC DD
+          B19  B17   2.4 q  13.5  13.5 -0.5      12  0  1  3
+      output:
+        INVALID:
+          trips:
+            - INVALID:
+                tripNumber: 1
+                header:
+                  name: trip
+                units:
+                  distanceUnit: ft
+                  azimuthUnit: deg
+                  inclinationUnit: deg
+                  backsightAzimuthCorrected: true
+                  backsightInclinationCorrected: true
+                  hasBacksightAzimuth: true
+                  hasBacksightInclination: true
+                shots:
+                  - {
+                      INVALID:
+                        {
+                          from: B17,
+                          to: B19,
+                          distance: [2.4, ft],
+                          frontsightAzimuth: [13.5, deg],
+                          frontsightInclination: [-0.5, deg],
+                          backsightAzimuth: [13.5, deg],
+                          toLruds:
+                            {
+                              left: [12, ft],
+                              right: [0, ft],
+                              up: [1, ft],
+                              down: [3, ft],
+                            },
+                        },
+                      issues: [0],
+                    }
+        issues:
+          - type: error
+            code: invalidShotFlag
+            message: Invalid shot flag
+            loc:
+              start: { line: 5, column: 17, index: 37 }
+              end: { line: 5, column: 18, index: 38 }
+    - it: invalid shot type
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        trip
+         *
+        FT CC DD
+          B19  B17   2.4G   13.5  13.5 -0.5      12  0  1  3
+      output:
+        INVALID:
+          trips:
+            - INVALID:
+                tripNumber: 1
+                header:
+                  name: trip
+                units:
+                  distanceUnit: ft
+                  azimuthUnit: deg
+                  inclinationUnit: deg
+                  backsightAzimuthCorrected: true
+                  backsightInclinationCorrected: true
+                  hasBacksightAzimuth: true
+                  hasBacksightInclination: true
+                shots:
+                  - {
+                      INVALID:
+                        {
+                          from: B17,
+                          to: B19,
+                          distance: [2.4, ft],
+                          frontsightAzimuth: [13.5, deg],
+                          frontsightInclination: [-0.5, deg],
+                          backsightAzimuth: [13.5, deg],
+                          toLruds:
+                            {
+                              left: [12, ft],
+                              right: [0, ft],
+                              up: [1, ft],
+                              down: [3, ft],
+                            },
+                        },
+                      issues: [0],
+                    }
+        issues:
+          - type: error
+            code: invalidShotType
+            message: Invalid shot type
+            loc:
+              start: { line: 5, column: 16, index: 36 }
+              end: { line: 5, column: 17, index: 37 }

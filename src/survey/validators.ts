@@ -12,17 +12,13 @@ export function isValidFloat(s: string): boolean {
 }
 // determines if a cell contains a valid unsigned float or whitespace.
 export function isValidOptFloat(s: string): boolean {
-  return /^\s*[-+]?[0-9]*(\.[0-9]*)?\s*$/.test(s)
+  return /^\s*([-+]?([0-9]+(\.[0-9]*)?|\.[0-9]+))?\s*$/.test(s)
 }
 // determines if a cell contains a valid unsigned float or whitespace.
 export function isValidOptUFloat(s: string): boolean {
-  return /^\s*[0-9]*(\.[0-9]*)?\s*$/.test(s)
+  return /^\s*([0-9]+(\.[0-9]*)?|\.[0-9]+)?\s*$/.test(s)
 }
 // determines if a cell contains a valid unsigned float.
 export function isValidUFloat(s: string): boolean {
   return /^\s*([0-9]+(\.[0-9]*)?|\.[0-9]+)\s*$/.test(s)
-}
-// determines if a cell contains a valid inclination or whitespace.
-export function isValidOptInclination(s: string): boolean {
-  return /^\s*[-+]?[0-9]*(\.[0-9]*)?\s*$/.test(s)
 }

@@ -20,7 +20,6 @@ import {
   isValidUInt,
   isValidUFloat,
   isValidFloat,
-  isValidOptInclination,
 } from './validators'
 import { getColumnRanges } from './getColumnRanges'
 import {
@@ -381,65 +380,79 @@ export default async function parseFrcsSurveyFile(
       const incFsStr = line.substring(...ranges.frontsightInclination)
       const incBsStr = line.substring(...ranges.backsightInclination)
 
-      let specialKind: FrcsShot['specialKind']
       let distance: UnitizedNumber<Length> | undefined
       let horizontalDistance: UnitizedNumber<Length> | undefined
       let verticalDistance: UnitizedNumber<Length> | undefined
       let frontsightInclination: UnitizedNumber<Angle> | undefined
       let backsightInclination: UnitizedNumber<Angle> | undefined
-      let excludeDistance: boolean | undefined
-      let isSplay: boolean | undefined
 
       // parse distance
       if (inches) {
-        const feetStr = line.substring(...ranges.distanceFeet)
-        const inchesStr = line.substring(...ranges.distanceInches)
-        // feet and inches are not both optional
-        if (!isValidUInt(feetStr) && !isValidUInt(inchesStr)) {
-          const invalid = feetStr.trim() || inchesStr.trim()
+        const feetStr = validate(
+          ...ranges.distanceFeet,
+          'feet',
+          isValidOptUFloat
+        )
+        const inchesStr = validate(
+          ...ranges.distanceInches,
+          'inches',
+          isValidOptUFloat
+        )
+        if (!/\S/.test(feetStr) && !/\S/.test(inchesStr)) {
           addIssue(
             'error',
-            invalid ? 'invalidDistance' : 'missingDistance',
-            invalid ? 'Invalid distance' : 'Missing distance',
+            'missingDistance',
+            'Missing distance',
             ranges.distanceFeet[0],
             ranges.distanceInches[1]
           )
-          // continue
-        } else {
-          // sometimes inches are omitted, hence the || 0...I'm assuming it's possible
-          // for feet to be omitted as well
+        }
+        // sometimes inches are omitted, hence the || 0...I'm assuming it's possible
+        // for feet to be omitted as well
+        else if (
+          (isValidUInt(feetStr) && isValidOptUFloat(inchesStr)) ||
+          (isValidOptUFloat(feetStr) && isValidUInt(inchesStr))
+        ) {
           distance = Unitize.inches(parseFloat(inchesStr) || 0).add(
             Unitize.feet(parseFloat(feetStr) || 0)
           )
         }
-        const offset =
-          ranges.kind[0] === ranges.distance[1]
-            ? ranges.distanceInches[1] - ranges.distance[1]
-            : 0
-        specialKind = parseSpecialKind(
-          line
-            .substring(ranges.kind[0] + offset, ranges.kind[1] + offset)
-            .trim()
-        )
-        const exclude = line
-          .substring(ranges.exclude[0] + offset, ranges.exclude[1] + offset)
-          .trim()
         // NOTE there are two columns around here that can contain a *.
         // I think they might represent different values, but thisis confused by
         // the fact that for ft/in shots, if there is a D or H flag it occupies the
         // first column that can contain a * for decimal feet shots
-        excludeDistance = exclude === '*' || exclude === 's'
-        isSplay = exclude === 's'
       } else {
         const distStr = validate(...ranges.distance, 'distance', isValidUFloat)
         const distNum = parseFloat(distStr)
         distance = Number.isFinite(distNum)
           ? new UnitizedNumber(distNum, distanceUnit)
           : undefined
-        specialKind = parseSpecialKind(line.substring(...ranges.kind).trim())
-        const exclude = line.substring(...ranges.exclude).trim()
-        excludeDistance = exclude === '*' || exclude === 's'
-        isSplay = exclude === 's'
+      }
+      const specialKindStr = line.substring(...ranges.kind).trim()
+      const exclude = line.substring(...ranges.exclude).trim()
+      const specialKind = parseSpecialKind(specialKindStr)
+
+      if (specialKindStr && !specialKind) {
+        addIssue(
+          'error',
+          'invalidShotType',
+          'Invalid shot type',
+          ranges.kind[0],
+          ranges.kind[1]
+        )
+      }
+
+      const excludeDistance = exclude === '*' || exclude === 's'
+      const isSplay = exclude === 's'
+
+      if (exclude && !excludeDistance) {
+        addIssue(
+          'error',
+          'invalidShotFlag',
+          'Invalid shot flag',
+          ranges.exclude[0],
+          ranges.exclude[1]
+        )
       }
 
       if (specialKind) {
@@ -484,14 +497,10 @@ export default async function parseFrcsSurveyFile(
         validate(
           ...ranges.frontsightInclination,
           'inclination',
-          isValidOptInclination
+          isValidOptFloat
         )
         // backsight inclination
-        validate(
-          ...ranges.backsightInclination,
-          'inclination',
-          isValidOptInclination
-        )
+        validate(...ranges.backsightInclination, 'inclination', isValidOptFloat)
         frontsightInclination = parseNumber(incFsStr, inclinationUnit)
         backsightInclination = parseNumber(incBsStr, inclinationUnit)
       }
@@ -746,7 +755,9 @@ export default async function parseFrcsSurveyFile(
     if (!validator(field)) {
       addIssue(
         'error',
-        `invalid${fieldName[0].toUpperCase()}${fieldName.substring(1)}`,
+        `${
+          field.trim() ? 'invalid' : 'missing'
+        }${fieldName[0].toUpperCase()}${fieldName.substring(1)}`,
         (field.trim() ? 'Invalid ' : 'Missing ') + fieldName,
         startColumn,
         endColumn

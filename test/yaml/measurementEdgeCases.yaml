@@ -146,3 +146,77 @@
                     },
                   excludeDistance: true,
                 }
+    - it: omitted inches
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        trip
+         *
+        FI CC DD
+          B19  B17   8      13.5  13.8 -0.5      12  0  4  3
+      output:
+        trips:
+          - tripNumber: 1
+            header:
+              name: trip
+            units:
+              distanceUnit: in
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: true
+              backsightInclinationCorrected: true
+              hasBacksightAzimuth: true
+              hasBacksightInclination: true
+            shots:
+              - {
+                  from: B17,
+                  to: B19,
+                  distance: [96, in],
+                  frontsightAzimuth: [13.5, deg],
+                  backsightAzimuth: [13.8, deg],
+                  frontsightInclination: [-0.5, 'deg'],
+                  toLruds:
+                    {
+                      left: [12, ft],
+                      right: [0, ft],
+                      up: [4, ft],
+                      down: [3, ft],
+                    },
+                }
+    - it: omitted feet
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        trip
+         *
+        FI CC DD
+          B19  B17      4   13.5  13.8 -0.5      12  0  4  3
+      output:
+        trips:
+          - tripNumber: 1
+            header:
+              name: trip
+            units:
+              distanceUnit: in
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: true
+              backsightInclinationCorrected: true
+              hasBacksightAzimuth: true
+              hasBacksightInclination: true
+            shots:
+              - {
+                  from: B17,
+                  to: B19,
+                  distance: [4, in],
+                  frontsightAzimuth: [13.5, deg],
+                  backsightAzimuth: [13.8, deg],
+                  frontsightInclination: [-0.5, 'deg'],
+                  toLruds:
+                    {
+                      left: [12, ft],
+                      right: [0, ft],
+                      up: [4, ft],
+                      down: [3, ft],
+                    },
+                }
