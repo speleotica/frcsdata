@@ -11,7 +11,7 @@ export function underlineSource(
   let start = source.lastIndexOf('\n', loc.start.index)
   if (start < 0) start = source.lastIndexOf('\r', loc.start.index)
   if (start < 0) start = -1
-  start++
+  if (start < loc.start.index) start++
 
   let end = source.indexOf('\r', loc.end.index)
   if (end < 0) end = source.indexOf('\n', loc.end.index)
