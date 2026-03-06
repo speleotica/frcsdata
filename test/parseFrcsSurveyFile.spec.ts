@@ -8,7 +8,7 @@ import fs from 'node:fs'
 import fsPromises from 'node:fs/promises'
 import { Readable } from 'node:stream'
 import { FrcsSurveyFile } from '../src/survey/FrcsSurveyFile'
-import { ParseFrcsSurveyFileOptions } from '../src/survey/parseFrcsSurveyFile'
+import { ParseFrcsSurveyFileOptions } from '../src/survey/FrcsSurveyFile'
 
 const reviver = (key: any, x: any) =>
   x instanceof Unit || x instanceof UnitizedNumber ? x.toString() : x

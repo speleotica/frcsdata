@@ -1,4 +1,8 @@
-import { FrcsSurveyFile, InvalidFrcsSurveyFile } from './FrcsSurveyFile'
+import {
+  FrcsSurveyFile,
+  InvalidFrcsSurveyFile,
+  ParseFrcsSurveyFileOptions,
+} from './FrcsSurveyFile'
 
 import { Unit, Length, Angle, UnitizedNumber } from '@speleotica/unitized'
 import { ParseIssue } from '../ParseIssue'
@@ -37,3 +41,6 @@ export type DeepMapJson<T> = T extends
 export type FrcsSurveyFileJson = DeepMapJson<FrcsSurveyFile>
 
 export type InvalidFrcsSurveyFileJson = DeepMapJson<InvalidFrcsSurveyFile>
+
+export type ParseFrcsSurveyFileOptionsJson =
+  DeepMapJson<ParseFrcsSurveyFileOptions>

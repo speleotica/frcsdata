@@ -1,8 +1,6 @@
-import {
-  type FrcsShotColumnConfig,
-  defaultFrcsShotColumnConfig,
-} from './FrcsSurveyFile'
+import { defaultFrcsShotColumnConfig } from './FrcsSurveyFile'
 import type {
+  ParseFrcsSurveyFileOptions,
   FrcsSurveyFile,
   FrcsTrip,
   FrcsUnits,
@@ -36,12 +34,6 @@ import {
   parseAzimuth,
 } from './parsers'
 import { normalizeTeamMemberName } from './normalizeTeamMemberName'
-
-export type ParseFrcsSurveyFileOptions = {
-  columns?: FrcsShotColumnConfig
-  outputColumns?: boolean
-  normalizeNames?: boolean
-}
 
 /**
    * Parses a raw cdata.fr survey file.  These look like so:
@@ -95,6 +87,7 @@ export default async function parseFrcsSurveyFile(
     columns = defaultFrcsShotColumnConfig,
     outputColumns = false,
     normalizeNames = true,
+    suppressWarnings,
   }: ParseFrcsSurveyFileOptions = {}
 ): Promise<FrcsSurveyFile | InvalidFrcsSurveyFile> {
   const columnRanges = getColumnRanges(columns)
@@ -132,6 +125,7 @@ export default async function parseFrcsSurveyFile(
   let lineStartIndex = 0
 
   let lineIssues: number[] = []
+  let tripIssues: number[] = []
 
   let began = false
 
@@ -183,14 +177,15 @@ export default async function parseFrcsSurveyFile(
           const team = line.substring(0, dateMatch.index)
           tripTeam = team
             .split(team.indexOf(';') >= 0 ? ';' : ',')
-            .map((member) => member.trim())
+            .flatMap((member) => member.trim() || [])
           if (!tripTeam.length) {
             addIssue(
               'warning',
-              'missingTeam',
+              'missingTripTeam',
               'Missing team',
               0,
-              dateMatch.index
+              dateMatch.index,
+              tripIssues
             )
           }
           if (normalizeNames) tripTeam = tripTeam.map(normalizeTeamMemberName)
@@ -212,10 +207,11 @@ export default async function parseFrcsSurveyFile(
         } else {
           addIssue(
             'warning',
-            'missingDate',
+            'missingTripDate',
             'Missing date',
             line.length,
-            line.length
+            line.length,
+            tripIssues
           )
         }
       } else if (lineNumber > 1) {
@@ -251,13 +247,17 @@ export default async function parseFrcsSurveyFile(
         team: tripTeam,
       }
       const units = parseUnits()
-      if ('INVALID' in units) {
+      if (
+        'INVALID' in units ||
+        tripIssues.some((i) => issues[i]?.type === 'error')
+      ) {
         trip = {
           INVALID: {
             header,
             units,
             shots: [],
           },
+          ...(tripIssues.length ? { issues: tripIssues } : {}),
         }
       } else {
         trip = {
@@ -267,6 +267,7 @@ export default async function parseFrcsSurveyFile(
           shots: [],
         }
       }
+      tripIssues = []
     } else if (trip) {
       let distanceUnit =
         unwrapInvalid(alternateUnits)?.distanceUnit ||
@@ -498,7 +499,7 @@ export default async function parseFrcsSurveyFile(
       const frontsightAzimuth = parseAzimuth(azmFsStr, azimuthUnit)
       const backsightAzimuth = parseAzimuth(azmBsStr, azimuthUnit)
 
-      if (!incFsStr && !incBsStr) {
+      if (!/\S/.test(incFsStr) && !/\S/.test(incBsStr)) {
         frontsightInclination = Unitize.degrees(0)
       }
 
@@ -569,12 +570,16 @@ export default async function parseFrcsSurveyFile(
     })
     .forEach(({ trip }, index) => (trip.tripNumber = index + 1))
 
-  if (!issues.length && trips.every((t): t is FrcsTrip => !('INVALID' in t))) {
+  if (
+    !issues.some((i) => i.type === 'error') &&
+    trips.every((t): t is FrcsTrip => !('INVALID' in t))
+  ) {
     return {
       cave,
       columns: outputColumns ? columns : undefined,
       location,
       trips,
+      ...(issues.length ? { issues } : undefined),
     }
   }
 
@@ -625,8 +630,19 @@ export default async function parseFrcsSurveyFile(
     code: string,
     message: string,
     startColumn: number,
-    endColumn: number
-  ): number {
+    endColumn: number,
+    indicesArray?: number[]
+  ) {
+    if (
+      suppressWarnings &&
+      type === 'warning' &&
+      (suppressWarnings === true ||
+        ('code' in suppressWarnings &&
+          suppressWarnings[code as keyof typeof suppressWarnings] === true))
+    ) {
+      return
+    }
+
     issues.push({
       type,
       code,
@@ -646,7 +662,7 @@ export default async function parseFrcsSurveyFile(
     })
     if (!lineIssues) lineIssues = []
     lineIssues.push(issues.length - 1)
-    return issues.length - 1
+    indicesArray?.push(issues.length - 1)
   }
 
   function parseUnits(): FrcsUnits | InvalidFrcsUnits {

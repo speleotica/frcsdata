@@ -203,3 +203,15 @@ export const defaultFrcsShotColumnConfig: FrcsShotColumnConfig = {
   up: 3,
   down: 3,
 }
+
+export type ParseFrcsSurveyFileOptions = {
+  columns?: FrcsShotColumnConfig
+  outputColumns?: boolean
+  normalizeNames?: boolean
+  suppressWarnings?:
+    | boolean
+    | {
+        missingTripTeam?: boolean
+        missingTripDate?: boolean
+      }
+}

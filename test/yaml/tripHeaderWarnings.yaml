@@ -1,0 +1,62 @@
+- describe: trip header warnings
+  specs:
+    - it: missing trip date
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        trip
+        jim, bob.
+         *
+        FT CC DD
+      output:
+        trips:
+          - tripNumber: 1
+            header:
+              name: trip
+            units:
+              distanceUnit: ft
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: true
+              backsightInclinationCorrected: true
+              hasBacksightAzimuth: true
+              hasBacksightInclination: true
+            shots: []
+        issues:
+          - type: warning
+            code: missingTripDate
+            message: Missing date
+            loc:
+              start: { line: 3, column: 9, index: 17 }
+              end: { line: 3, column: 9, index: 17 }
+    - it: missing trip team
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        trip
+        12/03/2024
+         *
+        FT CC DD
+      output:
+        trips:
+          - tripNumber: 1
+            header:
+              name: trip
+              date: 2024-12-03
+              team: []
+            units:
+              distanceUnit: ft
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: true
+              backsightInclinationCorrected: true
+              hasBacksightAzimuth: true
+              hasBacksightInclination: true
+            shots: []
+        issues:
+          - type: warning
+            code: missingTripTeam
+            message: Missing team
+            loc:
+              start: { line: 3, column: 0, index: 8 }
+              end: { line: 3, column: 0, index: 8 }

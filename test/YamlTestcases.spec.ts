@@ -24,11 +24,11 @@ function convert(testcase: (typeof testcases)[number]) {
   } else {
     it(testcase.it, async function () {
       if (testcase.procedure === 'parseFrcsSurveyFile') {
-        const { input, output } = testcase
+        const { input, options, output } = testcase
         const actual = JSON.parse(
           JSON.stringify(
             ZodValidOrInvalidFrcsSurveyFileToJson.parse(
-              await parseFrcsSurveyFile('cdata.fr', input)
+              await parseFrcsSurveyFile('cdata.fr', input, options)
             )
           )
         )

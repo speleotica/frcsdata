@@ -13,6 +13,7 @@ import type {
   InvalidFrcsTrip,
   InvalidFrcsTripHeader,
   InvalidFrcsUnits,
+  ParseFrcsSurveyFileOptions,
 } from './FrcsSurveyFile'
 import { ParseIssue } from '../ParseIssue'
 
@@ -162,27 +163,27 @@ const ZodFrcsTrip = z.strictObject({
 
 ZodFrcsTrip satisfies DeepMapJsonSchema<FrcsTrip>
 
+export const ZodFrcsShotColumnConfigJson = z.strictObject({
+  toStation: z.number(),
+  fromStation: z.number(),
+  distance: z.number(),
+  distanceFeet: z.number(),
+  distanceInches: z.number(),
+  kind: z.number(),
+  exclude: z.number(),
+  frontsightAzimuth: z.number(),
+  backsightAzimuth: z.number(),
+  frontsightInclination: z.number(),
+  backsightInclination: z.number(),
+  left: z.number(),
+  right: z.number(),
+  up: z.number(),
+  down: z.number(),
+})
+
 export const ZodFrcsSurveyFileJson = z.strictObject({
   cave: z.string().optional(),
-  columns: z
-    .strictObject({
-      toStation: z.number(),
-      fromStation: z.number(),
-      distance: z.number(),
-      distanceFeet: z.number(),
-      distanceInches: z.number(),
-      kind: z.number(),
-      exclude: z.number(),
-      frontsightAzimuth: z.number(),
-      backsightAzimuth: z.number(),
-      frontsightInclination: z.number(),
-      backsightInclination: z.number(),
-      left: z.number(),
-      right: z.number(),
-      up: z.number(),
-      down: z.number(),
-    })
-    .optional(),
+  columns: ZodFrcsShotColumnConfigJson.optional(),
   location: z.string().optional(),
   comment: z.string().optional(),
   trips: z.array(ZodFrcsTrip),
@@ -241,3 +242,19 @@ export const ZodValidOrInvalidFrcsSurveyFileJson = z.union([
   ZodInvalidFrcsSurveyFileJson,
   ZodFrcsSurveyFileJson,
 ])
+
+export const ZodParseFrcsSurveyFileOptionsJson = z.object({
+  columns: ZodFrcsShotColumnConfigJson.optional(),
+  outputColumns: z.boolean().optional(),
+  normalizeNames: z.boolean().optional(),
+  suppressWarnings: z
+    .union([
+      z.boolean(),
+      z
+        .object({ missingTripTeam: z.boolean(), missingTripDate: z.boolean() })
+        .partial(),
+    ])
+    .optional(),
+})
+
+ZodParseFrcsSurveyFileOptionsJson satisfies DeepMapJsonSchema<ParseFrcsSurveyFileOptions>

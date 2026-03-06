@@ -1,6 +1,5 @@
-import _parseFrcsSurveyFile, {
-  ParseFrcsSurveyFileOptions,
-} from '../survey/parseFrcsSurveyFile'
+import _parseFrcsSurveyFile from '../survey/parseFrcsSurveyFile'
+import { ParseFrcsSurveyFileOptions } from '../survey/FrcsSurveyFile'
 import _parseFrcsPlotFile from '../parseFrcsPlotFile'
 import _parseFrcsTripSummaryFile from '../parseFrcsTripSummaryFile'
 import type {
