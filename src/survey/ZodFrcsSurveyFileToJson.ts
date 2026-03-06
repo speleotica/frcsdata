@@ -14,7 +14,7 @@ import type {
   InvalidFrcsTripHeader,
   InvalidFrcsUnits,
 } from './FrcsSurveyFile'
-import { ParseError } from '../ParseError'
+import { ParseIssue } from '../ParseIssue'
 
 type DeepMapJsonSchema<T> = z.ZodType<DeepMapJson<T>, any, T>
 
@@ -247,6 +247,7 @@ export const ZodFrcsSurveyFileToJson = z.strictObject({
       comment: ZodSourceLoc.optional(),
     })
     .optional(),
+  issues: z.array(ParseIssue).optional(),
 })
 
 ZodFrcsSurveyFileToJson satisfies DeepMapJsonSchema<FrcsSurveyFile>
@@ -254,7 +255,7 @@ ZodFrcsSurveyFileToJson satisfies DeepMapJsonSchema<FrcsSurveyFile>
 function Invalid<T extends z.ZodTypeAny>(schema: T) {
   return z.strictObject({
     INVALID: schema,
-    errors: z.array(z.number()).optional(),
+    issues: z.array(z.number()).optional(),
   })
 }
 
@@ -285,7 +286,7 @@ export const ZodInvalidFrcsSurveyFileToJson = z.strictObject({
   INVALID: ZodFrcsSurveyFileToJson.extend({
     trips: z.array(z.union([ZodInvalidFrcsTrip, ZodFrcsTrip])),
   }),
-  errors: z.array(ParseError),
+  issues: z.array(ParseIssue),
 })
 
 ZodInvalidFrcsSurveyFileToJson satisfies DeepMapJsonSchema<InvalidFrcsSurveyFile>

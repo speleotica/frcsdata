@@ -13,7 +13,7 @@ import type {
   InvalidFrcsShot,
 } from './FrcsSurveyFile'
 import { Angle, Length, UnitizedNumber, Unitize } from '@speleotica/unitized'
-import { ParseError } from '../ParseError'
+import { ParseIssue, ParseIssueSeverity } from '../ParseIssue'
 import { chunksToLines } from '../chunksToLines'
 import {
   isValidStation,
@@ -97,13 +97,15 @@ export default async function parseFrcsSurveyFile(
     normalizeNames = true,
   }: ParseFrcsSurveyFileOptions = {}
 ): Promise<FrcsSurveyFile | InvalidFrcsSurveyFile> {
-  const ranges = getColumnRanges(columns)
-  const maxRange = Math.max(...Object.values(ranges).map((r) => r[1]))
+  const columnRanges = getColumnRanges(columns)
+  const maxRange = Math.max(
+    ...Object.values(columnRanges.decimal).map((r) => r[1])
+  )
 
   let cave: string | undefined = undefined
   let location: string | undefined = undefined
   const trips: (FrcsTrip | InvalidFrcsTrip)[] = []
-  const errors: ParseError[] = []
+  const issues: ParseIssue[] = []
 
   let tripName: string | undefined
   let tripTeam: string[] | undefined
@@ -129,12 +131,12 @@ export default async function parseFrcsSurveyFile(
   let line: string
   let lineStartIndex = 0
 
-  let lineErrors: number[] = []
+  let lineissues: number[] = []
 
   let began = false
 
   for await ({ line, startIndex: lineStartIndex } of chunksToLines(chunks)) {
-    if (lineErrors.length) lineErrors = []
+    if (lineissues.length) lineissues = []
 
     lineNumber++
 
@@ -261,6 +263,8 @@ export default async function parseFrcsSurveyFile(
       const inches = distanceUnit === Length.inches
       if (inches) distanceUnit = Length.feet
 
+      const ranges = inches ? columnRanges.feetAndInches : columnRanges.decimal
+
       // from station name
       if (!/\S/.test(line.substring(...ranges.fromStation))) continue
       const fromStr = validate(
@@ -304,12 +308,17 @@ export default async function parseFrcsSurveyFile(
           comment: getComment(),
         }
         addShot(
-          lineErrors.length ? { INVALID: shot, errors: lineErrors } : shot
+          lineissues.length ? { INVALID: shot, issues: lineissues } : shot
         )
         continue
       }
       if (!isValidStation(toStr)) {
-        error('invalidStationName', 'Invalid station name', ...ranges.toStation)
+        addIssue(
+          'error',
+          'invalidStationName',
+          'Invalid station name',
+          ...ranges.toStation
+        )
       }
 
       let fromLruds = commentFromStationLruds.get(from)
@@ -337,7 +346,7 @@ export default async function parseFrcsSurveyFile(
 
       // azimuth and inclination
       const azmFsStr = validate(
-        ranges.frontsightAzimuth[0] + (inches ? 1 : 0),
+        ranges.frontsightAzimuth[0],
         ranges.frontsightAzimuth[1],
         'azimuth',
         isValidOptUFloat
@@ -366,7 +375,8 @@ export default async function parseFrcsSurveyFile(
         // feet and inches are not both optional
         if (!isValidUInt(feetStr) && !isValidUInt(inchesStr)) {
           const invalid = feetStr.trim() || inchesStr.trim()
-          error(
+          addIssue(
+            'error',
             invalid ? 'invalidDistance' : 'missingDistance',
             invalid ? 'Invalid distance' : 'Missing distance',
             ranges.distanceFeet[0],
@@ -471,7 +481,7 @@ export default async function parseFrcsSurveyFile(
         frontsightInclination = Unitize.degrees(0)
       }
 
-      if (from && distance && !lineErrors.length) {
+      if (from && distance && !lineissues.length) {
         const shot: FrcsShot = {
           from,
           to: toStr.trim(),
@@ -518,7 +528,7 @@ export default async function parseFrcsSurveyFile(
         if (fromLruds) shot.fromLruds = fromLruds
         if (horizontalDistance) shot.horizontalDistance = horizontalDistance
         if (verticalDistance) shot.verticalDistance = verticalDistance
-        addShot({ INVALID: shot, errors: lineErrors })
+        addShot({ INVALID: shot, issues: lineissues })
       }
     }
   }
@@ -538,7 +548,7 @@ export default async function parseFrcsSurveyFile(
     })
     .forEach(({ trip }, index) => (trip.tripNumber = index + 1))
 
-  if (!errors.length && trips.every((t): t is FrcsTrip => !('INVALID' in t))) {
+  if (!issues.length && trips.every((t): t is FrcsTrip => !('INVALID' in t))) {
     return {
       cave,
       columns: outputColumns ? columns : undefined,
@@ -554,7 +564,7 @@ export default async function parseFrcsSurveyFile(
       location,
       trips,
     },
-    errors,
+    issues,
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
@@ -589,14 +599,15 @@ export default async function parseFrcsSurveyFile(
     }
   }
 
-  function error(
+  function addIssue(
+    type: ParseIssueSeverity,
     code: string,
     message: string,
     startColumn: number,
     endColumn: number
   ): number {
-    errors.push({
-      type: 'error',
+    issues.push({
+      type,
       code,
       message,
       loc: {
@@ -612,9 +623,9 @@ export default async function parseFrcsSurveyFile(
         },
       },
     })
-    if (!lineErrors) lineErrors = []
-    lineErrors.push(errors.length - 1)
-    return errors.length - 1
+    if (!lineissues) lineissues = []
+    lineissues.push(issues.length - 1)
+    return issues.length - 1
   }
 
   function parseUnits(): FrcsUnits | InvalidFrcsUnits {
@@ -622,15 +633,21 @@ export default async function parseFrcsSurveyFile(
     // 01234567
     const distanceUnit = parseLengthUnit(line.slice(0, 2))
     if (!distanceUnit) {
-      error('invalidDistanceUnit', 'Invalid distance unit', 0, 2)
+      addIssue('error', 'invalidDistanceUnit', 'Invalid distance unit', 0, 2)
     }
     const azimuthUnit = parseAngleUnit(line[6])
     if (!azimuthUnit) {
-      error('invalidAzimuthUnit', 'Invalid azimuth unit', 6, 7)
+      addIssue('error', 'invalidAzimuthUnit', 'Invalid azimuth unit', 6, 7)
     }
     const inclinationUnit = parseAngleUnit(line[7])
     if (!inclinationUnit) {
-      error('invalidInclinationUnit', 'Invalid inclination unit', 7, 8)
+      addIssue(
+        'error',
+        'invalidInclinationUnit',
+        'Invalid inclination unit',
+        7,
+        8
+      )
     }
     const backsightAzimuthCorrected = line[3] === 'C'
     const backsightInclinationCorrected = line[4] === 'C'
@@ -638,7 +655,8 @@ export default async function parseFrcsSurveyFile(
     const hasBacksightInclination = line[4] !== ' ' && line[4] !== '-'
 
     if (!/[-CB ]/.test(line[3])) {
-      error(
+      addIssue(
+        'error',
         'invalidBacksightAzimuthType',
         'Invalid backsight azimuth type',
         3,
@@ -646,7 +664,8 @@ export default async function parseFrcsSurveyFile(
       )
     }
     if (!/[-CB ]/.test(line[4])) {
-      error(
+      addIssue(
+        'error',
         'invalidBacksightInclinationType',
         'Invalid backsight inclination type',
         4,
@@ -665,7 +684,7 @@ export default async function parseFrcsSurveyFile(
           hasBacksightAzimuth,
           hasBacksightInclination,
         },
-        errors: lineErrors,
+        issues: lineissues,
       }
     }
 
@@ -688,7 +707,8 @@ export default async function parseFrcsSurveyFile(
   ): string {
     const field = line.substring(startColumn, endColumn)
     if (!validator(field)) {
-      error(
+      addIssue(
+        'error',
         `invalid${fieldName[0].toUpperCase()}${fieldName.substring(1)}`,
         (field.trim() ? 'Invalid ' : 'Missing ') + fieldName,
         startColumn,

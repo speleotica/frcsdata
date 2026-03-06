@@ -39,7 +39,6 @@ function readableStreamValues<T>(
 ): AsyncIterableIterator<T> {
   const reader = stream.getReader()
   return {
-    // @ts-expect-error types don't match, oh well
     async next() {
       try {
         const result = await reader.read()
@@ -68,9 +67,7 @@ function readableStreamValues<T>(
   }
 }
 
-function linesOf(
-  input: Blob | ReadableStream<Uint8Array>
-): AsyncIterable<string> {
+function linesOf(input: Blob | ReadableStream): AsyncIterable<string> {
   return readableStreamValues(
     (input instanceof ReadableStream ? input : input.stream())
       .pipeThrough(new TextDecoderStream())
@@ -82,13 +79,10 @@ const convertLineBased = <T>(
   fn: (file: string, lines: AsyncIterable<string>) => Promise<T>
 ) => {
   function converted(file: File): Promise<T>
-  function converted(
-    file: string,
-    input: Blob | ReadableStream<Uint8Array>
-  ): Promise<T>
+  function converted(file: string, input: Blob | ReadableStream): Promise<T>
   function converted(
     file: string | File,
-    input?: Blob | ReadableStream<Uint8Array>
+    input?: Blob | ReadableStream
   ): Promise<T> {
     if (file instanceof File) return converted(file.name, file)
     return fn(file, linesOf(input!))
@@ -96,9 +90,7 @@ const convertLineBased = <T>(
   return converted
 }
 
-function chunksOf(
-  input: Blob | ReadableStream<Uint8Array>
-): AsyncIterable<string> {
+function chunksOf(input: Blob | ReadableStream): AsyncIterable<string> {
   return readableStreamValues(
     (input instanceof ReadableStream ? input : input.stream()).pipeThrough(
       new TextDecoderStream()

@@ -17,8 +17,29 @@ type ColumnRanges = {
   up: [number, number]
   down: [number, number]
 }
-export function getColumnRanges(config: FrcsShotColumnConfig): ColumnRanges {
-  const result: ColumnRanges = {
+
+export function getColumnRanges(config: FrcsShotColumnConfig): {
+  decimal: ColumnRanges
+  feetAndInches: ColumnRanges
+} {
+  const decimal: ColumnRanges = {
+    toStation: [0, 0],
+    fromStation: [0, 0],
+    distance: [0, 0],
+    distanceFeet: [0, 0],
+    distanceInches: [0, 0],
+    kind: [0, 0],
+    exclude: [0, 0],
+    frontsightAzimuth: [0, 0],
+    backsightAzimuth: [0, 0],
+    frontsightInclination: [0, 0],
+    backsightInclination: [0, 0],
+    left: [0, 0],
+    right: [0, 0],
+    up: [0, 0],
+    down: [0, 0],
+  }
+  const feetAndInches: ColumnRanges = {
     toStation: [0, 0],
     fromStation: [0, 0],
     distance: [0, 0],
@@ -42,15 +63,20 @@ export function getColumnRanges(config: FrcsShotColumnConfig): ColumnRanges {
     FrcsShotColumnConfig[keyof FrcsShotColumnConfig]
   ][]) {
     if (key === 'distanceFeet' || key === 'distanceInches') continue
-    result[key][0] = c
-    result[key][1] = c + value
+    decimal[key][0] = c
+    decimal[key][1] = c + value
     c += value
   }
-  if (config.distanceFeet) {
-    result.distanceFeet[0] = result.distance[0]
-    result.distanceFeet[1] = result.distance[0] + config.distanceFeet
-    result.distanceInches[0] = result.distanceFeet[1]
-    result.distanceInches[1] = result.distanceFeet[1] + config.distanceInches
+  c = 0
+  for (const [key, value] of Object.entries(config) as [
+    keyof FrcsShotColumnConfig,
+    FrcsShotColumnConfig[keyof FrcsShotColumnConfig]
+  ][]) {
+    if (key === 'distance') continue
+    const width = key === 'frontsightAzimuth' ? value - 1 : value
+    feetAndInches[key][0] = c
+    feetAndInches[key][1] = c + width
+    c += width
   }
-  return result
+  return { decimal, feetAndInches }
 }

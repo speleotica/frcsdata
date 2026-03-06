@@ -12,7 +12,7 @@ describe(`formatFrcsSurveyFile`, function () {
     })
     if ('INVALID' in parsed) {
       throw new Error(
-        `expected no parse errors, but got: ${inspect(parsed.errors)}`
+        `expected no parse errors, but got: ${inspect(parsed.issues)}`
       )
     }
     expect((await slurp(formatFrcsSurveyFile(parsed))).join('')).to

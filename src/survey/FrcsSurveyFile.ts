@@ -1,14 +1,14 @@
-import { ParseError } from '../ParseError.js'
-import { SourceLoc } from '../SourceLoc.js'
+import { ParseIssue } from '../ParseIssue'
+import { SourceLoc } from '../SourceLoc'
 import { Unit, Length, Angle, UnitizedNumber } from '@speleotica/unitized'
 
 type Invalid<T> = {
   INVALID: T
   /**
-   * An array of indexes of errors in {@link InvalidFrcsSurveyFile['errors']} within the
+   * An array of indexes of issues in {@link InvalidFrcsSurveyFile['issues']} within the
    * `INVALID` node
    */
-  errors?: number[]
+  issues?: number[]
 }
 
 // eslint-disable-next-line @typescript-eslint/ban-types
@@ -27,6 +27,7 @@ export type FrcsSurveyFile = {
     location?: SourceLoc
     comment?: SourceLoc
   }
+  issues?: ParseIssue[]
 }
 
 export type FrcsShotColumnConfig = {
@@ -54,7 +55,7 @@ export type InvalidFrcsSurveyFile = {
       trips: (FrcsTrip | InvalidFrcsTrip)[]
     }
   >
-  errors: ParseError[]
+  issues: ParseIssue[]
 }
 
 export type FrcsUnits = {

@@ -1,8 +1,8 @@
 import { FrcsSurveyFile, InvalidFrcsSurveyFile } from './FrcsSurveyFile'
 
 import { Unit, Length, Angle, UnitizedNumber } from '@speleotica/unitized'
-import { ParseError } from '../ParseError.js'
-import { SourceLoc } from '../SourceLoc.js'
+import { ParseIssue } from '../ParseIssue'
+import { SourceLoc } from '../SourceLoc'
 
 export type JsonLengthUnit = 'm' | 'km' | 'cm' | 'ft' | 'mi' | 'yd' | 'in'
 export type JsonAngleUnit = 'rad' | 'deg' | 'grad' | 'mil' | '%'
@@ -15,7 +15,7 @@ export type DeepMapJson<T> = T extends
   | number
   | boolean
   | undefined
-  | ParseError
+  | ParseIssue
   | SourceLoc
   ? T
   : T extends Date

@@ -1,4 +1,4 @@
-- describe: trip header errors
+- describe: trip header issues
   specs:
     - it: invalid distance unit
       procedure: parseFrcsSurveyFile
@@ -22,10 +22,10 @@
                     backsightInclinationCorrected: true
                     hasBacksightAzimuth: true
                     hasBacksightInclination: true
-                  errors:
+                  issues:
                     - 0
                 shots: []
-        errors:
+        issues:
           - type: error
             code: invalidDistanceUnit
             message: Invalid distance unit
@@ -54,10 +54,10 @@
                     backsightInclinationCorrected: true
                     hasBacksightAzimuth: true
                     hasBacksightInclination: true
-                  errors:
+                  issues:
                     - 0
                 shots: []
-        errors:
+        issues:
           - type: error
             code: invalidAzimuthUnit
             message: Invalid azimuth unit
@@ -86,10 +86,10 @@
                     backsightInclinationCorrected: true
                     hasBacksightAzimuth: true
                     hasBacksightInclination: true
-                  errors:
+                  issues:
                     - 0
                 shots: []
-        errors:
+        issues:
           - type: error
             code: invalidInclinationUnit
             message: Invalid inclination unit
@@ -118,7 +118,7 @@
                 hasBacksightAzimuth: true
                 hasBacksightInclination: true
               shots: []
-        errors:
+        issues:
           - type: error
             code: invalidBacksightAzimuthType
             message: Invalid backsight azimuth type
@@ -147,7 +147,7 @@
                 hasBacksightAzimuth: true
                 hasBacksightInclination: true
               shots: []
-        errors:
+        issues:
           - type: error
             code: invalidBacksightInclinationType
             message: Invalid backsight inclination type
