@@ -131,12 +131,12 @@ export default async function parseFrcsSurveyFile(
   let line: string
   let lineStartIndex = 0
 
-  let lineissues: number[] = []
+  let lineIssues: number[] = []
 
   let began = false
 
   for await ({ line, startIndex: lineStartIndex } of chunksToLines(chunks)) {
-    if (lineissues.length) lineissues = []
+    if (lineIssues.length) lineIssues = []
 
     lineNumber++
 
@@ -329,7 +329,7 @@ export default async function parseFrcsSurveyFile(
           comment: getComment(),
         }
         addShot(
-          lineissues.length ? { INVALID: shot, issues: lineissues } : shot
+          lineIssues.length ? { INVALID: shot, issues: lineIssues } : shot
         )
         continue
       }
@@ -502,7 +502,7 @@ export default async function parseFrcsSurveyFile(
         frontsightInclination = Unitize.degrees(0)
       }
 
-      if (from && distance && !lineissues.length) {
+      if (from && distance && !lineIssues.length) {
         const shot: FrcsShot = {
           from,
           to: toStr.trim(),
@@ -549,7 +549,7 @@ export default async function parseFrcsSurveyFile(
         if (fromLruds) shot.fromLruds = fromLruds
         if (horizontalDistance) shot.horizontalDistance = horizontalDistance
         if (verticalDistance) shot.verticalDistance = verticalDistance
-        addShot({ INVALID: shot, issues: lineissues })
+        addShot({ INVALID: shot, issues: lineIssues })
       }
     }
   }
@@ -644,8 +644,8 @@ export default async function parseFrcsSurveyFile(
         },
       },
     })
-    if (!lineissues) lineissues = []
-    lineissues.push(issues.length - 1)
+    if (!lineIssues) lineIssues = []
+    lineIssues.push(issues.length - 1)
     return issues.length - 1
   }
 
@@ -705,7 +705,7 @@ export default async function parseFrcsSurveyFile(
           hasBacksightAzimuth,
           hasBacksightInclination,
         },
-        issues: lineissues,
+        issues: lineIssues,
       }
     }
 
