@@ -27,4 +27,37 @@ void yargs(process.argv.slice(2))
       await parseSurvey(file)
     },
   })
+  .command({
+    command: 'summarize-survey <file>',
+    describe: 'parse survey file and output trip summaries',
+    builder: (yargs) =>
+      yargs.positional('file', {
+        type: 'string',
+        demandOption: true,
+      }),
+    handler: async ({ file }) => {
+      const { summarizeSurvey } = await import('./cli/summarize-survey')
+      await summarizeSurvey(file)
+    },
+  })
+  .command({
+    command: 'check-survey-correspondence <surveyFile> <summaryFile>',
+    describe: 'parse survey file and output trip summaries',
+    builder: (yargs) =>
+      yargs
+        .positional('surveyFile', {
+          type: 'string',
+          demandOption: true,
+        })
+        .positional('summaryFile', {
+          type: 'string',
+          demandOption: true,
+        }),
+    handler: async ({ surveyFile, summaryFile }) => {
+      const { checkSurveyCorrespondence } = await import(
+        './cli/check-survey-correspondence'
+      )
+      await checkSurveyCorrespondence(surveyFile, summaryFile)
+    },
+  })
   .demandCommand().argv

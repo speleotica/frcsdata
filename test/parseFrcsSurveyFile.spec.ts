@@ -44,7 +44,7 @@ describe('parseFrcsSurveyFile', () => {
         location: 'Hart Co., KY',
         trips: [
           {
-            tripNumber: 2,
+            tripNumber: 1,
             header: {
               name: 'ENTRANCE DROPS, JOE\'S "I LOVE MY WIFE TRAVERSE", TRICKY TRAVERSE',
               comment: 'This File has Crumps test connected.  11/20/12',
@@ -198,7 +198,7 @@ describe('parseFrcsSurveyFile', () => {
             ],
           },
           {
-            tripNumber: 1,
+            tripNumber: 2,
             header: {
               name: 'TRICKY TRAVERSE AND THEN FIRST SURVEY IN UPPER CROWLWAY',
               date: new Date('1981/02/14').toISOString(),

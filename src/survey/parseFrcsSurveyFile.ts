@@ -33,6 +33,7 @@ import {
   parseAzimuth,
 } from './parsers'
 import { normalizeTeamMemberName } from './normalizeTeamMemberName'
+import { unwrapInvalid } from '../unwrapInvalid'
 
 /**
    * Parses a raw cdata.fr survey file.  These look like so:
@@ -202,7 +203,7 @@ export default async function parseFrcsSurveyFile(
             day = parseInt(dateMatch[11])
             year = parseInt(dateMatch[12])
           }
-          tripDate = new Date(year < 70 ? year + 2000 : year, month - 1, day)
+          tripDate = new Date(year < 60 ? year + 2000 : year, month - 1, day)
         } else {
           addIssue(
             'warning',
@@ -566,18 +567,7 @@ export default async function parseFrcsSurveyFile(
 
   if (trip) trips.push(trip)
 
-  trips
-    .map((trip, index) => ({ trip: unwrapInvalid(trip), index }))
-    .sort((a, b) => {
-      const aDate = unwrapInvalid(a.trip.header).date
-      const bDate = unwrapInvalid(b.trip.header).date
-      return (
-        (aDate != null && bDate != null
-          ? aDate.getTime() - bDate.getTime()
-          : 0) || a.index - b.index
-      )
-    })
-    .forEach(({ trip }, index) => (trip.tripNumber = index + 1))
+  trips.forEach((trip, index) => (unwrapInvalid(trip).tripNumber = index + 1))
 
   if (
     !issues.some((i) => i.type === 'error') &&
@@ -855,8 +845,4 @@ export default async function parseFrcsSurveyFile(
       trip.shots.push(shot)
     }
   }
-}
-
-function unwrapInvalid<T>(t: T): T extends { INVALID: infer I } ? I : T {
-  return (t instanceof Object && 'INVALID' in t ? t.INVALID : t) as any
 }

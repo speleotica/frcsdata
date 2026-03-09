@@ -21,7 +21,12 @@ const tripSummaryRegex =
  */
 export default async function parseFrcsTripSummaryFile(
   file: string,
-  lines: AsyncIterable<string>
+  lines: AsyncIterable<string>,
+  {
+    indexBy = 'tripNumber',
+  }: {
+    indexBy?: 'tripNumber' | 'occurrence'
+  } = {}
 ): Promise<FrcsTripSummaryFile> {
   const errors: Array<SegmentParseError> = []
   const tripSummaries: Array<FrcsTripSummary | undefined> = []
@@ -39,7 +44,8 @@ export default async function parseFrcsTripSummaryFile(
     if (match) {
       tripStartLine = lineNumber
       const tripNumber = parseInt(match[1])
-      const tripIndex = tripNumber - 1
+      const tripIndex =
+        indexBy === 'tripNumber' ? tripNumber - 1 : tripSummaries.length
       let year = parseInt(match[4])
       if (year < 1000) year += 1900
       const date = new Date(year, parseInt(match[2]) - 1, parseInt(match[3]))
