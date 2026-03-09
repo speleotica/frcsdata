@@ -1,0 +1,641 @@
+- describe: units changes
+  specs:
+    - it: backsights corrected change
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        "Skill Issue Complex" and other Nebulous Borehole leads
+        Sean Lewis, Amelia Fatykhova, Mark Wingard. 9/3/2023
+        Aid climb at end of Nubulous and enlarged crack with good airflow.
+        Went to another dome with dig in roof. Left rigging to continue.
+        Mopped up side area which was wide with multiple small leads.
+         *
+        FT BB DD
+         AJA2 AJA1  15.4   146.4 326.8-61.7 61.7  4  4 36  2
+         AJA3 AJA2   9.6   298.1        2.8       1  2  5  2
+        *      %NC
+        FT CC DD
+         WEG1AJF16  12.9   337.7 338.5 29.0 29.0  7 14 30  8
+         WEG2 WEG1  27.1   349.4 349.4 11.1 10.8 50 15  4 10
+      output:
+        trips:
+          - tripNumber: 1
+            header:
+              name: '"Skill Issue Complex" and other Nebulous Borehole leads'
+              comment:
+                Aid climb at end of Nubulous and enlarged crack with good airflow.
+
+                Went to another dome with dig in roof. Left rigging to continue.
+
+                Mopped up side area which was wide with multiple small leads.
+              date: 2023-09-03
+              team:
+                - Sean Lewis
+                - Amelia Fatykhova
+                - Mark Wingard
+            units:
+              distanceUnit: ft
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: false
+              backsightInclinationCorrected: false
+              hasBacksightAzimuth: true
+              hasBacksightInclination: true
+            shots:
+              - {
+                  from: AJA1,
+                  to: AJA2,
+                  distance: [15.4, ft],
+                  frontsightAzimuth: [146.4, deg],
+                  frontsightInclination: [-61.7, deg],
+                  backsightAzimuth: [326.8, deg],
+                  backsightInclination: [61.7, deg],
+                  toLruds:
+                    {
+                      left: [4, ft],
+                      right: [4, ft],
+                      up: [36, ft],
+                      down: [2, ft],
+                    },
+                }
+              - {
+                  from: AJA2,
+                  to: AJA3,
+                  distance: [9.6, ft],
+                  frontsightAzimuth: [298.1, deg],
+                  frontsightInclination: [2.8, deg],
+                  toLruds:
+                    {
+                      left: [1, ft],
+                      right: [2, ft],
+                      up: [5, ft],
+                      down: [2, ft],
+                    },
+                }
+              - {
+                  from: AJF16,
+                  to: WEG1,
+                  distance: [12.9, ft],
+                  frontsightAzimuth: [337.7, deg],
+                  frontsightInclination: [29, deg],
+                  backsightAzimuth: [158.5, deg],
+                  backsightInclination: [-29, deg],
+                  toLruds:
+                    {
+                      left: [7, ft],
+                      right: [14, ft],
+                      up: [30, ft],
+                      down: [8, ft],
+                    },
+                  recorded:
+                    {
+                      from: AJF16,
+                      to: WEG1,
+                      distance: [12.9, ft],
+                      frontsightAzimuth: [337.7, deg],
+                      frontsightInclination: [29, deg],
+                      backsightAzimuth: [338.5, deg],
+                      backsightInclination: [29, deg],
+                      toLruds:
+                        {
+                          left: [7, ft],
+                          right: [14, ft],
+                          up: [30, ft],
+                          down: [8, ft],
+                        },
+                      units:
+                        {
+                          distanceUnit: ft,
+                          azimuthUnit: deg,
+                          inclinationUnit: deg,
+                          backsightAzimuthCorrected: true,
+                          backsightInclinationCorrected: true,
+                          hasBacksightAzimuth: true,
+                          hasBacksightInclination: true,
+                        },
+                    },
+                }
+              - {
+                  from: WEG1,
+                  to: WEG2,
+                  distance: [27.1, ft],
+                  frontsightAzimuth: [349.4, deg],
+                  frontsightInclination: [11.1, deg],
+                  backsightAzimuth: [169.39999999999998, deg],
+                  backsightInclination: [-10.8, deg],
+                  toLruds:
+                    {
+                      left: [50, ft],
+                      right: [15, ft],
+                      up: [4, ft],
+                      down: [10, ft],
+                    },
+                  recorded:
+                    {
+                      from: WEG1,
+                      to: WEG2,
+                      distance: [27.1, ft],
+                      frontsightAzimuth: [349.4, deg],
+                      frontsightInclination: [11.1, deg],
+                      backsightAzimuth: [349.4, deg],
+                      backsightInclination: [10.8, deg],
+                      toLruds:
+                        {
+                          left: [50, ft],
+                          right: [15, ft],
+                          up: [4, ft],
+                          down: [10, ft],
+                        },
+                    },
+                }
+    - it: distance unit change
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        "Skill Issue Complex" and other Nebulous Borehole leads
+        Sean Lewis, Amelia Fatykhova, Mark Wingard. 9/3/2023
+        Aid climb at end of Nubulous and enlarged crack with good airflow.
+        Went to another dome with dig in roof. Left rigging to continue.
+        Mopped up side area which was wide with multiple small leads.
+         *
+        FT BB DD
+         AJA2 AJA1  15.4   146.4 326.8-61.7 61.7  4  4 36  2
+         AJA3 AJA2   9.6   298.1        2.8       1  2  5  2
+        *      %NC
+        M  BB DD
+        *
+        *AJF16                                     3  6  1  4
+         WEG1AJF16  12.9   337.7 338.5 29.0 29.0  7 14 30  8
+         WEG2 WEG1  27.1   349.4 349.4 11.1 10.8 50 15  4 10
+      output:
+        trips:
+          - tripNumber: 1
+            header:
+              name: '"Skill Issue Complex" and other Nebulous Borehole leads'
+              comment:
+                Aid climb at end of Nubulous and enlarged crack with good airflow.
+
+                Went to another dome with dig in roof. Left rigging to continue.
+
+                Mopped up side area which was wide with multiple small leads.
+              date: 2023-09-03
+              team:
+                - Sean Lewis
+                - Amelia Fatykhova
+                - Mark Wingard
+            units:
+              distanceUnit: ft
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: false
+              backsightInclinationCorrected: false
+              hasBacksightAzimuth: true
+              hasBacksightInclination: true
+            shots:
+              - {
+                  from: AJA1,
+                  to: AJA2,
+                  distance: [15.4, ft],
+                  frontsightAzimuth: [146.4, deg],
+                  frontsightInclination: [-61.7, deg],
+                  backsightAzimuth: [326.8, deg],
+                  backsightInclination: [61.7, deg],
+                  toLruds:
+                    {
+                      left: [4, ft],
+                      right: [4, ft],
+                      up: [36, ft],
+                      down: [2, ft],
+                    },
+                }
+              - {
+                  from: AJA2,
+                  to: AJA3,
+                  distance: [9.6, ft],
+                  frontsightAzimuth: [298.1, deg],
+                  frontsightInclination: [2.8, deg],
+                  toLruds:
+                    {
+                      left: [1, ft],
+                      right: [2, ft],
+                      up: [5, ft],
+                      down: [2, ft],
+                    },
+                }
+              - {
+                  from: AJF16,
+                  to: WEG1,
+                  distance: [42.32283464566929, ft],
+                  frontsightAzimuth: [337.7, deg],
+                  frontsightInclination: [29, deg],
+                  backsightAzimuth: [338.5, deg],
+                  backsightInclination: [29, deg],
+                  fromLruds:
+                    {
+                      left: [9.842519685039369, ft],
+                      right: [19.685039370078737, ft],
+                      up: [3.280839895013123, ft],
+                      down: [13.123359580052492, ft],
+                    },
+                  toLruds:
+                    {
+                      left: [22.96587926509186, ft],
+                      right: [45.93175853018372, ft],
+                      up: [98.42519685039369, ft],
+                      down: [26.246719160104984, ft],
+                    },
+                  recorded:
+                    {
+                      from: AJF16,
+                      to: WEG1,
+                      distance: [12.9, m],
+                      frontsightAzimuth: [337.7, deg],
+                      frontsightInclination: [29, deg],
+                      backsightAzimuth: [338.5, deg],
+                      backsightInclination: [29, deg],
+                      fromLruds:
+                        {
+                          left: [3, m],
+                          right: [6, m],
+                          up: [1, m],
+                          down: [4, m],
+                        },
+                      toLruds:
+                        {
+                          left: [7, m],
+                          right: [14, m],
+                          up: [30, m],
+                          down: [8, m],
+                        },
+                      units:
+                        {
+                          distanceUnit: m,
+                          azimuthUnit: deg,
+                          inclinationUnit: deg,
+                          backsightAzimuthCorrected: false,
+                          backsightInclinationCorrected: false,
+                          hasBacksightAzimuth: true,
+                          hasBacksightInclination: true,
+                        },
+                    },
+                }
+              - {
+                  from: WEG1,
+                  to: WEG2,
+                  distance: [88.91076115485563, ft],
+                  frontsightAzimuth: [349.4, deg],
+                  frontsightInclination: [11.1, deg],
+                  backsightAzimuth: [349.4, deg],
+                  backsightInclination: [10.8, deg],
+                  toLruds:
+                    {
+                      left: [164.04199475065616, ft],
+                      right: [49.212598425196845, ft],
+                      up: [13.123359580052492, ft],
+                      down: [32.80839895013123, ft],
+                    },
+                  recorded:
+                    {
+                      from: WEG1,
+                      to: WEG2,
+                      distance: [27.1, m],
+                      frontsightAzimuth: [349.4, deg],
+                      frontsightInclination: [11.1, deg],
+                      backsightAzimuth: [349.4, deg],
+                      backsightInclination: [10.8, deg],
+                      toLruds:
+                        {
+                          left: [50, m],
+                          right: [15, m],
+                          up: [4, m],
+                          down: [10, m],
+                        },
+                    },
+                }
+    - it: units change with invalid shot
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        "Skill Issue Complex" and other Nebulous Borehole leads
+        Sean Lewis, Amelia Fatykhova, Mark Wingard. 9/3/2023
+        Aid climb at end of Nubulous and enlarged crack with good airflow.
+        Went to another dome with dig in roof. Left rigging to continue.
+        Mopped up side area which was wide with multiple small leads.
+         *
+        FT BB DD
+         AJA2 AJA1  15.4   146.4 326.8-61.7 61.7  4  4 36  2
+         AJA3 AJA2   9.6   298.1        2.8       1  2  5  2
+        *      %NC
+        M  BB GG
+        *
+        *AJF16                                     3  6  1  4
+         WEG1AJF16  12.9   137.7 338.5-29.0 29.0  7 14 30  8
+         WEG2 WEG1     a   149.4 349.4-11.1 10.8 50 15  4 10
+      output:
+        INVALID:
+          trips:
+            - INVALID:
+                tripNumber: 1
+                header:
+                  name: '"Skill Issue Complex" and other Nebulous Borehole leads'
+                  comment:
+                    Aid climb at end of Nubulous and enlarged crack with good airflow.
+
+                    Went to another dome with dig in roof. Left rigging to continue.
+
+                    Mopped up side area which was wide with multiple small leads.
+                  date: 2023-09-03
+                  team:
+                    - Sean Lewis
+                    - Amelia Fatykhova
+                    - Mark Wingard
+                units:
+                  distanceUnit: ft
+                  azimuthUnit: deg
+                  inclinationUnit: deg
+                  backsightAzimuthCorrected: false
+                  backsightInclinationCorrected: false
+                  hasBacksightAzimuth: true
+                  hasBacksightInclination: true
+                shots:
+                  - {
+                      from: AJA1,
+                      to: AJA2,
+                      distance: [15.4, ft],
+                      frontsightAzimuth: [146.4, deg],
+                      frontsightInclination: [-61.7, deg],
+                      backsightAzimuth: [326.8, deg],
+                      backsightInclination: [61.7, deg],
+                      toLruds:
+                        {
+                          left: [4, ft],
+                          right: [4, ft],
+                          up: [36, ft],
+                          down: [2, ft],
+                        },
+                    }
+                  - {
+                      from: AJA2,
+                      to: AJA3,
+                      distance: [9.6, ft],
+                      frontsightAzimuth: [298.1, deg],
+                      frontsightInclination: [2.8, deg],
+                      toLruds:
+                        {
+                          left: [1, ft],
+                          right: [2, ft],
+                          up: [5, ft],
+                          down: [2, ft],
+                        },
+                    }
+                  - {
+                      from: AJF16,
+                      to: WEG1,
+                      distance: [42.32283464566929, ft],
+                      frontsightAzimuth: [123.92999999999999, deg],
+                      frontsightInclination: [-26.1, deg],
+                      backsightAzimuth: [304.65000000000003, deg],
+                      backsightInclination: [26.1, deg],
+                      fromLruds:
+                        {
+                          left: [9.842519685039369, ft],
+                          right: [19.685039370078737, ft],
+                          up: [3.280839895013123, ft],
+                          down: [13.123359580052492, ft],
+                        },
+                      toLruds:
+                        {
+                          left: [22.96587926509186, ft],
+                          right: [45.93175853018372, ft],
+                          up: [98.42519685039369, ft],
+                          down: [26.246719160104984, ft],
+                        },
+                      recorded:
+                        {
+                          from: AJF16,
+                          to: WEG1,
+                          distance: [12.9, m],
+                          frontsightAzimuth: [137.7, grad],
+                          frontsightInclination: [-29, grad],
+                          backsightAzimuth: [338.5, grad],
+                          backsightInclination: [29, grad],
+                          fromLruds:
+                            {
+                              left: [3, m],
+                              right: [6, m],
+                              up: [1, m],
+                              down: [4, m],
+                            },
+                          toLruds:
+                            {
+                              left: [7, m],
+                              right: [14, m],
+                              up: [30, m],
+                              down: [8, m],
+                            },
+                          units:
+                            {
+                              distanceUnit: m,
+                              azimuthUnit: grad,
+                              inclinationUnit: grad,
+                              backsightAzimuthCorrected: false,
+                              backsightInclinationCorrected: false,
+                              hasBacksightAzimuth: true,
+                              hasBacksightInclination: true,
+                            },
+                        },
+                    }
+                  - {
+                      INVALID:
+                        {
+                          from: WEG1,
+                          to: WEG2,
+                          frontsightAzimuth: [134.46, deg],
+                          frontsightInclination: [-9.99, deg],
+                          backsightAzimuth: [314.46, deg],
+                          backsightInclination: [9.72, deg],
+                          toLruds:
+                            {
+                              left: [164.04199475065616, ft],
+                              right: [49.212598425196845, ft],
+                              up: [13.123359580052492, ft],
+                              down: [32.80839895013123, ft],
+                            },
+                          recorded:
+                            {
+                              INVALID:
+                                {
+                                  from: WEG1,
+                                  to: WEG2,
+                                  frontsightAzimuth: [149.4, grad],
+                                  frontsightInclination: [-11.1, grad],
+                                  backsightAzimuth: [349.4, grad],
+                                  backsightInclination: [10.8, grad],
+                                  toLruds:
+                                    {
+                                      left: [50, m],
+                                      right: [15, m],
+                                      up: [4, m],
+                                      down: [10, m],
+                                    },
+                                },
+                              issues: [0],
+                            },
+                        },
+                      issues: [0],
+                    }
+        issues:
+          - type: error
+            code: invalidDistance
+            message: Invalid distance
+            loc:
+              start: { line: 16, column: 10, index: 563 }
+              end: { line: 16, column: 16, index: 569 }
+    - it: azimuth and inclination unit changes
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        "Skill Issue Complex" and other Nebulous Borehole leads
+        Sean Lewis, Amelia Fatykhova, Mark Wingard. 9/3/2023
+        Aid climb at end of Nubulous and enlarged crack with good airflow.
+        Went to another dome with dig in roof. Left rigging to continue.
+        Mopped up side area which was wide with multiple small leads.
+         *
+        FT BB DD
+         AJA2 AJA1  15.4   146.4 326.8-61.7 61.7  4  4 36  2
+         AJA3 AJA2   9.6   298.1        2.8       1  2  5  2
+        *      %NC
+        FT BB GG
+         WEG1AJF16  12.9   137.7 338.5-29.0 29.0  7 14 30  8
+         WEG2 WEG1  27.1   149.4 349.4-11.1 10.8 50 15  4 10
+      output:
+        trips:
+          - tripNumber: 1
+            header:
+              name: '"Skill Issue Complex" and other Nebulous Borehole leads'
+              comment:
+                Aid climb at end of Nubulous and enlarged crack with good airflow.
+
+                Went to another dome with dig in roof. Left rigging to continue.
+
+                Mopped up side area which was wide with multiple small leads.
+              date: 2023-09-03
+              team:
+                - Sean Lewis
+                - Amelia Fatykhova
+                - Mark Wingard
+            units:
+              distanceUnit: ft
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: false
+              backsightInclinationCorrected: false
+              hasBacksightAzimuth: true
+              hasBacksightInclination: true
+            shots:
+              - {
+                  from: AJA1,
+                  to: AJA2,
+                  distance: [15.4, ft],
+                  frontsightAzimuth: [146.4, deg],
+                  frontsightInclination: [-61.7, deg],
+                  backsightAzimuth: [326.8, deg],
+                  backsightInclination: [61.7, deg],
+                  toLruds:
+                    {
+                      left: [4, ft],
+                      right: [4, ft],
+                      up: [36, ft],
+                      down: [2, ft],
+                    },
+                }
+              - {
+                  from: AJA2,
+                  to: AJA3,
+                  distance: [9.6, ft],
+                  frontsightAzimuth: [298.1, deg],
+                  frontsightInclination: [2.8, deg],
+                  toLruds:
+                    {
+                      left: [1, ft],
+                      right: [2, ft],
+                      up: [5, ft],
+                      down: [2, ft],
+                    },
+                }
+              - {
+                  from: AJF16,
+                  to: WEG1,
+                  distance: [12.9, ft],
+                  frontsightAzimuth: [123.92999999999999, deg],
+                  frontsightInclination: [-26.1, deg],
+                  backsightAzimuth: [304.65000000000003, deg],
+                  backsightInclination: [26.1, deg],
+                  toLruds:
+                    {
+                      left: [7, ft],
+                      right: [14, ft],
+                      up: [30, ft],
+                      down: [8, ft],
+                    },
+                  recorded:
+                    {
+                      from: AJF16,
+                      to: WEG1,
+                      distance: [12.9, ft],
+                      frontsightAzimuth: [137.7, grad],
+                      frontsightInclination: [-29, grad],
+                      backsightAzimuth: [338.5, grad],
+                      backsightInclination: [29, grad],
+                      toLruds:
+                        {
+                          left: [7, ft],
+                          right: [14, ft],
+                          up: [30, ft],
+                          down: [8, ft],
+                        },
+                      units:
+                        {
+                          distanceUnit: ft,
+                          azimuthUnit: grad,
+                          inclinationUnit: grad,
+                          backsightAzimuthCorrected: false,
+                          backsightInclinationCorrected: false,
+                          hasBacksightAzimuth: true,
+                          hasBacksightInclination: true,
+                        },
+                    },
+                }
+              - {
+                  from: WEG1,
+                  to: WEG2,
+                  distance: [27.1, ft],
+                  frontsightAzimuth: [134.46, deg],
+                  frontsightInclination: [-9.99, deg],
+                  backsightAzimuth: [314.46, deg],
+                  backsightInclination: [9.72, deg],
+                  toLruds:
+                    {
+                      left: [50, ft],
+                      right: [15, ft],
+                      up: [4, ft],
+                      down: [10, ft],
+                    },
+                  recorded:
+                    {
+                      from: WEG1,
+                      to: WEG2,
+                      distance: [27.1, ft],
+                      frontsightAzimuth: [149.4, grad],
+                      frontsightInclination: [-11.1, grad],
+                      backsightAzimuth: [349.4, grad],
+                      backsightInclination: [10.8, grad],
+                      toLruds:
+                        {
+                          left: [50, ft],
+                          right: [15, ft],
+                          up: [4, ft],
+                          down: [10, ft],
+                        },
+                    },
+                }

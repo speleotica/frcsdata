@@ -1,0 +1,55 @@
+- describe: from station lruds
+  specs:
+    - it: from station lruds 1
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        Getting scooped at UG$10 Pit
+        Andy Edwards, Sierra Heimel, Sara Burgess. 4/3/21
+         *
+        FT CC DD
+        *
+        *UG$19                                     8  0110 14
+        UG$20UG$19 14.12   118.8 116.8-46.3-47.1  2 11 12  4
+      output:
+        trips:
+          - tripNumber: 1
+            header:
+              name: Getting scooped at UG$10 Pit
+              date: 2021-04-03
+              team:
+                - Andy Edwards
+                - Sierra Heimel
+                - Sara Burgess
+            units:
+              distanceUnit: ft
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: true
+              backsightInclinationCorrected: true
+              hasBacksightAzimuth: true
+              hasBacksightInclination: true
+            shots:
+              - {
+                  from: UG$19,
+                  to: UG$20,
+                  distance: [14.12, ft],
+                  frontsightAzimuth: [118.8, deg],
+                  frontsightInclination: [-46.3, deg],
+                  backsightAzimuth: [116.8, deg],
+                  backsightInclination: [-47.1, deg],
+                  fromLruds:
+                    {
+                      left: [8, ft],
+                      right: [0, ft],
+                      up: [110, ft],
+                      down: [14, ft],
+                    },
+                  toLruds:
+                    {
+                      left: [2, ft],
+                      right: [11, ft],
+                      up: [12, ft],
+                      down: [4, ft],
+                    },
+                }

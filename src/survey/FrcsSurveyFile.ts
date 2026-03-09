@@ -180,7 +180,9 @@ export type InvalidFrcsShot = Invalid<
       {
         recorded?:
           | FrcsShot['recorded']
-          | Invalid<Partial<FrcsShotBase> & { units?: InvalidFrcsUnits }>
+          | Invalid<
+              Partial<FrcsShotBase> & { units?: FrcsUnits | InvalidFrcsUnits }
+            >
       }
     >
   >

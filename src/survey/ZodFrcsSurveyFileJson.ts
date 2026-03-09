@@ -206,13 +206,24 @@ function Invalid<T extends z.ZodTypeAny>(schema: T) {
   })
 }
 
-const ZodInvalidFrcsShot = Invalid(ZodFrcsShot.partial())
-
-ZodInvalidFrcsShot satisfies DeepMapJsonSchema<InvalidFrcsShot>
-
 const ZodInvalidFrcsUnits = Invalid(ZodFrcsUnits.partial())
 
 ZodInvalidFrcsUnits satisfies DeepMapJsonSchema<InvalidFrcsUnits>
+
+const ZodInvalidFrcsShot = Invalid(
+  ZodFrcsShot.extend({
+    recorded: z.union([
+      ZodFrcsShot.shape.recorded,
+      Invalid(
+        ZodFrcsShotBase.extend({
+          units: z.union([ZodFrcsUnits, ZodInvalidFrcsUnits]),
+        }).partial()
+      ),
+    ]),
+  }).partial()
+)
+
+ZodInvalidFrcsShot satisfies DeepMapJsonSchema<InvalidFrcsShot>
 
 const ZodInvalidFrcsTripHeader = Invalid(ZodFrcsTripHeader.partial())
 

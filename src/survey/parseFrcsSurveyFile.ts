@@ -763,19 +763,15 @@ export default async function parseFrcsSurveyFile(
         | FrcsShot['recorded']
         | InvalidFrcsShot['INVALID']['recorded'] = shot
       if ('INVALID' in shot) {
-        shot.INVALID = {
-          ...shot.INVALID,
-          recorded,
-        }
-      } else if ('INVALID' in recorded) {
         shot = {
           INVALID: {
-            ...shot,
-            recorded,
+            ...shot.INVALID,
+            recorded: shot,
           },
+          issues: shot.issues,
         }
       } else {
-        shot = { ...shot, recorded }
+        shot = { ...shot, recorded: shot }
       }
       if (nextShotUnits) {
         unwrapInvalid(recorded).units = nextShotUnits
@@ -809,12 +805,14 @@ export default async function parseFrcsSurveyFile(
         if (distanceUnit && distanceUnit !== alternateUnits.distanceUnit) {
           shot.distance = shot.distance?.in(distanceUnit)
           if (shot.fromLruds) {
+            shot.fromLruds = { ...shot.fromLruds }
             shot.fromLruds.left = shot.fromLruds.left?.in(distanceUnit)
             shot.fromLruds.right = shot.fromLruds.right?.in(distanceUnit)
             shot.fromLruds.up = shot.fromLruds.up?.in(distanceUnit)
             shot.fromLruds.down = shot.fromLruds.down?.in(distanceUnit)
           }
           if (shot.toLruds) {
+            shot.toLruds = { ...shot.toLruds }
             shot.toLruds.left = shot.toLruds.left?.in(distanceUnit)
             shot.toLruds.right = shot.toLruds.right?.in(distanceUnit)
             shot.toLruds.up = shot.toLruds.up?.in(distanceUnit)
