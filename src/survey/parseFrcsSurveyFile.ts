@@ -225,7 +225,24 @@ export default async function parseFrcsSurveyFile(
       if (/^\*\s*%NC(\b|$)/.test(line)) {
         unitsChanged = true
       }
+      let match: RegExpMatchArray | null
+      if ((match = /^\*\s*%T([ITM])(\b|$)/.exec(line))) {
+        const currentUnits = alternateUnits || unwrapInvalid(trip)?.units
+        if (currentUnits && !('INVALID' in currentUnits)) {
+          alternateUnits = {
+            ...currentUnits,
+            distanceUnit:
+              match[1] === 'I'
+                ? Length.inches
+                : match[1] === 'M'
+                ? Length.meters
+                : Length.feet,
+          }
+          nextShotUnits = alternateUnits
+        }
+      }
       if (/^\*\s*%/.test(line)) {
+        inBlockComment = false
         continue
       }
       if (/[^\s*]/.test(line)) {
@@ -326,7 +343,6 @@ export default async function parseFrcsSurveyFile(
             up,
             down,
           },
-          excludeDistance: true,
           comment: getComment(),
         }
         addShot(

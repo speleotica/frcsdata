@@ -70,7 +70,6 @@ describe('parseFrcsSurveyFile', () => {
                   up: '0 ft',
                   down: '2 ft',
                 },
-                excludeDistance: true,
               },
               {
                 from: 'AE20',
@@ -483,7 +482,6 @@ MM    DD  0.34
               from: '012A0',
               distance: '0 m',
               fromLruds: {},
-              excludeDistance: true,
             },
             {
               from: '012A0',

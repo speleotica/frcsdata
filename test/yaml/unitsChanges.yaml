@@ -639,3 +639,231 @@
                         },
                     },
                 }
+    - it: distance unit change with %TI/%TT
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        CANYON OF THE RAPIDS,EXPECTATION CANYON,QPQ SURVEY,EXPEDITION CRAWL.
+        Dan CROWL, Steve Beckman.  5/25/74
+         *
+        FT CB DD
+         ZM44 ZM43  18.3   146.0      -15.0       2  0  7 20
+         ZM45 ZM44  29.3    94.0        0.0       0  3  7 15
+        *
+        *      %TI
+         QPQ1  QQ1  22  0   44.0       -3.0       1  2  1  6
+         QPQ2 QPQ1   4 10    3.0        0.0       1  0  1  1
+        *
+
+        EXPEDITION CRAWL.
+        ORIGINAL NOTES AVAILABLE.  DECL UNKNOWN.
+        BACKSIGHTS NOT TAKEN.
+        XY COORDINATES VERIFIED WITH JWS PRINTOUT.
+
+        ORIG 103
+        *
+        *      %TT
+         EC52 EC51  20.4   263.0        0.0       1  5  1  1
+         EC54 EC53  31.5   300.0        0.0       0  3  2  1
+      output:
+        trips:
+          - tripNumber: 1
+            header:
+              name: CANYON OF THE RAPIDS,EXPECTATION CANYON,QPQ SURVEY,EXPEDITION CRAWL.
+              date: 1974-05-25
+              team:
+                - Dan Crowl
+                - Steve Beckman
+            units:
+              distanceUnit: ft
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: true
+              backsightInclinationCorrected: false
+              hasBacksightAzimuth: true
+              hasBacksightInclination: true
+            shots:
+              - {
+                  from: ZM43,
+                  to: ZM44,
+                  distance: [18.3, ft],
+                  frontsightAzimuth: [146, deg],
+                  frontsightInclination: [-15, deg],
+                  toLruds:
+                    {
+                      left: [2, ft],
+                      right: [0, ft],
+                      up: [7, ft],
+                      down: [20, ft],
+                    },
+                }
+              - {
+                  from: ZM44,
+                  to: ZM45,
+                  distance: [29.3, ft],
+                  frontsightAzimuth: [94, deg],
+                  frontsightInclination: [0, deg],
+                  toLruds:
+                    {
+                      left: [0, ft],
+                      right: [3, ft],
+                      up: [7, ft],
+                      down: [15, ft],
+                    },
+                }
+              - {
+                  from: QQ1,
+                  to: QPQ1,
+                  distance: [22, ft],
+                  frontsightAzimuth: [44, deg],
+                  frontsightInclination: [-3, deg],
+                  toLruds:
+                    {
+                      left: [1, ft],
+                      right: [2, ft],
+                      up: [1, ft],
+                      down: [6, ft],
+                    },
+                  recorded:
+                    {
+                      from: QQ1,
+                      to: QPQ1,
+                      distance: [264, in],
+                      frontsightAzimuth: [44, deg],
+                      frontsightInclination: [-3, deg],
+                      toLruds:
+                        {
+                          left: [1, ft],
+                          right: [2, ft],
+                          up: [1, ft],
+                          down: [6, ft],
+                        },
+                      units:
+                        {
+                          distanceUnit: in,
+                          azimuthUnit: deg,
+                          inclinationUnit: deg,
+                          backsightAzimuthCorrected: true,
+                          backsightInclinationCorrected: false,
+                          hasBacksightAzimuth: true,
+                          hasBacksightInclination: true,
+                        },
+                    },
+                }
+              - {
+                  from: QPQ1,
+                  to: QPQ2,
+                  distance: [4.833333333333333, ft],
+                  frontsightAzimuth: [3, deg],
+                  frontsightInclination: [0, deg],
+                  toLruds:
+                    {
+                      left: [1, ft],
+                      right: [0, ft],
+                      up: [1, ft],
+                      down: [1, ft],
+                    },
+                  recorded:
+                    {
+                      from: QPQ1,
+                      to: QPQ2,
+                      distance: [58, in],
+                      frontsightAzimuth: [3, deg],
+                      frontsightInclination: [0, deg],
+                      toLruds:
+                        {
+                          left: [1, ft],
+                          right: [0, ft],
+                          up: [1, ft],
+                          down: [1, ft],
+                        },
+                    },
+                }
+              - {
+                  from: EC51,
+                  to: EC52,
+                  distance: [20.4, ft],
+                  frontsightAzimuth: [263, deg],
+                  frontsightInclination: [0, deg],
+                  toLruds:
+                    {
+                      left: [1, ft],
+                      right: [5, ft],
+                      up: [1, ft],
+                      down: [1, ft],
+                    },
+                  comment: EXPEDITION CRAWL.
+
+                    ORIGINAL NOTES AVAILABLE.  DECL UNKNOWN.
+
+                    BACKSIGHTS NOT TAKEN.
+
+                    XY COORDINATES VERIFIED WITH JWS PRINTOUT.
+
+
+                    ORIG 103,
+                  recorded:
+                    {
+                      from: EC51,
+                      to: EC52,
+                      distance: [20.4, ft],
+                      frontsightAzimuth: [263, deg],
+                      frontsightInclination: [0, deg],
+                      toLruds:
+                        {
+                          left: [1, ft],
+                          right: [5, ft],
+                          up: [1, ft],
+                          down: [1, ft],
+                        },
+                      comment: EXPEDITION CRAWL.
+
+                        ORIGINAL NOTES AVAILABLE.  DECL UNKNOWN.
+
+                        BACKSIGHTS NOT TAKEN.
+
+                        XY COORDINATES VERIFIED WITH JWS PRINTOUT.
+
+
+                        ORIG 103,
+                      units:
+                        {
+                          distanceUnit: ft,
+                          azimuthUnit: deg,
+                          inclinationUnit: deg,
+                          backsightAzimuthCorrected: true,
+                          backsightInclinationCorrected: false,
+                          hasBacksightAzimuth: true,
+                          hasBacksightInclination: true,
+                        },
+                    },
+                }
+              - {
+                  from: EC53,
+                  to: EC54,
+                  distance: [31.5, ft],
+                  frontsightAzimuth: [300, deg],
+                  frontsightInclination: [0, deg],
+                  toLruds:
+                    {
+                      left: [0, ft],
+                      right: [3, ft],
+                      up: [2, ft],
+                      down: [1, ft],
+                    },
+                  recorded:
+                    {
+                      from: EC53,
+                      to: EC54,
+                      distance: [31.5, ft],
+                      frontsightAzimuth: [300, deg],
+                      frontsightInclination: [0, deg],
+                      toLruds:
+                        {
+                          left: [0, ft],
+                          right: [3, ft],
+                          up: [2, ft],
+                          down: [1, ft],
+                        },
+                    },
+                }

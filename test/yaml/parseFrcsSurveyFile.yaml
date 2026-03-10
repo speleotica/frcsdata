@@ -77,7 +77,6 @@
                       up: [0, ft],
                       down: [2, ft],
                     },
-                  excludeDistance: true,
                 }
               - {
                   from: AE20,

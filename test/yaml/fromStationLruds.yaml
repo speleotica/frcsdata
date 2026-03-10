@@ -1,6 +1,6 @@
 - describe: from station lruds
   specs:
-    - it: from station lruds 1
+    - it: from station lruds in commented lines
       procedure: parseFrcsSurveyFile
       input: |2
          *
@@ -51,5 +51,61 @@
                       right: [11, ft],
                       up: [12, ft],
                       down: [4, ft],
+                    },
+                }
+    - it: from station lruds in data lines
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        A TRAIL Resurvey.
+        Norm Pace, Rich Ely, Don McLeod, Reuben Levinson, John Rutherford. 11/26/66
+         *
+        FT CB DD    A
+                A1     0                         13  2  4  0
+           A2   A1  30.5    26.0        0.0       3  3  2  0
+      output:
+        trips:
+          - tripNumber: 1
+            header:
+              name: A TRAIL Resurvey.
+              date: 1966-11-26
+              team:
+                - Norm Pace
+                - Rich Ely
+                - Don McLeod
+                - Reuben Levinson
+                - John Rutherford
+            units:
+              distanceUnit: ft
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: true
+              backsightInclinationCorrected: false
+              hasBacksightAzimuth: true
+              hasBacksightInclination: true
+            shots:
+              - {
+                  from: A1,
+                  distance: [0, ft],
+                  fromLruds:
+                    {
+                      left: [13, ft],
+                      right: [2, ft],
+                      up: [4, ft],
+                      down: [0, ft],
+                    },
+                }
+              - {
+                  from: A1,
+                  to: A2,
+                  distance: [30.5, ft],
+                  frontsightAzimuth: [26, deg],
+                  frontsightInclination: [0, deg],
+                  toLruds:
+                    {
+                      left: [3, ft],
+                      right: [3, ft],
+                      up: [2, ft],
+                      down: [0, ft],
                     },
                 }
