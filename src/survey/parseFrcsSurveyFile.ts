@@ -520,10 +520,22 @@ export default async function parseFrcsSurveyFile(
         validate(...ranges.backsightInclination, 'inclination', isValidOptFloat)
         frontsightInclination = parseNumber(incFsStr, inclinationUnit)
         backsightInclination = parseNumber(incBsStr, inclinationUnit)
+
+        validateInclinationRange(
+          frontsightInclination,
+          ...ranges.frontsightInclination
+        )
+        validateInclinationRange(
+          backsightInclination,
+          ...ranges.backsightInclination
+        )
       }
 
       const frontsightAzimuth = parseAzimuth(azmFsStr, azimuthUnit)
       const backsightAzimuth = parseAzimuth(azmBsStr, azimuthUnit)
+
+      validateAzimuthRange(frontsightAzimuth, ...ranges.frontsightAzimuth)
+      validateAzimuthRange(backsightAzimuth, ...ranges.backsightAzimuth)
 
       if (!/\S/.test(incFsStr) && !/\S/.test(incBsStr)) {
         frontsightInclination = Unitize.degrees(0)
@@ -770,6 +782,74 @@ export default async function parseFrcsSurveyFile(
       )
     }
     return field
+  }
+
+  function validateAzimuthRange(
+    azimuth: UnitizedNumber<Angle> | undefined,
+    startColumn: number,
+    endColumn: number
+  ) {
+    if (!azimuth) return
+    const rawValue = azimuth.get(azimuth.unit)
+    let max = Infinity
+    switch (azimuth.unit) {
+      case Angle.degrees:
+        max = 360
+        break
+      case Angle.gradians:
+        max = 400
+        break
+      case Angle.radians:
+        max = Math.PI * 2
+        break
+      case Angle.milsNATO:
+        max = 6400
+        break
+    }
+    if (rawValue < 0 || rawValue >= max) {
+      addIssue(
+        'error',
+        'azimuthOutOfRange',
+        'Azimuth out of range',
+        startColumn,
+        endColumn,
+        lineIssues
+      )
+    }
+  }
+
+  function validateInclinationRange(
+    inclination: UnitizedNumber<Angle> | undefined,
+    startColumn: number,
+    endColumn: number
+  ) {
+    if (!inclination) return
+    const rawValue = inclination.get(inclination.unit)
+    let max = Infinity
+    switch (inclination.unit) {
+      case Angle.degrees:
+        max = 90
+        break
+      case Angle.gradians:
+        max = 100
+        break
+      case Angle.radians:
+        max = Math.PI / 2
+        break
+      case Angle.milsNATO:
+        max = 1600
+        break
+    }
+    if (rawValue < -max || rawValue > max) {
+      addIssue(
+        'error',
+        'inclinationOutOfRange',
+        'Inclination out of range',
+        startColumn,
+        endColumn,
+        lineIssues
+      )
+    }
   }
 
   function addShot(shot: FrcsShot | InvalidFrcsShot) {

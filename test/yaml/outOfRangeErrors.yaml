@@ -1,0 +1,394 @@
+- describe: shot errors
+  specs:
+    - it: frontsight azimuth out of range - 360.1 degrees
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        trip
+         *
+        FT CC DD
+          B19  B17   8.4   360.1       -0.5      12  0  4  3
+      output:
+        INVALID:
+          trips:
+            - INVALID:
+                tripNumber: 1
+                header:
+                  name: trip
+                units:
+                  distanceUnit: ft
+                  azimuthUnit: deg
+                  inclinationUnit: deg
+                  backsightAzimuthCorrected: true
+                  backsightInclinationCorrected: true
+                  hasBacksightAzimuth: true
+                  hasBacksightInclination: true
+                shots:
+                  - {
+                      INVALID:
+                        {
+                          from: B17,
+                          to: B19,
+                          distance: [8.4, ft],
+                          frontsightAzimuth: [360.1, deg],
+                          frontsightInclination: [-0.5, deg],
+                          toLruds:
+                            {
+                              left: [12, ft],
+                              right: [0, ft],
+                              up: [4, ft],
+                              down: [3, ft],
+                            },
+                        },
+                      issues: [0, 0],
+                    }
+        issues:
+          - type: error
+            code: azimuthOutOfRange
+            message: Azimuth out of range
+            loc:
+              start: { line: 5, column: 18, index: 38 }
+              end: { line: 5, column: 24, index: 44 }
+    - it: frontsight azimuth out of range - 400.1 gradians
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        trip
+         *
+        FT CC GD
+          B19  B17   8.4   400.1       -0.5      12  0  4  3
+      output:
+        INVALID:
+          trips:
+            - INVALID:
+                tripNumber: 1
+                header:
+                  name: trip
+                units:
+                  distanceUnit: ft
+                  azimuthUnit: grad
+                  inclinationUnit: deg
+                  backsightAzimuthCorrected: true
+                  backsightInclinationCorrected: true
+                  hasBacksightAzimuth: true
+                  hasBacksightInclination: true
+                shots:
+                  - {
+                      INVALID:
+                        {
+                          from: B17,
+                          to: B19,
+                          distance: [8.4, ft],
+                          frontsightAzimuth: [400.1, grad],
+                          frontsightInclination: [-0.5, deg],
+                          toLruds:
+                            {
+                              left: [12, ft],
+                              right: [0, ft],
+                              up: [4, ft],
+                              down: [3, ft],
+                            },
+                        },
+                      issues: [0, 0],
+                    }
+        issues:
+          - type: error
+            code: azimuthOutOfRange
+            message: Azimuth out of range
+            loc:
+              start: { line: 5, column: 18, index: 38 }
+              end: { line: 5, column: 24, index: 44 }
+    - it: frontsight azimuth out of range - 6400.1 mils
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        trip
+         *
+        FT CC MD
+          B19  B17   8.4  6400.1       -0.5      12  0  4  3
+      output:
+        INVALID:
+          trips:
+            - INVALID:
+                tripNumber: 1
+                header:
+                  name: trip
+                units:
+                  distanceUnit: ft
+                  azimuthUnit: mil
+                  inclinationUnit: deg
+                  backsightAzimuthCorrected: true
+                  backsightInclinationCorrected: true
+                  hasBacksightAzimuth: true
+                  hasBacksightInclination: true
+                shots:
+                  - {
+                      INVALID:
+                        {
+                          from: B17,
+                          to: B19,
+                          distance: [8.4, ft],
+                          frontsightAzimuth: [6400.1, mil],
+                          frontsightInclination: [-0.5, deg],
+                          toLruds:
+                            {
+                              left: [12, ft],
+                              right: [0, ft],
+                              up: [4, ft],
+                              down: [3, ft],
+                            },
+                        },
+                      issues: [0, 0],
+                    }
+        issues:
+          - type: error
+            code: azimuthOutOfRange
+            message: Azimuth out of range
+            loc:
+              start: { line: 5, column: 18, index: 38 }
+              end: { line: 5, column: 24, index: 44 }
+    - it: backsight azimuth out of range - 360.1 degrees
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        trip
+         *
+        FT CC DD
+          B19  B17   8.4         360.1 -0.5      12  0  4  3
+      output:
+        INVALID:
+          trips:
+            - INVALID:
+                tripNumber: 1
+                header:
+                  name: trip
+                units:
+                  distanceUnit: ft
+                  azimuthUnit: deg
+                  inclinationUnit: deg
+                  backsightAzimuthCorrected: true
+                  backsightInclinationCorrected: true
+                  hasBacksightAzimuth: true
+                  hasBacksightInclination: true
+                shots:
+                  - {
+                      INVALID:
+                        {
+                          from: B17,
+                          to: B19,
+                          distance: [8.4, ft],
+                          backsightAzimuth: [360.1, deg],
+                          frontsightInclination: [-0.5, deg],
+                          toLruds:
+                            {
+                              left: [12, ft],
+                              right: [0, ft],
+                              up: [4, ft],
+                              down: [3, ft],
+                            },
+                        },
+                      issues: [0, 0],
+                    }
+        issues:
+          - type: error
+            code: azimuthOutOfRange
+            message: Azimuth out of range
+            loc:
+              start: { line: 5, column: 24, index: 44 }
+              end: { line: 5, column: 30, index: 50 }
+    - it: frontsight inclination out of range - 90.1 degrees
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        trip
+         *
+        FT CC DD
+          B19  B17   8.4     5.1       90.1      12  0  4  3
+      output:
+        INVALID:
+          trips:
+            - INVALID:
+                tripNumber: 1
+                header:
+                  name: trip
+                units:
+                  distanceUnit: ft
+                  azimuthUnit: deg
+                  inclinationUnit: deg
+                  backsightAzimuthCorrected: true
+                  backsightInclinationCorrected: true
+                  hasBacksightAzimuth: true
+                  hasBacksightInclination: true
+                shots:
+                  - {
+                      INVALID:
+                        {
+                          from: B17,
+                          to: B19,
+                          distance: [8.4, ft],
+                          frontsightAzimuth: [5.1, deg],
+                          frontsightInclination: [90.1, deg],
+                          toLruds:
+                            {
+                              left: [12, ft],
+                              right: [0, ft],
+                              up: [4, ft],
+                              down: [3, ft],
+                            },
+                        },
+                      issues: [0, 0],
+                    }
+        issues:
+          - type: error
+            code: inclinationOutOfRange
+            message: Inclination out of range
+            loc:
+              start: { line: 5, column: 30, index: 50 }
+              end: { line: 5, column: 35, index: 55 }
+    - it: frontsight inclination out of range - -90.1 degrees
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        trip
+         *
+        FT CC DD
+          B19  B17   8.4     5.1      -90.1      12  0  4  3
+      output:
+        INVALID:
+          trips:
+            - INVALID:
+                tripNumber: 1
+                header:
+                  name: trip
+                units:
+                  distanceUnit: ft
+                  azimuthUnit: deg
+                  inclinationUnit: deg
+                  backsightAzimuthCorrected: true
+                  backsightInclinationCorrected: true
+                  hasBacksightAzimuth: true
+                  hasBacksightInclination: true
+                shots:
+                  - {
+                      INVALID:
+                        {
+                          from: B17,
+                          to: B19,
+                          distance: [8.4, ft],
+                          frontsightAzimuth: [5.1, deg],
+                          frontsightInclination: [-90.1, deg],
+                          toLruds:
+                            {
+                              left: [12, ft],
+                              right: [0, ft],
+                              up: [4, ft],
+                              down: [3, ft],
+                            },
+                        },
+                      issues: [0, 0],
+                    }
+        issues:
+          - type: error
+            code: inclinationOutOfRange
+            message: Inclination out of range
+            loc:
+              start: { line: 5, column: 30, index: 50 }
+              end: { line: 5, column: 35, index: 55 }
+    - it: frontsight inclination out of range - 100.1 gradians
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        trip
+         *
+        FT CC DG
+          B19  B17   8.4     5.1      100.1      12  0  4  3
+      output:
+        INVALID:
+          trips:
+            - INVALID:
+                tripNumber: 1
+                header:
+                  name: trip
+                units:
+                  distanceUnit: ft
+                  azimuthUnit: deg
+                  inclinationUnit: grad
+                  backsightAzimuthCorrected: true
+                  backsightInclinationCorrected: true
+                  hasBacksightAzimuth: true
+                  hasBacksightInclination: true
+                shots:
+                  - {
+                      INVALID:
+                        {
+                          from: B17,
+                          to: B19,
+                          distance: [8.4, ft],
+                          frontsightAzimuth: [5.1, deg],
+                          frontsightInclination: [100.1, grad],
+                          toLruds:
+                            {
+                              left: [12, ft],
+                              right: [0, ft],
+                              up: [4, ft],
+                              down: [3, ft],
+                            },
+                        },
+                      issues: [0, 0],
+                    }
+        issues:
+          - type: error
+            code: inclinationOutOfRange
+            message: Inclination out of range
+            loc:
+              start: { line: 5, column: 30, index: 50 }
+              end: { line: 5, column: 35, index: 55 }
+    - it: backsight inclination out of range - 90.1 degrees
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        trip
+         *
+        FT CC DD
+          B19  B17   8.4     5.1            90.1 12  0  4  3
+      output:
+        INVALID:
+          trips:
+            - INVALID:
+                tripNumber: 1
+                header:
+                  name: trip
+                units:
+                  distanceUnit: ft
+                  azimuthUnit: deg
+                  inclinationUnit: deg
+                  backsightAzimuthCorrected: true
+                  backsightInclinationCorrected: true
+                  hasBacksightAzimuth: true
+                  hasBacksightInclination: true
+                shots:
+                  - {
+                      INVALID:
+                        {
+                          from: B17,
+                          to: B19,
+                          distance: [8.4, ft],
+                          frontsightAzimuth: [5.1, deg],
+                          backsightInclination: [90.1, deg],
+                          toLruds:
+                            {
+                              left: [12, ft],
+                              right: [0, ft],
+                              up: [4, ft],
+                              down: [3, ft],
+                            },
+                        },
+                      issues: [0, 0],
+                    }
+        issues:
+          - type: error
+            code: inclinationOutOfRange
+            message: Inclination out of range
+            loc:
+              start: { line: 5, column: 35, index: 55 }
+              end: { line: 5, column: 40, index: 60 }
