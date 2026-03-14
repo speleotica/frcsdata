@@ -41,6 +41,19 @@ void yargs(process.argv.slice(2))
     },
   })
   .command({
+    command: 'list-names <file>',
+    describe: 'parse survey file and output surveyor name/count table',
+    builder: (yargs) =>
+      yargs.positional('file', {
+        type: 'string',
+        demandOption: true,
+      }),
+    handler: async ({ file }) => {
+      const { listNames } = await import('./cli/list-names')
+      await listNames(file)
+    },
+  })
+  .command({
     command: 'check-survey-correspondence <surveyFile> <summaryFile>',
     describe: 'parse survey file and output trip summaries',
     builder: (yargs) =>
