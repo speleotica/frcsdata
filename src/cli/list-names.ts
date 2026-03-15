@@ -3,7 +3,10 @@ import { parseFrcsSurveyFile } from '../node/index'
 import { ZodValidOrInvalidFrcsSurveyFileToJson } from '../survey/ZodFrcsSurveyFileToJson'
 import { unwrapInvalid } from '../unwrapInvalid'
 
-export async function listNames(file: string) {
+export async function listSurveyNames(
+  file: string,
+  options?: { includeCounts?: boolean }
+) {
   const parsed = ZodValidOrInvalidFrcsSurveyFileToJson.parse(
     await parseFrcsSurveyFile(file)
   )
@@ -20,7 +23,10 @@ export async function listNames(file: string) {
   const maxNameCount = table.reduce((max, [, count]) => Math.max(max, count), 0)
   const countLength = maxNameCount.toFixed().length
 
+  const includeCounts = options?.includeCounts ?? false
+
   for (const [name, count] of table) {
-    console.log(count.toFixed().padStart(countLength), name)
+    if (includeCounts) console.log(count.toFixed().padStart(countLength), name)
+    else console.log(name)
   }
 }

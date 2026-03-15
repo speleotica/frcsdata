@@ -9,6 +9,7 @@ import type {
   InvalidFrcsUnits,
   InvalidFrcsTrip,
   InvalidFrcsShot,
+  FrcsTripHeader,
 } from './FrcsSurveyFile'
 import { Angle, Length, UnitizedNumber, Unitize } from '@speleotica/unitized'
 import { ParseIssue, ParseIssueSeverity } from '../ParseIssue'
@@ -34,6 +35,7 @@ import {
 } from './parsers'
 import { normalizeTeamMemberName } from './normalizeTeamMemberName'
 import { unwrapInvalid } from '../unwrapInvalid'
+import { SourceLoc } from '../SourceLoc'
 
 /**
    * Parses a raw cdata.fr survey file.  These look like so:
@@ -88,6 +90,7 @@ export default async function parseFrcsSurveyFile(
     outputColumns = false,
     normalizeNames = true,
     suppressWarnings,
+    includeLocs,
   }: ParseFrcsSurveyFileOptions = {}
 ): Promise<FrcsSurveyFile | InvalidFrcsSurveyFile> {
   const columnRanges = getColumnRanges(columns)
@@ -98,11 +101,15 @@ export default async function parseFrcsSurveyFile(
   let cave: string | undefined = undefined
   let location: string | undefined = undefined
   const trips: (FrcsTrip | InvalidFrcsTrip)[] = []
+  const rootLocs: FrcsSurveyFile['locs'] = {}
   const issues: ParseIssue[] = []
 
   let tripName: string | undefined
+  let tripNameLoc: SourceLoc | undefined
   let tripTeam: string[] | undefined
+  let tripTeamLoc: SourceLoc[] | undefined
   let tripDate: Date | undefined
+  let tripDateLoc: SourceLoc | undefined
   let inTripComment = true
   let tripCommentStartLine = 1
   let tripCommentEndLine = -1
@@ -111,6 +118,7 @@ export default async function parseFrcsSurveyFile(
   let trip: FrcsTrip | InvalidFrcsTrip | undefined = undefined
   let inBlockComment = false
   let section
+  let sectionLoc: SourceLoc | undefined
   const commentFromStationLruds = new Map<
     string,
     NonNullable<FrcsShot['fromLruds']>
@@ -139,11 +147,25 @@ export default async function parseFrcsSurveyFile(
       if (/^\s+\*/.test(line)) {
         continue
       }
-      const match = /^\s*([^,]+)(,(.*))?/.exec(line)
+      const match = /^\s*([^,]+)(,(.*))?/d.exec(line)
       if (match) {
         cave = match[1].trim()
+        if (includeLocs && match.indices) {
+          rootLocs.cave = makeLineLoc(
+            lineNumber,
+            lineStartIndex,
+            ...match.indices[1]
+          )
+        }
         if (match[3]) {
           location = match[3].trim()
+          if (includeLocs && match.indices) {
+            rootLocs.cave = makeLineLoc(
+              lineNumber,
+              lineStartIndex,
+              ...match.indices[3]
+            )
+          }
         }
       }
     }
@@ -157,9 +179,14 @@ export default async function parseFrcsSurveyFile(
       alternateUnits = nextShotUnits = undefined
       unitsChanged = false
       if (inTripComment) {
+        tripName = undefined
+        tripNameLoc = undefined
         section = undefined
+        sectionLoc = undefined
         tripTeam = undefined
+        tripTeamLoc = undefined
         tripDate = undefined
+        tripDateLoc = undefined
         tripComment.length = 0
         tripCommentStartLine = lineNumber
       } else {
@@ -167,17 +194,45 @@ export default async function parseFrcsSurveyFile(
       }
     } else if (inTripComment) {
       if (lineNumber === tripCommentStartLine + 1) {
-        tripName = line && line.trim()
+        tripName = line.trim()
+        const startColumn = /\S/.exec(line)?.index ?? 0
+        const endColumn = startColumn + tripName.length
+        tripNameLoc = makeLineLoc(
+          lineNumber,
+          lineStartIndex,
+          startColumn,
+          endColumn
+        )
       } else if (lineNumber === tripCommentStartLine + 2) {
         const dateMatch =
-          /(?:[-.]\s*)?((\d+)[-/](\d+)[-/](\d{2,4})|((\d+)[-/ ](january|february|march|april|may|june|july|august|september|october|november|december|(?:jan|feb|mar|apr|jun|jul|aug|sept?|oct|nov|dec)\.?)[-/ ](\d{2,4}))|((january|february|march|april|may|june|july|august|september|october|november|december|(?:jan|feb|mar|apr|jun|jul|aug|sept?|oct|nov|dec)\.?)\s+(\d+)(?:,\s*|,?\s+)(\d{2,4})))/i.exec(
+          /(?:[-.]\s*)?((\d+)[-/](\d+)[-/](\d{2,4})|((\d+)[-/ ](january|february|march|april|may|june|july|august|september|october|november|december|(?:jan|feb|mar|apr|jun|jul|aug|sept?|oct|nov|dec)\.?)[-/ ](\d{2,4}))|((january|february|march|april|may|june|july|august|september|october|november|december|(?:jan|feb|mar|apr|jun|jul|aug|sept?|oct|nov|dec)\.?)\s+(\d+)(?:,\s*|,?\s+)(\d{2,4})))/di.exec(
             line
           )
         if (dateMatch) {
           const team = line.substring(0, dateMatch.index)
-          tripTeam = team
-            .split(team.indexOf(';') >= 0 ? ';' : ',')
-            .flatMap((member) => member.trim() || [])
+          tripTeam = []
+          tripTeamLoc = []
+          for (const match of team.matchAll(
+            team.includes(';')
+              ? /\s*([^;]+)\s*/dg
+              : team.includes(',')
+              ? /\s*([^,]+)\s*/dg
+              : /(\S+( \S+)*)/dg
+          )) {
+            const name = match[1].trim()
+            tripTeam.push(name)
+            if (includeLocs && match.indices) {
+              const index = match.indices[1][0]
+              tripTeamLoc.push(
+                makeLineLoc(
+                  lineNumber,
+                  lineStartIndex,
+                  index,
+                  index + name.length
+                )
+              )
+            }
+          }
           if (!tripTeam.length) {
             addIssue(
               'warning',
@@ -204,6 +259,13 @@ export default async function parseFrcsSurveyFile(
             year = parseInt(dateMatch[12])
           }
           tripDate = new Date(year < 60 ? year + 2000 : year, month - 1, day)
+          if (includeLocs && dateMatch.indices) {
+            tripDateLoc = makeLineLoc(
+              lineNumber,
+              lineStartIndex,
+              ...dateMatch.indices[1]
+            )
+          }
         } else {
           addIssue(
             'warning',
@@ -256,12 +318,23 @@ export default async function parseFrcsSurveyFile(
       addCommentLine(line)
     } else if (lineNumber === tripCommentEndLine + 1) {
       if (trip) trips.push(trip)
+      const comment = tripComment.join('\n') || undefined
+      const headerLocs: FrcsTripHeader['locs'] =
+        includeLocs && tripNameLoc
+          ? {
+              name: tripNameLoc,
+              date: tripDateLoc,
+              section: sectionLoc,
+              team: tripTeamLoc,
+            }
+          : undefined
       const header = {
         name: tripName || '',
-        comment: (tripComment && tripComment.join('\n')) || undefined,
+        comment,
         section,
         date: tripDate,
         team: tripTeam,
+        ...(headerLocs && { locs: headerLocs }),
       }
       const units = parseUnits()
       if (
@@ -559,6 +632,9 @@ export default async function parseFrcsSurveyFile(
           },
           excludeDistance,
           comment,
+          ...(includeLocs && {
+            loc: makeLineLoc(lineNumber, lineStartIndex, 0, line.length),
+          }),
         }
         if (isSplay) shot.isSplay = true
         if (fromLruds) shot.fromLruds = fromLruds
@@ -583,6 +659,9 @@ export default async function parseFrcsSurveyFile(
           },
           excludeDistance,
           comment,
+          ...(includeLocs && {
+            loc: makeLineLoc(lineNumber, lineStartIndex, 0, line.length),
+          }),
         }
         if (isSplay) shot.isSplay = true
         if (fromLruds) shot.fromLruds = fromLruds
@@ -607,6 +686,7 @@ export default async function parseFrcsSurveyFile(
       location,
       trips,
       ...(issues.length ? { issues } : undefined),
+      ...(includeLocs && { locs: rootLocs }),
     }
   }
 
@@ -616,6 +696,7 @@ export default async function parseFrcsSurveyFile(
       columns: outputColumns ? columns : undefined,
       location,
       trips,
+      ...(includeLocs && { locs: rootLocs }),
     },
     issues,
   }
@@ -938,5 +1019,25 @@ export default async function parseFrcsSurveyFile(
     } else {
       trip.shots.push(shot)
     }
+  }
+}
+
+function makeLineLoc(
+  line: number,
+  lineStartIndex: number,
+  startColumn: number,
+  endColumn: number
+): SourceLoc {
+  return {
+    start: {
+      index: lineStartIndex + startColumn,
+      line,
+      column: startColumn,
+    },
+    end: {
+      index: lineStartIndex + endColumn,
+      line,
+      column: endColumn,
+    },
   }
 }

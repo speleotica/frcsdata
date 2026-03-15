@@ -216,4 +216,5 @@ export type ParseFrcsSurveyFileOptions = {
         missingTripTeam?: boolean
         missingTripDate?: boolean
       }
+  includeLocs?: boolean
 }

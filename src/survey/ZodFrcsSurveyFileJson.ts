@@ -266,6 +266,7 @@ export const ZodParseFrcsSurveyFileOptionsJson = z.object({
         .partial(),
     ])
     .optional(),
+  includeLocs: z.boolean().optional(),
 })
 
 ZodParseFrcsSurveyFileOptionsJson satisfies DeepMapJsonSchema<ParseFrcsSurveyFileOptions>

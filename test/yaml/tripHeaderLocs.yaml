@@ -1,0 +1,50 @@
+- describe: trip header locs
+  specs:
+    - it: basic test
+      procedure: parseFrcsSurveyFile
+      options:
+        includeLocs: true
+      input: |2
+            Fisher Ridge
+        Bed of Nails continued
+        Sean Lewis, Niles Lathrop, Felipe Roz_Borscevicius.  12/30/2025
+         *
+        FT CC DD
+      output:
+        cave: Fisher Ridge
+        trips:
+          - tripNumber: 1
+            header:
+              name: Bed of Nails continued
+              date: 2025-12-30
+              team:
+                - Sean Lewis
+                - Niles Lathrop
+                - Felipe Roz Borscevicius
+              locs:
+                name:
+                  start: { index: 17, line: 2, column: 0 }
+                  end: { index: 39, line: 2, column: 22 }
+                date:
+                  start: { index: 93, line: 3, column: 53 }
+                  end: { index: 103, line: 3, column: 63 }
+                team:
+                  - start: { index: 40, line: 3, column: 0 }
+                    end: { index: 50, line: 3, column: 10 }
+                  - start: { index: 52, line: 3, column: 12 }
+                    end: { index: 65, line: 3, column: 25 }
+                  - start: { index: 67, line: 3, column: 27 }
+                    end: { index: 90, line: 3, column: 50 }
+            units:
+              distanceUnit: ft
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: true
+              backsightInclinationCorrected: true
+              hasBacksightAzimuth: true
+              hasBacksightInclination: true
+            shots: []
+        locs:
+          cave:
+            start: { index: 4, line: 1, column: 4 }
+            end: { index: 16, line: 1, column: 16 }
