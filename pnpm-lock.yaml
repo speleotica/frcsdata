@@ -8,6 +8,9 @@ dependencies:
   '@babel/runtime':
     specifier: ^7.18.6
     version: 7.24.4
+  '@jcoreio/utils':
+    specifier: 0.0.0-development
+    version: 0.0.0-development
   '@speleotica/unitized':
     specifier: ^2.0.0
     version: 2.0.0(@babel/core@7.29.0)
@@ -1828,6 +1831,11 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
+
+  /@jcoreio/utils@0.0.0-development:
+    resolution: {integrity: sha512-1M7Rmg4Cl6KyHTbegdkNYS5rJgYImwNF36ew01H5xHT1Wvbb/w6Q/jDtqMYDABICR0RysSuhEg5EbmIY2Cx7tA==}
+    engines: {node: '>=16'}
+    dev: false
 
   /@jridgewell/gen-mapping@0.3.13:
     resolution: {integrity: sha512-2kkt/7niJ6MgEPxF0bYdQ6etZaA+fQvDcLKckhy1yIQOzaoKjBBjSj63/aLVjYE3qhRt5dvM+uUyfCg6UKCBbA==}

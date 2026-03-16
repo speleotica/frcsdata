@@ -11,7 +11,10 @@ export async function replaceSurveyNames(
 ) {
   const source = await readFile(surveyFile, 'utf8')
   const parsed = ZodValidOrInvalidFrcsSurveyFileToJson.parse(
-    await parseFrcsSurveyFile(surveyFile, [source], { includeLocs: true })
+    await parseFrcsSurveyFile(surveyFile, [source], {
+      normalizeNames: false,
+      includeLocs: true,
+    })
   )
   const nameReplacements = new Map<string, string>()
   for (const line of (await readFile(replacementsFile, 'utf8')).split(

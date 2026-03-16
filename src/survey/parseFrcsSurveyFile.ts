@@ -209,7 +209,7 @@ export default async function parseFrcsSurveyFile(
             line
           )
         if (dateMatch) {
-          const team = line.substring(0, dateMatch.index)
+          const team = line.substring(0, dateMatch.index).replace(/\.?\s*$/, '')
           tripTeam = []
           tripTeamLoc = []
           for (const match of team.matchAll(
@@ -217,7 +217,11 @@ export default async function parseFrcsSurveyFile(
               ? /\s*([^;]+)\s*/dg
               : team.includes(',')
               ? /\s*([^,]+)\s*/dg
-              : /(\S+( \S+)*)/dg
+              : team.includes('&')
+              ? /\s*([^&]+)\s*/dg
+              : /\S {2,}\S/.test(team)
+              ? /(\S+( \S+)*)/dg
+              : /(\S+( \S\.? )? \S{2,})/dg
           )) {
             const name = match[1].trim()
             tripTeam.push(name)

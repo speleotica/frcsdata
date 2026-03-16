@@ -54,10 +54,16 @@ void yargs(process.argv.slice(2))
           type: 'boolean',
           describe: 'count the number of occurrences of each name',
           demandOption: false,
+        })
+        .option('suggest-replacements', {
+          alias: 's',
+          type: 'boolean',
+          describe: 'output suggested replacements',
+          demandOption: false,
         }),
-    handler: async ({ file, counts }) => {
+    handler: async ({ file, counts, suggestReplacements }) => {
       const { listSurveyNames: listNames } = await import('./cli/list-names')
-      await listNames(file, { includeCounts: counts })
+      await listNames(file, { includeCounts: counts, suggestReplacements })
     },
   })
   .command({
