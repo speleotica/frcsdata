@@ -1,20 +1,21 @@
 /* eslint-disable no-console */
 import chalk from 'chalk'
-import { parseFrcsSurveyFile } from '../string/index'
-import fs from 'fs/promises'
+import { parseFrcsSurveyFile, parseFrcsTripSummaryFile } from '../string/index'
 import { summarizeSurvey } from '../survey/summarizeSurvey'
-import { parseFrcsTripSummaryFile } from '../node/index.js'
 import { formatFrcsTripSummaryFile } from '../formatFrcsTripSummaryFile.js'
 import { isDeepStrictEqual } from 'util'
+import { readFile } from './readFile'
 
 export async function checkSurveyCorrespondence(
   surveyFile: string,
   summaryFile: string
 ) {
-  const source = await fs.readFile(surveyFile, 'utf8')
+  const source = await readFile(surveyFile)
   const parsedSurvey = await parseFrcsSurveyFile(surveyFile, source)
   const parsedSummaries = (
-    await parseFrcsTripSummaryFile(summaryFile, { indexBy: 'occurrence' })
+    await parseFrcsTripSummaryFile(summaryFile, await readFile(summaryFile), {
+      indexBy: 'occurrence',
+    })
   ).tripSummaries.sort((a, b) => (a?.tripNumber ?? 0) - (b?.tripNumber ?? 0))
   const convertedSummaries = summarizeSurvey(parsedSurvey, {
     ignoreVerticalOfHShots: true,

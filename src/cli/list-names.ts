@@ -1,17 +1,20 @@
 /* eslint-disable no-console */
-import { parseFrcsSurveyFile } from '../node/index'
+import { parseFrcsSurveyFile } from '../string/index'
 import { normalizeNameCapitalization } from '../survey/normalizeTeamMemberName'
 import { ZodValidOrInvalidFrcsSurveyFileToJson } from '../survey/ZodFrcsSurveyFileToJson'
 import { unwrapInvalid } from '../unwrapInvalid'
 import { groupBy } from '@jcoreio/utils/groupBy'
 import { compareNames } from './compareNames'
+import { readFile } from './readFile'
 
 export async function listSurveyNames(
   file: string,
   options?: { includeCounts?: boolean; suggestReplacements?: boolean }
 ) {
   const parsed = ZodValidOrInvalidFrcsSurveyFileToJson.parse(
-    await parseFrcsSurveyFile(file, { normalizeNames: false })
+    await parseFrcsSurveyFile(file, await readFile(file), {
+      normalizeNames: false,
+    })
   )
   const nameCounts = new Map<string, number>()
   for (const trip of unwrapInvalid(parsed).trips) {

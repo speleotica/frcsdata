@@ -1,11 +1,11 @@
 /* eslint-disable no-console */
-import fs from 'fs/promises'
+import { readFile } from './readFile'
 import parseFrcsSurveyFile from '../survey/parseFrcsSurveyFile'
 import chalk from 'chalk'
 import { formatIssues } from '../formatIssues.js'
 
 export async function checkSurvey(file: string) {
-  const source = await fs.readFile(file, 'utf8')
+  const source = await readFile(file)
   const parsed = await parseFrcsSurveyFile(file, [source])
 
   const issues = parsed.issues || []

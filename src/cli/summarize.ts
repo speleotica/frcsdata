@@ -2,12 +2,12 @@
 import chalk from 'chalk'
 import { formatIssues } from '../formatIssues'
 import { parseFrcsSurveyFile } from '../string/index'
-import fs from 'fs/promises'
 import { formatFrcsTripSummaryFile } from '../formatFrcsTripSummaryFile'
 import { summarizeSurvey as baseSummarizeSurvey } from '../survey/summarizeSurvey'
+import { readFile } from './readFile'
 
 export async function summarizeSurvey(file: string) {
-  const source = await fs.readFile(file, 'utf8')
+  const source = await readFile(file)
   const parsed = await parseFrcsSurveyFile(file, source)
   if ('INVALID' in parsed) {
     console.log(
