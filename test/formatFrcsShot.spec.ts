@@ -48,7 +48,6 @@ describe(`formatFrcsShot`, function () {
   testCase(
     'shot with excess precision',
     {
-      kind: FrcsShotKind.Normal,
       to: 'PDF28',
       from: 'PDF27',
       distance: Unitize.feet(31.7),
