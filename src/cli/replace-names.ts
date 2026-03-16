@@ -4,6 +4,7 @@ import { replaceRanges } from '../replaceRanges'
 import { ZodValidOrInvalidFrcsSurveyFileToJson } from '../survey/ZodFrcsSurveyFileToJson'
 import { unwrapInvalid } from '../unwrapInvalid'
 import { readFile } from 'fs/promises'
+import { parseNamesFile } from './parseNamesFile'
 
 export async function replaceSurveyNames(
   surveyFile: string,
@@ -16,15 +17,7 @@ export async function replaceSurveyNames(
       includeLocs: true,
     })
   )
-  const nameReplacements = new Map<string, string>()
-  for (const line of (await readFile(replacementsFile, 'utf8')).split(
-    /\r\n?|\n/gm
-  )) {
-    const match = /^\s*(.+)\s*=>\s*(.+)\s*$/.exec(line)
-    if (match) {
-      nameReplacements.set(match[1].trim(), match[2].trim())
-    }
-  }
+  const names = await parseNamesFile(await readFile(replacementsFile, 'utf8'))
 
   const replacements: { start: number; end: number; value: string }[] = []
   for (const trip of unwrapInvalid(parsed).trips) {
@@ -33,7 +26,7 @@ export async function replaceSurveyNames(
     )
     if (!team || !teamLocs) continue
     for (let i = 0; i < team.length; i++) {
-      const replacement = nameReplacements.get(team[i])
+      const replacement = names.get(team[i])?.replacement
       if (replacement && teamLocs[i]) {
         replacements.push({
           start: teamLocs[i].start.index,

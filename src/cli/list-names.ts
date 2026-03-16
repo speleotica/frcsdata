@@ -1,12 +1,10 @@
 /* eslint-disable no-console */
 import { parseFrcsSurveyFile } from '../node/index'
-import {
-  normalizeNameCapitalization,
-  normalizeTeamMemberName,
-} from '../survey/normalizeTeamMemberName'
+import { normalizeNameCapitalization } from '../survey/normalizeTeamMemberName'
 import { ZodValidOrInvalidFrcsSurveyFileToJson } from '../survey/ZodFrcsSurveyFileToJson'
 import { unwrapInvalid } from '../unwrapInvalid'
 import { groupBy } from '@jcoreio/utils/groupBy'
+import { compareNames } from './compareNames'
 
 export async function listSurveyNames(
   file: string,
@@ -24,15 +22,9 @@ export async function listSurveyNames(
     }
   }
 
-  const table = [...nameCounts.entries()].sort((a, b) => {
-    const [aFirst, aLast] = splitName(a[0].toLowerCase())
-    const [bFirst, bLast] = splitName(b[0].toLowerCase())
-    return (
-      aLast.localeCompare(bLast) ||
-      aFirst.localeCompare(bFirst) ||
-      a[0].localeCompare(b[0])
-    )
-  })
+  const table = [...nameCounts.entries()].sort((a, b) =>
+    compareNames(a[0], b[0])
+  )
   const maxNameCount = table.reduce((max, [, count]) => Math.max(max, count), 0)
   const countLength = maxNameCount.toFixed().length
 
@@ -56,12 +48,6 @@ export async function listSurveyNames(
         if (name !== best) replacements.set(name, best)
       }
     }
-
-    // const firstInitials = new Map(
-    //   names.flatMap((name) =>
-    //     /^\S\.?\s/.test(name) ? [[name.toLowerCase(), name]] : []
-    //   )
-    // )
 
     const firstInitials = groupBy(
       names.filter((name) => /^\S[. ]/.test(name)),
@@ -93,10 +79,6 @@ export async function listSurveyNames(
       )
     else console.log(name, ...(replacement ? ['=>', replacement] : []))
   }
-}
-
-const splitName = (name: string) => {
-  return /^(.+)\s+(\S+)$/.exec(name)?.slice(1) || ['', name]
 }
 
 const countCaps = (name: string) => {

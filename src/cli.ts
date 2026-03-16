@@ -87,6 +87,20 @@ void yargs(process.argv.slice(2))
     },
   })
   .command({
+    command: 'merge-names-files <namesFiles..>',
+    describe: 'merge two or more names files',
+    builder: (yargs) =>
+      yargs.positional('namesFiles', {
+        type: 'string',
+        array: true,
+        demandOption: true,
+      }),
+    handler: async ({ namesFiles }) => {
+      const { mergeNamesFiles } = await import('./cli/merge-names-files')
+      await mergeNamesFiles(...namesFiles)
+    },
+  })
+  .command({
     command: 'check-correspondence <surveyFile> <summaryFile>',
     describe: 'parse survey file and output trip summaries',
     builder: (yargs) =>
