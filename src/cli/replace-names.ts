@@ -5,6 +5,7 @@ import { ZodValidOrInvalidFrcsSurveyFileToJson } from '../survey/ZodFrcsSurveyFi
 import { unwrapInvalid } from '../unwrapInvalid'
 import { parseNamesFile } from './parseNamesFile'
 import { readFile } from './readFile'
+import { writeFile } from 'fs/promises'
 import chalk from 'chalk'
 import { compareNames } from './compareNames'
 
@@ -13,6 +14,7 @@ export async function replaceSurveyNames(
   replacementsFile: string,
   options?: {
     verbose?: boolean
+    write?: boolean
   }
 ) {
   const source = await readFile(surveyFile)
@@ -55,10 +57,15 @@ export async function replaceSurveyNames(
     }
   }
 
-  process.stdout.write(replaceRanges(source, replacements))
+  const replaced = replaceRanges(source, replacements)
+  if (options?.write) {
+    await writeFile(surveyFile, replaced, 'utf8')
+  } else {
+    process.stdout.write(replaced)
+  }
   console.error(
     chalk.yellow(
-      `replaced ${replacedNames.size} ${
+      `replaced ${replacedNames.size} name${
         replacedNames.size === 1 ? '' : 's'
       } in ${replacementCount} location${replacementCount === 1 ? '' : 's'}`
     )

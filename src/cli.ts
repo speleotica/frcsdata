@@ -83,12 +83,17 @@ void yargs(process.argv.slice(2))
         .option('verbose', {
           alias: 'v',
           type: 'boolean',
+        })
+        .option('write', {
+          alias: 'w',
+          describe: 'overwrite survey file with replacements',
+          type: 'boolean',
         }),
-    handler: async ({ surveyFile, replacementsFile, verbose }) => {
+    handler: async ({ surveyFile, replacementsFile, verbose, write }) => {
       const { replaceSurveyNames: replaceNames } = await import(
         './cli/replace-names'
       )
-      await replaceNames(surveyFile, replacementsFile, { verbose })
+      await replaceNames(surveyFile, replacementsFile, { verbose, write })
     },
   })
   .command({
