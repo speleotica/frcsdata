@@ -1,6 +1,7 @@
 import yargs from 'yargs/yargs'
 
 void yargs(process.argv.slice(2))
+  .scriptName('frcsdata')
   .command({
     command: 'check <file>',
     describe: 'check survey file for errors or warnings',
@@ -78,12 +79,16 @@ void yargs(process.argv.slice(2))
         .positional('replacementsFile', {
           type: 'string',
           demandOption: true,
+        })
+        .option('verbose', {
+          alias: 'v',
+          type: 'boolean',
         }),
-    handler: async ({ surveyFile, replacementsFile }) => {
+    handler: async ({ surveyFile, replacementsFile, verbose }) => {
       const { replaceSurveyNames: replaceNames } = await import(
         './cli/replace-names'
       )
-      await replaceNames(surveyFile, replacementsFile)
+      await replaceNames(surveyFile, replacementsFile, { verbose })
     },
   })
   .command({
