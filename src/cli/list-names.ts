@@ -6,6 +6,7 @@ import { unwrapInvalid } from '../unwrapInvalid'
 import { groupBy } from '@jcoreio/utils/groupBy'
 import { compareNames } from './compareNames'
 import { readFile } from './readFile'
+import { encodeWindows1252 } from './encodeWindows1252'
 
 export async function listSurveyNames(
   file: string,
@@ -74,13 +75,19 @@ export async function listSurveyNames(
 
   for (const [name, count] of table) {
     const replacement = replacements.get(name)
-    if (includeCounts)
-      console.log(
-        count.toFixed().padStart(countLength),
-        name,
-        ...(replacement ? ['=>', replacement] : [])
+    if (includeCounts) {
+      process.stdout.write(
+        encodeWindows1252(
+          `${count.toFixed().padStart(countLength)} ${name}${
+            replacement ? ` => ${replacement}` : ''
+          }\n`
+        )
       )
-    else console.log(name, ...(replacement ? ['=>', replacement] : []))
+    } else {
+      process.stdout.write(
+        encodeWindows1252(`${name}${replacement ? ` => ${replacement}` : ''}\n`)
+      )
+    }
   }
 }
 

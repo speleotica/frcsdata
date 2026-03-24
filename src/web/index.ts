@@ -92,7 +92,7 @@ const convertLineBased = <T>(
 function chunksOf(input: Blob | ReadableStream): AsyncIterable<string> {
   return readableStreamValues(
     (input instanceof ReadableStream ? input : input.stream()).pipeThrough(
-      new TextDecoderStream()
+      new TextDecoderStream('windows-1252')
     )
   )
 }

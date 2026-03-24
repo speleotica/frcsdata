@@ -5,6 +5,7 @@ import { parseFrcsSurveyFile } from '../string/index'
 import { formatFrcsTripSummaryFile } from '../formatFrcsTripSummaryFile'
 import { summarizeSurvey as baseSummarizeSurvey } from '../survey/summarizeSurvey'
 import { readFile } from './readFile'
+import { encodeWindows1252 } from './encodeWindows1252'
 
 export async function summarizeSurvey(file: string) {
   const source = await readFile(file)
@@ -23,6 +24,6 @@ export async function summarizeSurvey(file: string) {
   }
 
   for (const line of formatFrcsTripSummaryFile(baseSummarizeSurvey(parsed))) {
-    console.log(line)
+    process.stdout.write(encodeWindows1252(line + '\n'))
   }
 }

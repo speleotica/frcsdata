@@ -57,6 +57,7 @@
     "dedent-js": "^1.0.1",
     "glob": "^13.0.6",
     "parse-segment": "^1.5.4",
+    "windows-1252": "^3.0.4",
     "yaml": "^2.8.2",
     "yargs": "^17",
     "zod": "^3"

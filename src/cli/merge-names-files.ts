@@ -1,6 +1,7 @@
 import { parseNamesFile } from './parseNamesFile'
 import { formatNamesFile } from './formatNamesFile'
 import { readFile } from './readFile'
+import { encodeWindows1252 } from './encodeWindows1252'
 
 export async function mergeNamesFiles(...files: string[]) {
   const names = new Map<string, { replacement?: string }>()
@@ -14,5 +15,5 @@ export async function mergeNamesFiles(...files: string[]) {
     }
   }
 
-  process.stdout.write(formatNamesFile(names))
+  process.stdout.write(encodeWindows1252(formatNamesFile(names)))
 }

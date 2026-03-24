@@ -8,6 +8,7 @@ import { readFile } from './readFile'
 import { writeFile } from 'fs/promises'
 import chalk from 'chalk'
 import { compareNames } from './compareNames'
+import { encodeWindows1252 } from './encodeWindows1252'
 
 export async function replaceSurveyNames(
   surveyFile: string,
@@ -57,9 +58,9 @@ export async function replaceSurveyNames(
     }
   }
 
-  const replaced = replaceRanges(source, replacements)
+  const replaced = encodeWindows1252(replaceRanges(source, replacements))
   if (options?.write) {
-    await writeFile(surveyFile, replaced, 'utf8')
+    await writeFile(surveyFile, replaced)
   } else {
     process.stdout.write(replaced)
   }

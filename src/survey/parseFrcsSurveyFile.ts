@@ -137,7 +137,9 @@ export default async function parseFrcsSurveyFile(
 
   let began = false
 
-  for await ({ line, startIndex: lineStartIndex } of chunksToLines(chunks)) {
+  for await ({ line, startIndex: lineStartIndex } of chunksToLines(chunks, {
+    includeStartIndex: true,
+  })) {
     if (lineIssues.length) lineIssues = []
 
     lineNumber++
