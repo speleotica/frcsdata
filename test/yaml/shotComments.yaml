@@ -1,0 +1,262 @@
+- describe: shot comments
+  specs:
+    - it: attaches leading comments to shots
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        Pee Quick Canyon off of the Boob Tube
+        Peter Quick, Larry Bean. 8/02/86
+         *
+        FT CC DD
+        *
+        *First survey down drop through Drippy Dome
+         BTP1  BT4  10.3     253   254  -10 -9.5  8  2  2  8
+         BTP2 BTP1   6.6   194.5   195  -34  -35  3  1  2 44
+         BTP3 BTP2  43.5                -90  -90  3  9 45  3
+        *
+        *Now head east towards good stuff
+         BTP4 BTP3  18.1   103.5 103.5   55 55.5  1  6 25 15
+      output:
+        trips:
+          - tripNumber: 1
+            header:
+              name: Pee Quick Canyon off of the Boob Tube
+              date: 1986-08-02
+              team:
+                - Peter Quick
+                - Larry Bean
+            units:
+              distanceUnit: ft
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: true
+              backsightInclinationCorrected: true
+              hasBacksightAzimuth: true
+              hasBacksightInclination: true
+            shots:
+              - {
+                  from: BT4,
+                  to: BTP1,
+                  distance: [10.3, ft],
+                  frontsightAzimuth: [253, deg],
+                  frontsightInclination: [-10, deg],
+                  backsightAzimuth: [254, deg],
+                  backsightInclination: [-9.5, deg],
+                  toLruds:
+                    {
+                      left: [8, ft],
+                      right: [2, ft],
+                      up: [2, ft],
+                      down: [8, ft],
+                    },
+                  comment: First survey down drop through Drippy Dome,
+                }
+              - {
+                  from: BTP1,
+                  to: BTP2,
+                  distance: [6.6, ft],
+                  frontsightAzimuth: [194.5, deg],
+                  frontsightInclination: [-34, deg],
+                  backsightAzimuth: [195, deg],
+                  backsightInclination: [-35, deg],
+                  toLruds:
+                    {
+                      left: [3, ft],
+                      right: [1, ft],
+                      up: [2, ft],
+                      down: [44, ft],
+                    },
+                }
+              - {
+                  from: BTP2,
+                  to: BTP3,
+                  distance: [43.5, ft],
+                  frontsightInclination: [-90, deg],
+                  backsightInclination: [-90, deg],
+                  toLruds:
+                    {
+                      left: [3, ft],
+                      right: [9, ft],
+                      up: [45, ft],
+                      down: [3, ft],
+                    },
+                }
+              - {
+                  from: BTP3,
+                  to: BTP4,
+                  distance: [18.1, ft],
+                  frontsightAzimuth: [103.5, deg],
+                  frontsightInclination: [55, deg],
+                  backsightAzimuth: [103.5, deg],
+                  backsightInclination: [55.5, deg],
+                  toLruds:
+                    {
+                      left: [1, ft],
+                      right: [6, ft],
+                      up: [25, ft],
+                      down: [15, ft],
+                    },
+                  comment: Now head east towards good stuff,
+                }
+    - it: if two comments are in a row, attaches first to preceeding shot and second to succeeding shot
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        Pee Quick Canyon off of the Boob Tube
+        Peter Quick, Larry Bean. 8/02/86
+         *
+        FT CC DD
+        BTP43BTP42  14.0      80  80.5   10 10.5  0 12 35  7
+        *
+        Survey ends at lip of dome pit.  Later exploration on another
+        *trip by P. Quick showed nothing at bottom of 40 ft pit.
+        *            
+        *Return to bottom of Drippy Dome and head west in main canyon
+         BTQ1 BTP3  12.4     211   211   21 21.5  3  7 35  7
+      output:
+        trips:
+          - tripNumber: 1
+            header:
+              name: Pee Quick Canyon off of the Boob Tube
+              date: 1986-08-02
+              team:
+                - Peter Quick
+                - Larry Bean
+            units:
+              distanceUnit: ft
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: true
+              backsightInclinationCorrected: true
+              hasBacksightAzimuth: true
+              hasBacksightInclination: true
+            shots:
+              - {
+                  from: BTP42,
+                  to: BTP43,
+                  distance: [14, ft],
+                  frontsightAzimuth: [80, deg],
+                  frontsightInclination: [10, deg],
+                  backsightAzimuth: [80.5, deg],
+                  backsightInclination: [10.5, deg],
+                  toLruds:
+                    {
+                      left: [0, ft],
+                      right: [12, ft],
+                      up: [35, ft],
+                      down: [7, ft],
+                    },
+                  comment:
+                    Survey ends at lip of dome pit.  Later exploration on another
+
+                    trip by P. Quick showed nothing at bottom of 40 ft pit.,
+                }
+              - {
+                  from: BTP3,
+                  to: BTQ1,
+                  distance: [12.4, ft],
+                  frontsightAzimuth: [211, deg],
+                  frontsightInclination: [21, deg],
+                  backsightAzimuth: [211, deg],
+                  backsightInclination: [21.5, deg],
+                  toLruds:
+                    {
+                      left: [3, ft],
+                      right: [7, ft],
+                      up: [35, ft],
+                      down: [7, ft],
+                    },
+                  comment: Return to bottom of Drippy Dome and head west in main canyon,
+                }
+    - it: attaches trailing comments before a trip to the last shot
+      procedure: parseFrcsSurveyFile
+      input: |2
+         *
+        Pee Quick Canyon off of the Boob Tube
+        Peter Quick, Larry Bean. 8/02/86
+         *
+        FT CC DD
+        BTR37BTR36  26.9     285   284 -1.5   -1  9  6  7  8
+        *
+        Survey terminated at breakdown choke.  Passage might continue through
+        *breakdown.
+        *           
+        SUMMARY OF SIDE LEADS:
+            BTP18: Lower level mud crawl
+            BTP33: Upper canyon on left wall, 3Hx2W
+            BTR16: SE upper canyon lead.  Nice 5Hx4W dry gypsum.  Need rope
+                    "for safety"
+        *     BTR30: Nice 5Wx3H crawl, good air, dry.
+         *
+        Upper Pete's Canyon
+        Bob Anderson, Larry Bean, Chip Hopper, Peter Quick. 9/13/86
+         *
+        FT CC DD
+      output:
+        trips:
+          - tripNumber: 1
+            header:
+              name: Pee Quick Canyon off of the Boob Tube
+              date: 1986-08-02
+              team:
+                - Peter Quick
+                - Larry Bean
+            units:
+              distanceUnit: ft
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: true
+              backsightInclinationCorrected: true
+              hasBacksightAzimuth: true
+              hasBacksightInclination: true
+            shots:
+              - {
+                  from: BTR36,
+                  to: BTR37,
+                  distance: [26.9, ft],
+                  frontsightAzimuth: [285, deg],
+                  frontsightInclination: [-1.5, deg],
+                  backsightAzimuth: [284, deg],
+                  backsightInclination: [-1, deg],
+                  toLruds:
+                    {
+                      left: [9, ft],
+                      right: [6, ft],
+                      up: [7, ft],
+                      down: [8, ft],
+                    },
+                  comment:
+                    "Survey terminated at breakdown choke.  Passage might continue through
+
+                    breakdown.
+
+                    SUMMARY OF SIDE LEADS:
+
+                    \    BTP18: Lower level mud crawl
+
+                    \    BTP33: Upper canyon on left wall, 3Hx2W
+
+                    \    BTR16: SE upper canyon lead.  Nice 5Hx4W dry gypsum.  Need rope
+
+                    \            \"for safety\"
+
+                    \     BTR30: Nice 5Wx3H crawl, good air, dry.",
+                }
+          - tripNumber: 2
+            header:
+              name: Upper Pete's Canyon
+              date: 1986-09-13
+              team:
+                - Bob Anderson
+                - Larry Bean
+                - Chip Hopper
+                - Peter Quick
+            units:
+              distanceUnit: ft
+              azimuthUnit: deg
+              inclinationUnit: deg
+              backsightAzimuthCorrected: true
+              backsightInclinationCorrected: true
+              hasBacksightAzimuth: true
+              hasBacksightInclination: true
+            shots: []

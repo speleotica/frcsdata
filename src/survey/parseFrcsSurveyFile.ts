@@ -115,7 +115,8 @@ export default async function parseFrcsSurveyFile(
   let tripCommentEndLine = -1
   const tripComment: string[] = []
   const commentLines: string[] = []
-  let trip: FrcsTrip | InvalidFrcsTrip | undefined = undefined
+  let trip: FrcsTrip | InvalidFrcsTrip | undefined
+  let lastShot: FrcsShot | InvalidFrcsShot | undefined
   let inBlockComment = false
   let section
   let sectionLoc: SourceLoc | undefined
@@ -181,6 +182,8 @@ export default async function parseFrcsSurveyFile(
       alternateUnits = nextShotUnits = undefined
       unitsChanged = false
       if (inTripComment) {
+        const trailingComment = getComment()
+        if (trailingComment) attachComment(lastShot, trailingComment)
         tripName = undefined
         tripNameLoc = undefined
         section = undefined
@@ -318,7 +321,10 @@ export default async function parseFrcsSurveyFile(
         inBlockComment = false
       } else {
         inBlockComment = !inBlockComment
-        if (inBlockComment) commentLines.length = 0
+        if (inBlockComment) {
+          const trailingComment = getComment()
+          if (trailingComment) attachComment(lastShot, trailingComment)
+        }
       }
     } else if (inBlockComment) {
       addCommentLine(line)
@@ -710,10 +716,20 @@ export default async function parseFrcsSurveyFile(
   ////////////////////////////////////////////////////////////////////////////////////////////
 
   function getComment(): string | undefined {
-    if (!commentLines?.length) return undefined
+    if (!commentLines.length) return undefined
     const comment = commentLines.join('\n').trim()
     commentLines.length = 0
     return comment || undefined
+  }
+
+  function attachComment(
+    shot: FrcsShot | InvalidFrcsShot | undefined,
+    comment: string
+  ) {
+    const unwrapped = unwrapInvalid(shot)
+    if (!unwrapped) return
+    if (unwrapped.comment) unwrapped.comment += '\n' + comment
+    else unwrapped.comment = comment
   }
 
   function addCommentLine(comment: string): void {
@@ -940,6 +956,7 @@ export default async function parseFrcsSurveyFile(
   }
 
   function addShot(shot: FrcsShot | InvalidFrcsShot) {
+    lastShot = shot
     if (!trip) return
     if (alternateUnits) {
       const recorded:
